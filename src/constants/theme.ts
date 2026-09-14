@@ -27,22 +27,25 @@ export const FontSize = {
 
 export const PriorityColors = {
   Low: "#10B981", // Emerald 500
-  Medium: "#F59E0B", // Amber 500
+  Medium: "#d9691f", // ConcertGo Orange
   High: "#EF4444", // Red 500
+  Rendah: "#10B981",
+  Sedang: "#d9691f",
+  Tinggi: "#EF4444",
 };
 
 export const Shadows = {
   light: {
-    shadowColor: "#000",
+    shadowColor: "#241608",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
     elevation: 2,
   },
   medium: {
-    shadowColor: "#000",
+    shadowColor: "#241608",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.08,
     shadowRadius: 12,
     elevation: 4,
   },

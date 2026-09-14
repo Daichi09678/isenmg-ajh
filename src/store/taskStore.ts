@@ -10,8 +10,14 @@ interface TaskState {
   getTaskById: (id: string) => Task | undefined;
 }
 
+const DUMMY_TASKS: Task[] = [
+  { id: "1", title: "Kirim proposal ke klien", description: "", category: "Kerja" as any, priority: "Tinggi" as any, deadline: "15 Sep", isDone: false, createdAt: new Date().toISOString() },
+  { id: "2", title: "Rapat tim mingguan", description: "", category: "Kerja" as any, priority: "Sedang" as any, deadline: "16 Sep", isDone: false, createdAt: new Date().toISOString() },
+  { id: "3", title: "Baca 30 halaman buku", description: "", category: "Belajar" as any, priority: "Sedang" as any, deadline: "17 Sep", isDone: true, createdAt: new Date().toISOString() }
+];
+
 export const useTaskStore = create<TaskState>((set, get) => ({
-  tasks: [],
+  tasks: DUMMY_TASKS,
   addTask: (payload) => {
     const newTask: Task = {
       ...payload,

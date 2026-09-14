@@ -40,28 +40,28 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     borderWidth: 1,
-    borderRadius: Radius.lg,
-    padding: Spacing.md,
+    borderRadius: Radius.lg, // 24px
+    padding: Spacing.lg,
     alignItems: "flex-start",
   },
   iconBox: {
-    width: 36,
-    height: 36,
+    width: 40,
+    height: 40,
     borderRadius: Radius.full,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.md,
   },
   content: {
     alignItems: "flex-start",
   },
   value: {
-    fontSize: FontSize.xl,
-    fontWeight: "800",
-    marginBottom: 2,
+    fontSize: FontSize.xxl,
+    fontWeight: "900",
+    marginBottom: 4,
   },
   label: {
     fontSize: FontSize.xs,
-    fontWeight: "500",
+    fontWeight: "600",
   },
 });

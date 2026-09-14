@@ -7,19 +7,20 @@ import { Feather } from "@expo/vector-icons";
 import { useAppTheme } from "../store/themeStore";
 import { useUserStore } from "../store/userStore";
 import Button from "../components/Button";
-import { Spacing, FontSize, Radius, Shadows } from "../constants/theme";
+import { Spacing, FontSize, Radius } from "../constants/theme";
 
-export default function LoginScreen() {
+export default function RegisterScreen() {
   const { colors } = useAppTheme();
-  const { name, updateProfile } = useUserStore();
+  const { updateProfile } = useUserStore();
 
-  const [inputUsername, setInputUsername] = useState("");
+  const [inputName, setInputName] = useState("");
+  const [inputEmail, setInputEmail] = useState("");
   const [inputPassword, setInputPassword] = useState("");
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
-  const handleLogin = () => {
-    if (inputUsername) {
-      updateProfile({ name: inputUsername });
+  const handleRegister = () => {
+    if (inputName) {
+      updateProfile({ name: inputName });
     }
     router.replace("/(tabs)" as any);
   };
@@ -50,31 +51,51 @@ export default function LoginScreen() {
               />
             </View>
             <Text style={[styles.title, { color: colors.text }]}>
-              Task<Text style={{ color: colors.accent }}>GO</Text>
+              Buat<Text style={{ color: colors.accent }}>Akun</Text>
             </Text>
-            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Selesaikan lebih banyak hal hari ini.</Text>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Mulai kelola tugasmu hari ini.</Text>
           </View>
 
           {/* Form Card */}
           <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.cardTitle, { color: colors.text }]}>Selamat Datang</Text>
+            <Text style={[styles.cardTitle, { color: colors.text }]}>Daftar Baru</Text>
             <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
-              Masuk untuk mengelola aktivitas Anda.
+              Lengkapi data di bawah untuk bergabung.
             </Text>
             
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.text }]}>Email atau Username</Text>
+              <Text style={[styles.label, { color: colors.text }]}>Nama Lengkap</Text>
               <View style={[
                 styles.inputBox, 
-                { borderColor: focusedInput === 'user' ? colors.accent : colors.border, backgroundColor: colors.background }
+                { borderColor: focusedInput === 'name' ? colors.accent : colors.border, backgroundColor: colors.background }
               ]}>
-                <Feather name="user" size={20} color={focusedInput === 'user' ? colors.accent : colors.textSecondary} />
+                <Feather name="user" size={20} color={focusedInput === 'name' ? colors.accent : colors.textSecondary} />
                 <TextInput
-                  value={inputUsername}
-                  onChangeText={setInputUsername}
-                  onFocus={() => setFocusedInput('user')}
+                  value={inputName}
+                  onChangeText={setInputName}
+                  onFocus={() => setFocusedInput('name')}
                   onBlur={() => setFocusedInput(null)}
-                  placeholder="Mis. amano / hello@contoh.com"
+                  placeholder="Mis. Amano"
+                  placeholderTextColor={colors.textSecondary}
+                  style={[styles.input, { color: colors.text }]}
+                />
+              </View>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={[styles.label, { color: colors.text }]}>Email</Text>
+              <View style={[
+                styles.inputBox, 
+                { borderColor: focusedInput === 'email' ? colors.accent : colors.border, backgroundColor: colors.background }
+              ]}>
+                <Feather name="mail" size={20} color={focusedInput === 'email' ? colors.accent : colors.textSecondary} />
+                <TextInput
+                  value={inputEmail}
+                  onChangeText={setInputEmail}
+                  onFocus={() => setFocusedInput('email')}
+                  onBlur={() => setFocusedInput(null)}
+                  placeholder="hello@contoh.com"
+                  keyboardType="email-address"
                   placeholderTextColor={colors.textSecondary}
                   style={[styles.input, { color: colors.text }]}
                 />
@@ -101,21 +122,17 @@ export default function LoginScreen() {
               </View>
             </View>
 
-            <TouchableOpacity style={styles.forgotPassword} onPress={() => router.push('/forgot-password' as any)}>
-              <Text style={[styles.forgotPasswordText, { color: colors.accent }]}>Lupa password?</Text>
-            </TouchableOpacity>
-
             <Button 
-              label="Masuk ke Aplikasi" 
+              label="Buat Akun Sekarang" 
               variant="primary" 
-              onPress={handleLogin} 
-              style={{ marginTop: Spacing.xs }} 
+              onPress={handleRegister} 
+              style={{ marginTop: Spacing.sm }} 
             />
 
             <View style={styles.registerContainer}>
-              <Text style={[styles.registerText, { color: colors.textSecondary }]}>Belum punya akun? </Text>
-              <TouchableOpacity onPress={() => router.push('/register' as any)}>
-                <Text style={[styles.registerTextBold, { color: colors.accent }]}>Daftar di sini</Text>
+              <Text style={[styles.registerText, { color: colors.textSecondary }]}>Sudah punya akun? </Text>
+              <TouchableOpacity onPress={() => router.back()}>
+                <Text style={[styles.registerTextBold, { color: colors.accent }]}>Masuk di sini</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -220,14 +237,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 320,
-  },
-  forgotPassword: {
-    alignSelf: "flex-end",
-    marginBottom: Spacing.lg,
-  },
-  forgotPasswordText: {
-    fontSize: FontSize.sm,
-    fontWeight: "600",
   },
   registerContainer: {
     flexDirection: "row",

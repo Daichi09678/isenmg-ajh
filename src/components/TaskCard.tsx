@@ -24,7 +24,7 @@ export default function TaskCard({ task, onToggleDone, onDelete }: TaskCardProps
         styles.card,
         { 
           backgroundColor: colors.surface, 
-          borderColor: mode === 'dark' ? colors.border : "transparent",
+          borderColor: colors.border,
           opacity: pressed ? 0.9 : 1,
           transform: [{ scale: pressed ? 0.98 : 1 }]
         },
@@ -35,7 +35,10 @@ export default function TaskCard({ task, onToggleDone, onDelete }: TaskCardProps
       <View style={styles.header}>
         <View style={styles.titleRow}>
           <Pressable onPress={() => onToggleDone(task.id)} hitSlop={12} style={styles.checkButton}>
-            <View style={[styles.checkInner, { borderColor: task.isDone ? colors.accent : colors.textSecondary, backgroundColor: task.isDone ? colors.accent : "transparent" }]}>
+            <View style={[styles.checkInner, { 
+              borderColor: task.isDone ? colors.accent : colors.textSecondary, 
+              backgroundColor: task.isDone ? colors.accent : "transparent" 
+            }]}>
               {task.isDone && <Feather name="check" size={14} color="#FFFFFF" />}
             </View>
           </Pressable>
@@ -52,8 +55,16 @@ export default function TaskCard({ task, onToggleDone, onDelete }: TaskCardProps
             {task.title}
           </Text>
         </View>
-        <Pressable onPress={() => onDelete(task.id)} hitSlop={8} style={styles.deleteBtn}>
-          <Feather name="trash-2" size={18} color="#EF4444" />
+        <Pressable 
+          onPress={() => onDelete(task.id)} 
+          hitSlop={8} 
+          style={({ pressed }) => [
+            styles.deleteBtn,
+            { backgroundColor: 'transparent' },
+            pressed && { opacity: 0.5 }
+          ]}
+        >
+          <Feather name="trash-2" size={18} color={colors.textSecondary} />
         </Pressable>
       </View>
 
@@ -62,18 +73,24 @@ export default function TaskCard({ task, onToggleDone, onDelete }: TaskCardProps
           <View
             style={[
               styles.priorityBadge,
-              { backgroundColor: `${PriorityColors[task.priority]}15` },
+              { 
+                backgroundColor: task.isDone 
+                  ? 'transparent' 
+                  : `${PriorityColors[task.priority]}15`,
+                borderColor: task.isDone ? colors.border : 'transparent',
+                borderWidth: task.isDone ? 1 : 0
+              },
             ]}
           >
-            <View style={[styles.priorityDot, { backgroundColor: PriorityColors[task.priority] }]} />
-            <Text style={[styles.priorityText, { color: PriorityColors[task.priority] }]}>
+            <View style={[styles.priorityDot, { backgroundColor: task.isDone ? colors.textSecondary : PriorityColors[task.priority] }]} />
+            <Text style={[styles.priorityText, { color: task.isDone ? colors.textSecondary : PriorityColors[task.priority] }]}>
               {task.priority}
             </Text>
           </View>
         </View>
         
         <View style={styles.deadlineBox}>
-          <Feather name="clock" size={12} color={colors.textSecondary} />
+          <Feather name="clock" size={14} color={colors.textSecondary} />
           <Text style={[styles.deadline, { color: colors.textSecondary }]}>
             {formatDeadline(task.deadline)}
           </Text>
@@ -85,8 +102,8 @@ export default function TaskCard({ task, onToggleDone, onDelete }: TaskCardProps
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: Radius.lg,
-    padding: Spacing.md,
+    borderRadius: Radius.lg, // 24px
+    padding: Spacing.lg,
     marginBottom: Spacing.md,
     borderWidth: 1,
   },
@@ -109,27 +126,26 @@ const styles = StyleSheet.create({
   checkInner: {
     width: 22,
     height: 22,
-    borderRadius: 6,
+    borderRadius: Radius.full,
     borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
   },
   title: {
     fontSize: FontSize.md,
-    fontWeight: "600",
+    fontWeight: "700",
     lineHeight: 24,
     flex: 1,
   },
   deleteBtn: {
     padding: 4,
-    backgroundColor: "rgba(239, 68, 68, 0.1)",
     borderRadius: Radius.full,
   },
   footer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingLeft: Spacing.xl + 6,
+    paddingLeft: Spacing.xl + 4,
   },
   badgeRow: {
     flexDirection: "row",
@@ -139,10 +155,10 @@ const styles = StyleSheet.create({
   priorityBadge: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: Radius.sm,
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: Radius.full,
   },
   priorityDot: {
     width: 6,
@@ -150,16 +166,18 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   priorityText: {
-    fontSize: FontSize.xs,
-    fontWeight: "600",
+    fontSize: 12,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
   deadlineBox: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: 6,
   },
   deadline: {
-    fontSize: FontSize.xs,
-    fontWeight: "500",
+    fontSize: 13,
+    fontWeight: "600",
   },
 });

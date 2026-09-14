@@ -7,7 +7,6 @@ import {
   ScrollView,
   Pressable,
   Switch,
-  Alert,
   Platform,
   KeyboardAvoidingView,
 } from "react-native";
@@ -15,17 +14,24 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useAppTheme } from "../store/themeStore";
 import { useTaskStore } from "../store/taskStore";
 import { Priority } from "../types/task";
-import Button from "../components/Button";
-import { Spacing, Radius, FontSize, PriorityColors } from "../constants/theme";
 import { formatDeadline } from "../utils/date";
 
 const PRIORITIES: Priority[] = ["Low", "Medium", "High"];
 
+// ConcertGo Aesthetic Palette
+const Palette = {
+  bg: "#f6efe1",
+  text: "#241608",
+  textMuted: "#8a7a63",
+  primary: "#d9691f",
+  border: "#e6d9bf",
+  surface: "#ffffff",
+  surfaceAlt: "#efe4cf",
+};
+
 export default function AddEditTaskScreen() {
-  const { colors } = useAppTheme();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const addTask = useTaskStore((s) => s.addTask);
   const updateTask = useTaskStore((s) => s.updateTask);
@@ -43,6 +49,8 @@ export default function AddEditTaskScreen() {
   const [reminder, setReminder] = useState(existingTask?.reminder ?? false);
   const [showPicker, setShowPicker] = useState(false);
   const [errors, setErrors] = useState<{ title?: string }>({});
+  
+  const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
   const validate = () => {
     const newErrors: { title?: string } = {};
@@ -81,150 +89,204 @@ export default function AddEditTaskScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
       >
         <View style={styles.header}>
-          <Pressable onPress={handleCancel} hitSlop={8}>
-            <Feather name="x" size={24} color={colors.text} />
+          <Pressable 
+            onPress={handleCancel} 
+            hitSlop={8}
+            style={({ pressed }) => [
+              styles.backButton,
+              pressed && { opacity: 0.7 }
+            ]}
+          >
+            <Feather name="x" size={20} color={Palette.text} />
           </Pressable>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>
-            {isEditMode ? "Edit Task" : "Tambah Task"}
+          <Text style={styles.headerTitle}>
+            {isEditMode ? "Edit Aktivitas" : "Buat Aktivitas"}
           </Text>
-          <View style={{ width: 24 }} />
+          <View style={{ width: 40 }} />
         </View>
 
         <ScrollView
           contentContainerStyle={styles.form}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          {/* Judul Task */}
-          <View style={styles.field}>
-            <Text style={[styles.label, { color: colors.text }]}>Judul Task</Text>
-            <TextInput
-              value={title}
-              onChangeText={(text) => {
-                setTitle(text);
-                if (errors.title) setErrors({});
-              }}
-              placeholder="Mis: Selesaikan laporan mingguan"
-              placeholderTextColor={colors.textSecondary}
-              style={[
-                styles.input,
-                {
-                  color: colors.text,
-                  borderColor: errors.title ? colors.text : colors.border,
-                  backgroundColor: colors.surface,
-                },
-              ]}
-            />
-            {errors.title && (
-              <Text style={[styles.errorText, { color: colors.text }]}>
-                {errors.title}
-              </Text>
-            )}
+          {/* Hero / Header Section */}
+          <View style={styles.heroSection}>
+            <View style={styles.heroBadge}>
+              <Feather name="star" size={14} color={Palette.primary} />
+              <Text style={styles.heroBadgeText}>PRODUKTIVITAS</Text>
+            </View>
+            <Text style={styles.heroTitle}>
+              {isEditMode ? "Perbarui Rencana" : "Rencanakan Harimu"}
+            </Text>
+            <Text style={styles.heroSubtitle}>
+              {isEditMode 
+                ? "Sesuaikan kembali aktivitas yang sudah kamu jadwalkan agar lebih optimal."
+                : "Tambahkan tugas baru untuk mencapai target harianmu dengan mudah."}
+            </Text>
           </View>
 
-          {/* Deskripsi */}
-          <View style={styles.field}>
-            <Text style={[styles.label, { color: colors.text }]}>Deskripsi</Text>
-            <TextInput
-              value={description}
-              onChangeText={setDescription}
-              placeholder="Tambahkan detail task (opsional)"
-              placeholderTextColor={colors.textSecondary}
-              multiline
-              numberOfLines={4}
-              style={[
-                styles.input,
-                styles.textArea,
-                { color: colors.text, borderColor: colors.border, backgroundColor: colors.surface },
-              ]}
-            />
-          </View>
+          {/* Form Fields Card */}
+          <View style={styles.card}>
+            {/* Judul Task */}
+            <View style={styles.field}>
+              <Text style={styles.label}>Judul Tugas</Text>
+              <View style={[
+                styles.inputContainer,
+                focusedInput === 'title' && styles.inputFocused,
+                errors.title && styles.inputError
+              ]}>
+                <Feather name="edit-2" size={18} color={focusedInput === 'title' ? Palette.primary : Palette.textMuted} style={styles.inputIcon} />
+                <TextInput
+                  value={title}
+                  onChangeText={(text) => {
+                    setTitle(text);
+                    if (errors.title) setErrors({});
+                  }}
+                  onFocus={() => setFocusedInput('title')}
+                  onBlur={() => setFocusedInput(null)}
+                  placeholder="Mis: Menyelesaikan desain laporan"
+                  placeholderTextColor={Palette.textMuted}
+                  style={styles.input}
+                />
+              </View>
+              {errors.title && (
+                <Text style={styles.errorText}>
+                  {errors.title}
+                </Text>
+              )}
+            </View>
 
-          {/* Deadline */}
-          <View style={styles.field}>
-            <Text style={[styles.label, { color: colors.text }]}>Deadline</Text>
-            <Pressable
-              onPress={() => setShowPicker(true)}
-              style={[
-                styles.input,
-                styles.dateInput,
-                { borderColor: colors.border, backgroundColor: colors.surface },
-              ]}
-            >
-              <Text style={{ color: colors.text }}>{formatDeadline(deadline.toISOString())}</Text>
-              <Feather name="calendar" size={18} color={colors.textSecondary} />
-            </Pressable>
-            {showPicker && (
-              <DateTimePicker
-                value={deadline}
-                mode="datetime"
-                display={Platform.OS === "ios" ? "spinner" : "default"}
-                onChange={onDateChange}
-              />
-            )}
-          </View>
+            {/* Deskripsi */}
+            <View style={styles.field}>
+              <Text style={styles.label}>Deskripsi Singkat</Text>
+              <View style={[
+                styles.inputContainer,
+                styles.textAreaContainer,
+                focusedInput === 'desc' && styles.inputFocused
+              ]}>
+                <Feather name="align-left" size={18} color={focusedInput === 'desc' ? Palette.primary : Palette.textMuted} style={[styles.inputIcon, { marginTop: 16 }]} />
+                <TextInput
+                  value={description}
+                  onChangeText={setDescription}
+                  onFocus={() => setFocusedInput('desc')}
+                  onBlur={() => setFocusedInput(null)}
+                  placeholder="Tambahkan catatan atau detail..."
+                  placeholderTextColor={Palette.textMuted}
+                  multiline
+                  numberOfLines={4}
+                  style={[styles.input, styles.textArea]}
+                />
+              </View>
+            </View>
 
-          {/* Priority */}
-          <View style={styles.field}>
-            <Text style={[styles.label, { color: colors.text }]}>Priority</Text>
-            <View style={styles.priorityRow}>
-              {PRIORITIES.map((p) => {
-                const isActive = p === priority;
-                return (
-                  <Pressable
-                    key={p}
-                    onPress={() => setPriority(p)}
-                    style={[
-                      styles.priorityChip,
-                      {
-                        borderColor: isActive ? colors.text : colors.border,
-                        backgroundColor: isActive ? colors.text : "transparent",
-                      },
-                    ]}
-                  >
-                    <View
-                      style={[styles.priorityDot, { backgroundColor: isActive ? colors.background : PriorityColors[p] }]}
-                    />
-                    <Text
+            {/* Deadline */}
+            <View style={styles.field}>
+              <Text style={styles.label}>Tenggat Waktu (Deadline)</Text>
+              <Pressable
+                onPress={() => setShowPicker(true)}
+                style={({ pressed }) => [
+                  styles.inputContainer,
+                  pressed && { backgroundColor: Palette.surfaceAlt }
+                ]}
+              >
+                <Feather name="calendar" size={18} color={Palette.primary} style={styles.inputIcon} />
+                <Text style={styles.dateText}>{formatDeadline(deadline.toISOString())}</Text>
+                <Feather name="chevron-down" size={18} color={Palette.textMuted} style={{ marginRight: 16 }} />
+              </Pressable>
+              {showPicker && (
+                <DateTimePicker
+                  value={deadline}
+                  mode="datetime"
+                  display={Platform.OS === "ios" ? "spinner" : "default"}
+                  onChange={onDateChange}
+                />
+              )}
+            </View>
+
+            {/* Priority */}
+            <View style={styles.field}>
+              <Text style={styles.label}>Tingkat Prioritas</Text>
+              <View style={styles.priorityRow}>
+                {PRIORITIES.map((p) => {
+                  const isActive = p === priority;
+                  return (
+                    <Pressable
+                      key={p}
+                      onPress={() => setPriority(p)}
                       style={[
-                        styles.priorityChipText,
-                        { color: isActive ? colors.background : colors.text },
+                        styles.priorityChip,
+                        isActive && styles.priorityChipActive,
                       ]}
                     >
-                      {p}
-                    </Text>
-                  </Pressable>
-                );
-              })}
+                      {isActive && <Feather name="check-circle" size={14} color="#fff" />}
+                      <Text
+                        style={[
+                          styles.priorityChipText,
+                          isActive && styles.priorityChipTextActive,
+                        ]}
+                      >
+                        {p}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
             </View>
-          </View>
 
-          {/* Reminder Toggle */}
-          <View style={[styles.field, styles.reminderRow]}>
-            <View>
-              <Text style={[styles.label, { color: colors.text }]}>Reminder</Text>
-              <Text style={[styles.hint, { color: colors.textSecondary }]}>
-                Ingatkan saya sebelum deadline
-              </Text>
+            {/* Reminder Toggle */}
+            <View style={styles.reminderRow}>
+              <View style={styles.reminderTextContainer}>
+                <View style={styles.reminderIconWrapper}>
+                  <Feather name="bell" size={20} color={reminder ? Palette.primary : Palette.textMuted} />
+                </View>
+                <View>
+                  <Text style={styles.reminderTitle}>Pasang Pengingat</Text>
+                  <Text style={styles.reminderSubtitle}>
+                    Notifikasi sebelum tenggat waktu
+                  </Text>
+                </View>
+              </View>
+              <Switch
+                value={reminder}
+                onValueChange={setReminder}
+                trackColor={{ false: Palette.border, true: Palette.primary }}
+                thumbColor={"#fff"}
+                ios_backgroundColor={Palette.border}
+              />
             </View>
-            <Switch
-              value={reminder}
-              onValueChange={setReminder}
-              trackColor={{ false: colors.border, true: colors.text }}
-              thumbColor={colors.background}
-            />
           </View>
         </ScrollView>
 
         {/* Action Buttons */}
-        <View style={[styles.actions, { borderTopColor: colors.border }]}>
-          <Button label="Batal" variant="outline" onPress={handleCancel} style={{ flex: 1 }} />
-          <Button label="Simpan" variant="primary" onPress={handleSave} style={{ flex: 1 }} />
+        <View style={styles.actions}>
+          <Pressable 
+            onPress={handleCancel}
+            style={({ pressed }) => [
+              styles.btnCancel,
+              pressed && { opacity: 0.7, transform: [{ scale: 0.98 }] }
+            ]}
+          >
+            <Text style={styles.btnCancelText}>Batal</Text>
+          </Pressable>
+          <Pressable 
+            onPress={handleSave}
+            style={({ pressed }) => [
+              styles.btnSave,
+              pressed && { opacity: 0.9, transform: [{ scale: 0.98 }] }
+            ]}
+          >
+            <Text style={styles.btnSaveText}>
+              {isEditMode ? "Simpan Perubahan" : "Simpan Tugas"}
+            </Text>
+            <Feather name="arrow-right" size={18} color="#fff" />
+          </Pressable>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -232,83 +294,253 @@ export default function AddEditTaskScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { 
+    flex: 1,
+    backgroundColor: Palette.bg,
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Palette.border,
+    backgroundColor: 'rgba(246, 239, 225, 0.95)',
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Palette.surfaceAlt,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Palette.border,
   },
   headerTitle: {
-    fontSize: FontSize.lg,
-    fontWeight: "700",
+    fontSize: 18,
+    fontWeight: "800",
+    color: Palette.text,
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
   },
   form: {
-    padding: Spacing.lg,
-    gap: Spacing.lg,
+    padding: 24,
+    paddingBottom: 40,
+  },
+  heroSection: {
+    marginBottom: 32,
+    alignItems: 'flex-start',
+  },
+  heroBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(217, 105, 31, 0.1)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(217, 105, 31, 0.3)',
+    marginBottom: 16,
+  },
+  heroBadgeText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: Palette.primary,
+    letterSpacing: 1.5,
+  },
+  heroTitle: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: Palette.text,
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    marginBottom: 8,
+  },
+  heroSubtitle: {
+    fontSize: 14,
+    color: Palette.textMuted,
+    lineHeight: 22,
+  },
+  card: {
+    backgroundColor: Palette.surface,
+    borderRadius: 24,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: Palette.border,
+    shadowColor: Palette.text,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 2,
+    gap: 24,
   },
   field: {
-    gap: Spacing.sm,
+    gap: 10,
   },
   label: {
-    fontSize: FontSize.sm,
-    fontWeight: "600",
+    fontSize: 13,
+    fontWeight: "700",
+    color: Palette.text,
+    marginLeft: 4,
   },
-  hint: {
-    fontSize: FontSize.xs,
-    marginTop: 2,
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: Palette.border,
+    borderRadius: 16,
+    minHeight: 56,
+  },
+  inputFocused: {
+    borderColor: Palette.primary,
+    shadowColor: Palette.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  inputError: {
+    borderColor: '#ef4444',
+  },
+  inputIcon: {
+    paddingHorizontal: 16,
   },
   input: {
-    borderWidth: 1,
-    borderRadius: Radius.md,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
-    fontSize: FontSize.md,
+    flex: 1,
+    fontSize: 15,
+    color: Palette.text,
+    fontWeight: '500',
+    paddingRight: 16,
+    paddingVertical: 16,
+  },
+  textAreaContainer: {
+    alignItems: 'flex-start',
   },
   textArea: {
-    minHeight: 100,
     textAlignVertical: "top",
+    minHeight: 120,
+    paddingTop: 16,
   },
-  dateInput: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+  dateText: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '600',
+    color: Palette.text,
   },
   errorText: {
-    fontSize: FontSize.xs,
+    fontSize: 12,
+    color: '#ef4444',
+    marginLeft: 4,
+    fontWeight: '500',
   },
   priorityRow: {
     flexDirection: "row",
-    gap: Spacing.sm,
+    gap: 8,
   },
   priorityChip: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: 6,
-    borderWidth: 1.5,
-    borderRadius: Radius.full,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
+    borderWidth: 1,
+    borderColor: Palette.border,
+    borderRadius: 12,
+    paddingVertical: 14,
+    backgroundColor: Palette.surfaceAlt,
   },
-  priorityDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+  priorityChipActive: {
+    backgroundColor: Palette.primary,
+    borderColor: Palette.primary,
+    shadowColor: Palette.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
   },
   priorityChipText: {
-    fontSize: FontSize.sm,
-    fontWeight: "600",
+    fontSize: 13,
+    fontWeight: "700",
+    color: Palette.textMuted,
+  },
+  priorityChipTextActive: {
+    color: "#fff",
   },
   reminderRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    paddingTop: 24,
+    borderTopWidth: 1,
+    borderTopColor: Palette.border,
+    marginTop: 4,
+  },
+  reminderTextContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  reminderIconWrapper: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Palette.surfaceAlt,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  reminderTitle: {
+    fontSize: 14,
+    fontWeight: "800",
+    color: Palette.text,
+    marginBottom: 2,
+  },
+  reminderSubtitle: {
+    fontSize: 12,
+    color: Palette.textMuted,
   },
   actions: {
     flexDirection: "row",
-    gap: Spacing.md,
-    padding: Spacing.lg,
+    gap: 12,
+    padding: 24,
+    backgroundColor: Palette.bg,
     borderTopWidth: 1,
+    borderTopColor: Palette.border,
+  },
+  btnCancel: {
+    flex: 1,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: Palette.border,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+  },
+  btnCancelText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: Palette.text,
+  },
+  btnSave: {
+    flex: 1.5,
+    flexDirection: 'row',
+    backgroundColor: Palette.text,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 16,
+    shadowColor: Palette.text,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  btnSaveText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#fff',
   },
 });

@@ -1,33 +1,47 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable, Modal, TextInput, ImageBackground, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { useAppTheme } from "../../store/themeStore";
 import { useUserStore } from "../../store/userStore";
 import { useTaskStore } from "../../store/taskStore";
-import Button from "../../components/Button";
-import TaskCard from "../../components/TaskCard";
-import { Spacing, FontSize, Radius, Shadows } from "../../constants/theme";
+
+const COLORS = {
+  bg: "#0f172a", // Dark slate background
+  card: "#1e293b", 
+  cardAlt: "#334155",
+  border: "#475569",
+  dark: "#0f172a",
+  darkBg: "#020617",
+  accent: "#3b82f6",
+  accentSoft: "#60a5fa",
+  muted: "#64748b",
+  mutedLight: "#94a3b8",
+  white: "#f8fafc",
+  danger: "#ef4444",
+};
 
 export default function ProfileScreen() {
-  const { colors, mode } = useAppTheme();
   const { name, email, backgroundUrl, avatarUrl, updateProfile } = useUserStore();
-  
-  // Ambil data task dari store (untuk Riwayat)
   const tasks = useTaskStore((s) => s.tasks);
-  const toggleDone = useTaskStore((s) => s.toggleDone);
-  const deleteTask = useTaskStore((s) => s.deleteTask);
   
-  // Ambil hanya 3 task terakhir yang sudah selesai
-  const historyTasks = tasks.filter((t) => t.isDone).slice(-3);
+  const themeBg = COLORS.bg;
+  const themeText = COLORS.white;
+
+  const totalDone = tasks.filter(t => t.isDone).length;
 
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(name);
   const [editEmail, setEditEmail] = useState(email);
   const [editBg, setEditBg] = useState(backgroundUrl);
   const [editAvatar, setEditAvatar] = useState(avatarUrl);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const handleLogout = () => {
+    setShowLogoutModal(false);
+    router.replace("/login" as any);
+  };
 
   const pickImage = async (type: "avatar" | "background") => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -36,13 +50,9 @@ export default function ProfileScreen() {
       aspect: type === "avatar" ? [1, 1] : [16, 9],
       quality: 0.8,
     });
-
     if (!result.canceled) {
-      if (type === "avatar") {
-        setEditAvatar(result.assets[0].uri);
-      } else {
-        setEditBg(result.assets[0].uri);
-      }
+      if (type === "avatar") setEditAvatar(result.assets[0].uri);
+      else setEditBg(result.assets[0].uri);
     }
   };
 
@@ -60,365 +70,374 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header Melengkung dengan Gradient & Background */}
-      <View style={styles.headerWrapper}>
-        <LinearGradient
-          colors={colors.gradientPrimary}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.headerGradient}
-        >
-          {backgroundUrl ? (
-            <ImageBackground 
-              source={{ uri: backgroundUrl }} 
-              style={StyleSheet.absoluteFill}
-              imageStyle={{ 
-                opacity: 0.4, 
-                borderBottomLeftRadius: Radius.xl * 1.5, 
-                borderBottomRightRadius: Radius.xl * 1.5 
-              }}
-            />
-          ) : null}
-          <SafeAreaView edges={["top"]} style={styles.headerSafeArea}>
-            <View style={styles.headerTop}>
-              <Text style={styles.headerTitle}>Profil Saya</Text>
-              <Pressable 
-                onPress={() => setIsEditing(true)} 
-                style={[styles.editBtn, { backgroundColor: "rgba(255,255,255,0.2)" }]}
-              >
-                <Feather name="edit-3" size={18} color="#FFFFFF" />
-              </Pressable>
-            </View>
-            
-            <View style={styles.profileHeader}>
-              <View style={[styles.avatarBox, Shadows.medium, { backgroundColor: colors.surface }]}>
-                {avatarUrl ? (
-                  <Image source={{ uri: avatarUrl }} style={styles.avatarImage} />
-                ) : (
-                  <Text style={[styles.avatarText, { color: colors.accent }]}>
-                    {name ? name.charAt(0).toUpperCase() : "?"}
-                  </Text>
-                )}
-              </View>
-              <Text style={styles.name}>{name || "Tanpa Nama"}</Text>
-              <Text style={styles.email}>{email || "Belum ada email"}</Text>
-            </View>
-          </SafeAreaView>
-        </LinearGradient>
+    <SafeAreaView edges={["top"]} style={[styles.safe, { backgroundColor: themeBg }]}>
+      {/* HEADER */}
+      <View style={[styles.header, { borderBottomColor: COLORS.border }]}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          <View style={styles.logoBox}>
+            <Ionicons name="person" size={14} color={COLORS.bg} />
+          </View>
+          <Text style={[styles.logoText, { color: themeText }]}>Profil</Text>
+        </View>
+        <Pressable onPress={() => setIsEditing(true)}>
+          <Feather name="edit-3" size={20} color={COLORS.mutedLight} />
+        </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Kartu Statistik Profil */}
-        <View style={[styles.card, Shadows.light, { backgroundColor: colors.surface, borderColor: mode === 'dark' ? colors.border : "transparent" }]}>
-          <View style={styles.cardItem}>
-            <View style={[styles.iconBox, { backgroundColor: "rgba(79, 70, 229, 0.1)" }]}>
-              <Feather name="check-circle" size={24} color={colors.accent} />
-            </View>
-            <View style={styles.cardTextContent}>
-              <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>Total Diselesaikan</Text>
-              <Text style={[styles.cardValue, { color: colors.text }]}>{tasks.filter(t => t.isDone).length} Task</Text>
-            </View>
-          </View>
+      <ScrollView contentContainerStyle={styles.contentPad} showsVerticalScrollIndicator={false}>
+        
+        {/* Profile Hero Card */}
+        <View style={styles.heroCard}>
+          {backgroundUrl ? (
+            <ImageBackground source={{ uri: backgroundUrl }} style={StyleSheet.absoluteFill} imageStyle={{ opacity: 0.2, borderRadius: 18 }} />
+          ) : null}
           
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
-          
-          <View style={styles.cardItem}>
-            <View style={[styles.iconBox, { backgroundColor: "rgba(245, 158, 11, 0.1)" }]}>
-              <Feather name="zap" size={24} color="#F59E0B" />
+          <View style={styles.heroContent}>
+            <View style={styles.avatarWrap}>
+              {avatarUrl ? (
+                <Image source={{ uri: avatarUrl }} style={styles.avatarImg} />
+              ) : (
+                <Text style={styles.avatarText}>{name ? name.charAt(0).toUpperCase() : "?"}</Text>
+              )}
             </View>
-            <View style={styles.cardTextContent}>
-              <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>Streak Harian</Text>
-              <Text style={[styles.cardValue, { color: colors.text }]}>3 Hari</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.profileName} numberOfLines={1}>{name || "Tanpa Nama"}</Text>
+              <Text style={styles.profileEmail} numberOfLines={1}>{email || "Belum ada email"}</Text>
             </View>
           </View>
         </View>
 
-        {/* Bagian Riwayat Laporan */}
-        <View style={styles.historySection}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Riwayat Laporan Terakhir</Text>
-          {historyTasks.length > 0 ? (
-            historyTasks.map((task) => (
-              <TaskCard 
-                key={task.id} 
-                task={task} 
-                onToggleDone={toggleDone} 
-                onDelete={deleteTask} 
-              />
-            ))
-          ) : (
-            <View style={[styles.emptyHistory, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <Feather name="inbox" size={32} color={colors.textSecondary} />
-              <Text style={[styles.emptyHistoryText, { color: colors.textSecondary }]}>Belum ada riwayat task yang diselesaikan.</Text>
+        {/* Stats Grid */}
+        <View style={styles.statsRow}>
+          <View style={styles.statBox}>
+            <View style={[styles.iconWrap, { backgroundColor: "rgba(59,130,246,0.2)" }]}>
+              <Feather name="check-circle" size={20} color={COLORS.accent} />
             </View>
-          )}
+            <View style={{ marginTop: 8 }}>
+              <Text style={styles.statVal}>{totalDone}</Text>
+              <Text style={styles.statLab}>Tugas Selesai</Text>
+            </View>
+          </View>
+
+          <View style={styles.statBox}>
+            <View style={[styles.iconWrap, { backgroundColor: "rgba(245,158,11,0.2)" }]}>
+              <Feather name="zap" size={20} color="#F59E0B" />
+            </View>
+            <View style={{ marginTop: 8 }}>
+              <Text style={styles.statVal}>3 Hari</Text>
+              <Text style={styles.statLab}>Streak Harian</Text>
+            </View>
+          </View>
         </View>
+
+        {/* Menu Items */}
+        <View style={styles.menuSection}>
+          <Text style={[styles.sectionTitle, { color: themeText }]}>Aktivitas</Text>
+          <View style={[styles.menuList, { backgroundColor: COLORS.card }]}>
+            <Pressable
+              style={styles.menuItem}
+              onPress={() => router.push("/performance-report" as any)}
+            >
+              <View style={[styles.menuIconWrap, { backgroundColor: COLORS.cardAlt }]}>
+                <Feather name="bar-chart-2" size={16} color={COLORS.mutedLight} />
+              </View>
+              <Text style={[styles.menuText, { color: themeText }]}>Laporan Kinerja</Text>
+              <Feather name="chevron-right" size={16} color={COLORS.border} />
+            </Pressable>
+            <View style={styles.menuDivider} />
+            <Pressable
+              style={styles.menuItem}
+              onPress={() => router.push("/achievements" as any)}
+            >
+              <View style={[styles.menuIconWrap, { backgroundColor: COLORS.cardAlt }]}>
+                <Feather name="star" size={16} color={COLORS.mutedLight} />
+              </View>
+              <Text style={[styles.menuText, { color: themeText }]}>Pencapaian & Badge</Text>
+              <Feather name="chevron-right" size={16} color={COLORS.border} />
+            </Pressable>
+          </View>
+        </View>
+
+        <View style={styles.menuSection}>
+          <Text style={[styles.sectionTitle, { color: themeText }]}>Akun</Text>
+          <View style={[styles.menuList, { backgroundColor: COLORS.card }]}>
+            <Pressable
+              style={styles.menuItem}
+              onPress={() => router.push("/change-password" as any)}
+            >
+              <View style={[styles.menuIconWrap, { backgroundColor: COLORS.cardAlt }]}>
+                <Feather name="lock" size={16} color={COLORS.mutedLight} />
+              </View>
+              <Text style={[styles.menuText, { color: themeText }]}>Ubah Password</Text>
+              <Feather name="chevron-right" size={16} color={COLORS.border} />
+            </Pressable>
+            <View style={styles.menuDivider} />
+            <Pressable
+              style={styles.menuItem}
+              onPress={() => setShowLogoutModal(true)}
+            >
+              <View style={[styles.menuIconWrap, { backgroundColor: "rgba(239, 68, 68, 0.2)" }]}>
+                <Feather name="log-out" size={16} color={COLORS.danger} />
+              </View>
+              <Text style={[styles.menuText, { color: COLORS.danger }]}>Keluar Akun</Text>
+            </Pressable>
+          </View>
+        </View>
+
       </ScrollView>
 
-      {/* Modal Edit Profil */}
-      <Modal visible={isEditing} animationType="fade" transparent={true}>
+      {/* MODAL EDIT */}
+      <Modal visible={isEditing} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, Shadows.medium, { backgroundColor: colors.surface }]}>
-            <Text style={[styles.modalTitle, { color: colors.text }]}>Edit Profil</Text>
+          <View style={[styles.modalSheet, { backgroundColor: themeBg }]}>
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: themeText }]}>Edit Profil</Text>
+              <Pressable onPress={handleCancel}>
+                <Ionicons name="close" size={20} color={COLORS.mutedLight} />
+              </Pressable>
+            </View>
 
-            <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={false}>
-              <View style={styles.fieldGroup}>
-                <View style={styles.field}>
-                  <Text style={[styles.label, { color: colors.text }]}>Foto Profil</Text>
-                  <View style={styles.imagePickerRow}>
-                    <View style={[styles.previewBox, { backgroundColor: colors.background, borderColor: colors.border }]}>
-                      {editAvatar ? <Image source={{ uri: editAvatar }} style={styles.previewImg} /> : <Feather name="user" size={24} color={colors.textSecondary} />}
-                    </View>
-                    <Button label="Pilih dari Galeri" variant="outline" onPress={() => pickImage("avatar")} style={{ flex: 1 }} />
+            <ScrollView contentContainerStyle={{ gap: 16 }} showsVerticalScrollIndicator={false}>
+              
+              <View>
+                <Text style={styles.modalLabel}>Foto Profil</Text>
+                <View style={styles.imagePickerRow}>
+                  <View style={styles.previewBox}>
+                    {editAvatar ? <Image source={{ uri: editAvatar }} style={styles.previewImg} /> : <Feather name="user" size={24} color={COLORS.mutedLight} />}
                   </View>
-                </View>
-
-                <View style={styles.field}>
-                  <Text style={[styles.label, { color: colors.text }]}>Foto Background Header</Text>
-                  <View style={styles.imagePickerRow}>
-                    <View style={[styles.previewBoxBg, { backgroundColor: colors.background, borderColor: colors.border }]}>
-                      {editBg ? <Image source={{ uri: editBg }} style={styles.previewImg} /> : <Feather name="image" size={24} color={colors.textSecondary} />}
-                    </View>
-                    <Button label="Pilih dari Galeri" variant="outline" onPress={() => pickImage("background")} style={{ flex: 1 }} />
-                  </View>
-                </View>
-
-                <View style={styles.field}>
-                  <Text style={[styles.label, { color: colors.text }]}>Nama</Text>
-                  <TextInput
-                    value={editName}
-                    onChangeText={setEditName}
-                    placeholder="Masukkan nama"
-                    placeholderTextColor={colors.textSecondary}
-                    style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
-                  />
-                </View>
-
-                <View style={styles.field}>
-                  <Text style={[styles.label, { color: colors.text }]}>Email</Text>
-                  <TextInput
-                    value={editEmail}
-                    onChangeText={setEditEmail}
-                    keyboardType="email-address"
-                    placeholder="Masukkan email"
-                    placeholderTextColor={colors.textSecondary}
-                    style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
-                  />
+                  <Pressable style={styles.outlineBtn} onPress={() => pickImage("avatar")}>
+                    <Text style={styles.outlineBtnText}>Pilih Foto</Text>
+                  </Pressable>
                 </View>
               </View>
-            </ScrollView>
 
-            <View style={styles.modalActions}>
-              <Button label="Batal" variant="outline" onPress={handleCancel} style={{ flex: 1 }} />
-              <Button label="Simpan" variant="primary" onPress={handleSave} style={{ flex: 1 }} />
+              <View>
+                <Text style={styles.modalLabel}>Background Profil</Text>
+                <View style={styles.imagePickerRow}>
+                  <View style={styles.previewBoxBg}>
+                    {editBg ? <Image source={{ uri: editBg }} style={styles.previewImg} /> : <Feather name="image" size={24} color={COLORS.mutedLight} />}
+                  </View>
+                  <Pressable style={styles.outlineBtn} onPress={() => pickImage("background")}>
+                    <Text style={styles.outlineBtnText}>Pilih Latar</Text>
+                  </Pressable>
+                </View>
+              </View>
+
+              <View>
+                <Text style={styles.modalLabel}>Nama Lengkap</Text>
+                <TextInput
+                  value={editName}
+                  onChangeText={setEditName}
+                  style={[styles.modalInput, { backgroundColor: COLORS.card, color: themeText }]}
+                />
+              </View>
+
+              <View>
+                <Text style={styles.modalLabel}>Email</Text>
+                <TextInput
+                  value={editEmail}
+                  onChangeText={setEditEmail}
+                  keyboardType="email-address"
+                  style={[styles.modalInput, { backgroundColor: COLORS.card, color: themeText }]}
+                />
+              </View>
+
+              <Pressable style={styles.modalSubmit} onPress={handleSave}>
+                <Text style={styles.modalSubmitText}>Simpan Perubahan</Text>
+              </Pressable>
+              
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* MODAL LOGOUT */}
+      <Modal visible={showLogoutModal} transparent animationType="fade">
+        <View style={styles.logoutModalOverlay}>
+          <View style={[styles.logoutSheet, { backgroundColor: themeBg, borderColor: COLORS.border }]}>
+            <View style={styles.logoutIconBox}>
+              <Feather name="log-out" size={28} color={COLORS.danger} />
+            </View>
+            <Text style={[styles.logoutTitle, { color: themeText }]}>Keluar dari Akun?</Text>
+            <Text style={[styles.logoutDesc, { color: COLORS.mutedLight }]}>
+              Anda perlu masuk kembali dengan akun Anda untuk mengakses tugas dan aktivitas.
+            </Text>
+
+            <View style={styles.logoutBtnRow}>
+              <Pressable
+                style={[styles.cancelBtn, { borderColor: COLORS.border }]}
+                onPress={() => setShowLogoutModal(false)}
+              >
+                <Text style={[styles.cancelBtnText, { color: themeText }]}>Batal</Text>
+              </Pressable>
+
+              <Pressable
+                style={[styles.confirmLogoutBtn, { backgroundColor: COLORS.danger }]}
+                onPress={handleLogout}
+              >
+                <Text style={styles.confirmLogoutBtnText}>Keluar</Text>
+              </Pressable>
             </View>
           </View>
         </View>
       </Modal>
-    </View>
+
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  headerWrapper: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
-    zIndex: 10,
-  },
-  headerGradient: {
-    borderBottomLeftRadius: Radius.xl * 1.5,
-    borderBottomRightRadius: Radius.xl * 1.5,
-    paddingBottom: Spacing.xxl,
-    overflow: "hidden", 
-  },
-  headerSafeArea: {
-    paddingHorizontal: Spacing.lg,
-  },
-  headerTop: {
+  safe: { flex: 1 },
+  header: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginTop: Spacing.md,
+    justifyContent: "space-between",
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
   },
-  headerTitle: { 
-    fontSize: FontSize.xxl, 
-    fontWeight: "800",
-    color: "#FFFFFF",
-    letterSpacing: 0.5,
-  },
-  editBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: Radius.full,
+  logoBox: {
+    width: 22,
+    height: 22,
+    borderRadius: 7,
+    backgroundColor: COLORS.white,
     alignItems: "center",
     justifyContent: "center",
   },
-  profileHeader: { 
-    alignItems: "center", 
-    marginTop: Spacing.lg,
+  logoText: {
+    fontSize: 14,
+    fontWeight: "600",
   },
-  avatarBox: { 
-    width: 90, 
-    height: 90, 
-    borderRadius: Radius.full, 
-    alignItems: "center", 
-    justifyContent: "center", 
-    marginBottom: Spacing.md,
-    borderWidth: 4,
-    borderColor: "rgba(255,255,255,0.2)",
+  contentPad: {
+    padding: 14,
+    gap: 14,
+    paddingBottom: 40,
+  },
+  heroCard: {
+    backgroundColor: COLORS.card,
+    borderRadius: 18,
+    padding: 20,
     overflow: "hidden",
   },
-  avatarImage: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
-  avatarText: { 
-    fontSize: 36, 
-    fontWeight: "bold",
-  },
-  name: { 
-    fontSize: FontSize.xxl, 
-    fontWeight: "800",
-    color: "#FFFFFF",
-    marginBottom: 4,
-  },
-  email: { 
-    fontSize: FontSize.sm, 
-    color: "rgba(255,255,255,0.8)",
-    fontWeight: "500",
-  },
-  content: { 
-    padding: Spacing.lg,
-    paddingTop: Spacing.xl,
-    paddingBottom: 120, // Extra space for Bottom Tabs
-  },
-  card: { 
-    borderRadius: Radius.lg, 
-    borderWidth: 1, 
-    padding: Spacing.lg,
-    marginTop: -Spacing.md, // Overlap
-  },
-  cardItem: { 
-    flexDirection: "row", 
-    alignItems: "center", 
-    gap: Spacing.md, 
-    paddingVertical: Spacing.xs 
-  },
-  iconBox: {
-    width: 48,
-    height: 48,
-    borderRadius: Radius.full,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  cardTextContent: {
-    flex: 1,
-  },
-  cardTitle: { 
-    fontSize: FontSize.sm, 
-    fontWeight: "600",
-    marginBottom: 2,
-  },
-  cardValue: { 
-    fontSize: FontSize.lg, 
-    fontWeight: "800" 
-  },
-  divider: { 
-    height: 1, 
-    marginVertical: Spacing.md 
-  },
-  historySection: {
-    marginTop: Spacing.xl,
-  },
-  sectionTitle: {
-    fontSize: FontSize.lg,
-    fontWeight: "700",
-    marginBottom: Spacing.md,
-  },
-  emptyHistory: {
-    padding: Spacing.xl,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderRadius: Radius.lg,
-    borderStyle: "dashed",
-    gap: Spacing.sm,
-  },
-  emptyHistoryText: {
-    fontSize: FontSize.sm,
-    textAlign: "center",
-  },
-  
-  // Modal Styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    justifyContent: "center",
-    padding: Spacing.lg,
-  },
-  modalContent: {
-    borderRadius: Radius.lg,
-    padding: Spacing.xl,
-  },
-  modalTitle: {
-    fontSize: FontSize.xl,
-    fontWeight: "800",
-    marginBottom: Spacing.lg,
-  },
-  fieldGroup: {
-    gap: Spacing.lg,
-    paddingBottom: Spacing.md,
-  },
-  field: {
-    gap: Spacing.sm,
-  },
-  label: {
-    fontSize: FontSize.sm,
-    fontWeight: "600",
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: Radius.md,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
-    fontSize: FontSize.md,
-  },
-  imagePickerRow: {
+  heroContent: {
     flexDirection: "row",
     alignItems: "center",
-    gap: Spacing.md,
+    gap: 16,
   },
-  previewBox: {
+  avatarWrap: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: COLORS.accent,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 3,
+    borderColor: COLORS.bg,
+    overflow: "hidden",
+  },
+  avatarImg: { width: "100%", height: "100%", resizeMode: "cover" },
+  avatarText: { fontSize: 24, fontWeight: "800", color: COLORS.white },
+  profileName: { fontSize: 18, fontWeight: "600", color: COLORS.white, marginBottom: 4 },
+  profileEmail: { fontSize: 12, color: COLORS.mutedLight },
+
+  statsRow: { flexDirection: "row", gap: 10 },
+  statBox: {
+    flex: 1,
+    backgroundColor: COLORS.card,
+    borderRadius: 16,
+    padding: 16,
+  },
+  iconWrap: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center" },
+  statVal: { fontSize: 16, fontWeight: "700", color: COLORS.white, marginBottom: 2 },
+  statLab: { fontSize: 11, color: COLORS.mutedLight },
+
+  menuSection: { marginTop: 10 },
+  sectionTitle: { fontSize: 14, fontWeight: "500", marginBottom: 10 },
+  menuList: { borderRadius: 16, overflow: "hidden" },
+  menuItem: { flexDirection: "row", alignItems: "center", padding: 14 },
+  menuIconWrap: { width: 32, height: 32, borderRadius: 10, alignItems: "center", justifyContent: "center", marginRight: 12 },
+  menuText: { flex: 1, fontSize: 13, fontWeight: "500" },
+  menuDivider: { height: 1, backgroundColor: COLORS.border, marginLeft: 58 },
+
+  // Modal
+  modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" },
+  modalSheet: { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, maxHeight: "90%", borderWidth: 1, borderColor: COLORS.border },
+  modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 },
+  modalTitle: { fontSize: 16, fontWeight: "800" },
+  modalLabel: { fontSize: 11, fontWeight: "700", color: COLORS.mutedLight, marginBottom: 6 },
+  imagePickerRow: { flexDirection: "row", alignItems: "center", gap: 12 },
+  previewBox: { width: 56, height: 56, borderRadius: 28, backgroundColor: COLORS.cardAlt, alignItems: "center", justifyContent: "center", overflow: "hidden" },
+  previewBoxBg: { width: 80, height: 56, borderRadius: 12, backgroundColor: COLORS.cardAlt, alignItems: "center", justifyContent: "center", overflow: "hidden" },
+  previewImg: { width: "100%", height: "100%", resizeMode: "cover" },
+  outlineBtn: { borderWidth: 1, borderColor: COLORS.border, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 999 },
+  outlineBtnText: { fontSize: 12, fontWeight: "600", color: COLORS.white },
+  modalInput: { borderWidth: 1, borderColor: COLORS.border, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10, fontSize: 12 },
+  modalSubmit: { marginTop: 20, backgroundColor: COLORS.accent, paddingVertical: 14, borderRadius: 999, alignItems: "center" },
+  modalSubmitText: { color: COLORS.white, fontWeight: "700", fontSize: 13 },
+
+  // Logout Modal
+  logoutModalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.55)",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24,
+  },
+  logoutSheet: {
+    width: "100%",
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: 24,
+    alignItems: "center",
+    gap: 12,
+  },
+  logoutIconBox: {
     width: 60,
     height: 60,
-    borderRadius: Radius.full,
-    borderWidth: 1,
+    borderRadius: 30,
+    backgroundColor: "rgba(239, 68, 68, 0.2)",
     alignItems: "center",
     justifyContent: "center",
-    overflow: "hidden",
+    marginBottom: 4,
   },
-  previewBoxBg: {
-    width: 80,
-    height: 50,
-    borderRadius: Radius.sm,
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
+  logoutTitle: {
+    fontSize: 18,
+    fontWeight: "800",
+    textAlign: "center",
   },
-  previewImg: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
+  logoutDesc: {
+    fontSize: 13,
+    textAlign: "center",
+    lineHeight: 18,
+    paddingHorizontal: 8,
+    marginBottom: 8,
   },
-  modalActions: {
+  logoutBtnRow: {
     flexDirection: "row",
-    gap: Spacing.md,
-    marginTop: Spacing.lg,
+    gap: 12,
+    width: "100%",
+    marginTop: 4,
+  },
+  cancelBtn: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 999,
+    borderWidth: 1,
+    alignItems: "center",
+  },
+  cancelBtnText: {
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  confirmLogoutBtn: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 999,
+    alignItems: "center",
+  },
+  confirmLogoutBtnText: {
+    color: "#ffffff",
+    fontSize: 13,
+    fontWeight: "700",
   },
 });

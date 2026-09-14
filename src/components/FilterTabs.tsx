@@ -51,13 +51,13 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   tab: {
-    paddingVertical: 6,
-    paddingHorizontal: Spacing.md,
+    paddingVertical: 10,
+    paddingHorizontal: Spacing.lg,
     borderRadius: Radius.full,
     borderWidth: 1,
   },
   tabText: {
     fontSize: FontSize.sm,
-    fontWeight: "600",
+    fontWeight: "700",
   },
 });

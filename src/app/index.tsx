@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, Animated, Easing, Image } from "react-native";
 import { router } from "expo-router";
-import { Feather } from "@expo/vector-icons";
 import { useAppTheme } from "../store/themeStore";
 import { Spacing, FontSize, Radius } from "../constants/theme";
 
 const TAGLINE = "Kelola tugasmu, satu per satu.";
-const TOTAL_DURATION = 2000; // 2 detik sesuai spesifikasi
+const TOTAL_DURATION = 2000;
 
 export default function AnimatedSplashScreen() {
   const { colors } = useAppTheme();
@@ -17,7 +16,6 @@ export default function AnimatedSplashScreen() {
   const [typedText, setTypedText] = useState("");
 
   useEffect(() => {
-    // Animasi fade-in + scale-up logo
     Animated.parallel([
       Animated.timing(logoOpacity, {
         toValue: 1,
@@ -33,7 +31,6 @@ export default function AnimatedSplashScreen() {
       }),
     ]).start();
 
-    // Animasi progress bar loading monochrome
     Animated.timing(progressWidth, {
       toValue: 100,
       duration: TOTAL_DURATION,
@@ -41,7 +38,6 @@ export default function AnimatedSplashScreen() {
       useNativeDriver: false,
     }).start();
 
-    // Efek typewriter untuk tagline
     let index = 0;
     const typeInterval = setInterval(() => {
       index += 1;
@@ -49,7 +45,6 @@ export default function AnimatedSplashScreen() {
       if (index >= TAGLINE.length) clearInterval(typeInterval);
     }, TOTAL_DURATION / (TAGLINE.length * 1.5));
 
-    // Auto redirect ke Login setelah durasi selesai
     const redirectTimer = setTimeout(() => {
       router.replace("/login" as any);
     }, TOTAL_DURATION + 300);
@@ -72,14 +67,15 @@ export default function AnimatedSplashScreen() {
           style={[
             styles.logoBox,
             {
-              borderColor: colors.text,
+              borderColor: colors.border,
+              backgroundColor: colors.surface,
               opacity: logoOpacity,
               transform: [{ scale: logoScale }],
             },
           ]}
         >
           <Image 
-            source={require("../../assets/images/task.png")} 
+            source={require("../../assets/images/iconsaja.png")} 
             style={{ width: 64, height: 64 }} 
             resizeMode="contain" 
           />
@@ -88,7 +84,7 @@ export default function AnimatedSplashScreen() {
         <Animated.Text
           style={[styles.appName, { color: colors.text, opacity: logoOpacity }]}
         >
-          <Text style={{ color: "#10B981" }}>Task</Text>Flow
+          Task<Text style={{ color: colors.accent }}>GO</Text>
         </Animated.Text>
 
         <Text style={[styles.tagline, { color: colors.textSecondary }]}>
@@ -104,12 +100,12 @@ export default function AnimatedSplashScreen() {
           <Animated.View
             style={[
               styles.progressFill,
-              { width: widthInterpolated, backgroundColor: colors.text },
+              { width: widthInterpolated, backgroundColor: colors.accent },
             ]}
           />
         </View>
         <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
-          Memuat task kamu...
+          Memuat aktivitas kamu...
         </Text>
       </View>
     </View>
@@ -129,31 +125,37 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   logoBox: {
-    width: 96,
-    height: 96,
+    width: 104,
+    height: 104,
     borderRadius: Radius.lg,
-    borderWidth: 2,
+    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: Spacing.lg,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
   appName: {
-    fontSize: FontSize.xxl,
-    fontWeight: "800",
+    fontSize: FontSize.xxxl,
+    fontWeight: "900",
     letterSpacing: 1,
     marginBottom: Spacing.sm,
   },
   tagline: {
     fontSize: FontSize.sm,
+    fontWeight: "500",
     minHeight: 20,
   },
   progressSection: {
     alignItems: "center",
-    gap: Spacing.sm,
+    gap: Spacing.md,
   },
   progressTrack: {
-    width: "70%",
-    height: 4,
+    width: "60%",
+    height: 6,
     borderRadius: Radius.full,
     overflow: "hidden",
   },
@@ -163,5 +165,6 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: FontSize.xs,
+    fontWeight: "600",
   },
 });

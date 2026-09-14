@@ -5,18 +5,23 @@ import { Spacing, Radius, FontSize } from "../constants/theme";
 
 interface ButtonProps extends PressableProps {
   label: string;
-  variant?: "primary" | "outline" | "danger";
+  variant?: "primary" | "outline" | "danger" | "secondary";
   style?: ViewStyle;
 }
 
 export default function Button({ label, variant = "primary", style, ...props }: ButtonProps) {
   const { colors } = useAppTheme();
 
-  let bg = colors.accent;
-  let text = colors.accentText;
-  let border = colors.accent;
+  // Primary defaults to the Dark Brown ConcertGo color for high contrast CTA
+  let bg = colors.text;
+  let text = colors.background;
+  let border = colors.text;
 
-  if (variant === "outline") {
+  if (variant === "secondary") {
+    bg = colors.accent; // Orange CTA
+    text = "#FFFFFF";
+    border = colors.accent;
+  } else if (variant === "outline") {
     bg = "transparent";
     text = colors.text;
     border = colors.border;
@@ -33,7 +38,8 @@ export default function Button({ label, variant = "primary", style, ...props }: 
         {
           backgroundColor: bg,
           borderColor: border,
-          opacity: pressed ? 0.8 : 1,
+          opacity: pressed ? 0.85 : 1,
+          transform: [{ scale: pressed ? 0.98 : 1 }],
         },
         style,
       ]}
@@ -47,14 +53,14 @@ export default function Button({ label, variant = "primary", style, ...props }: 
 const styles = StyleSheet.create({
   button: {
     paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    borderRadius: Radius.md,
+    paddingHorizontal: Spacing.xl,
+    borderRadius: Radius.full,
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
   },
   label: {
     fontSize: FontSize.md,
-    fontWeight: "600",
+    fontWeight: "700",
   },
 });

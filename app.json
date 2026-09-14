@@ -4,7 +4,7 @@
     "slug": "mobile-ajh",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/task.png",
+    "icon": "./assets/images/iconsaja.png",
     "scheme": "mobileajh",
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -13,7 +13,7 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/task.png",
+        "foregroundImage": "./assets/images/iconsaja.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
@@ -28,8 +28,8 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
-          "image": "./assets/images/task.png",
+          "backgroundColor": "#241608",
+          "image": "./assets/images/iconsaja.png",
           "imageWidth": 76
         }
       ],

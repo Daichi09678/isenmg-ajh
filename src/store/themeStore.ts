@@ -21,27 +21,27 @@ interface ThemeState {
 }
 
 const lightColors: ThemeColors = {
-  background: "#F4F7FB", // Softer, premium background
-  surface: "#FFFFFF",
-  text: "#1F2937",
-  textSecondary: "#6B7280",
-  border: "#E5E7EB",
-  accent: "#4F46E5", // Indigo 600
+  background: "#f6efe1",
+  surface: "#ffffff",
+  text: "#241608",
+  textSecondary: "#8a7a63",
+  border: "#e6d9bf",
+  accent: "#d9691f", // ConcertGo Orange
   accentText: "#FFFFFF",
-  gradientPrimary: ["#4F46E5", "#7C3AED"], // Indigo to Purple
-  gradientSecondary: ["#3B82F6", "#2DD4BF"], // Blue to Teal
+  gradientPrimary: ["#d9691f", "#b45211"],
+  gradientSecondary: ["#e67830", "#c45c16"],
 };
 
 const darkColors: ThemeColors = {
-  background: "#0F172A", // Slate 900
-  surface: "#1E293B", // Slate 800
-  text: "#F8FAFC",
-  textSecondary: "#94A3B8",
-  border: "#334155",
-  accent: "#6366F1", // Indigo 500
+  background: "#241608",
+  surface: "#33200c",
+  text: "#f6efe1",
+  textSecondary: "#b3a490",
+  border: "#4a3219",
+  accent: "#d9691f", // ConcertGo Orange
   accentText: "#FFFFFF",
-  gradientPrimary: ["#6366F1", "#8B5CF6"],
-  gradientSecondary: ["#60A5FA", "#34D399"],
+  gradientPrimary: ["#d9691f", "#b45211"],
+  gradientSecondary: ["#e67830", "#c45c16"],
 };
 
 export const useAppTheme = create<ThemeState>((set) => ({

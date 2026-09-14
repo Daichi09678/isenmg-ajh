@@ -1,32 +1,34 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import { Feather } from "@expo/vector-icons";
-import { useAppTheme } from "../../store/themeStore";
-import { Platform } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Platform, View } from "react-native";
 import { Radius } from "../../constants/theme";
 
-export default function TabLayout() {
-  const { colors } = useAppTheme();
+// Colors based on the photo
+const COLORS = {
+  bg: "#16181f",
+  active: "#4ade80",
+  inactive: "#a0a5b1",
+  border: "#333742",
+};
 
+export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.accent,
-        tabBarInactiveTintColor: colors.textSecondary,
+        tabBarActiveTintColor: COLORS.active,
+        tabBarInactiveTintColor: COLORS.inactive,
         tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopWidth: 0,
-          elevation: 10,
-          shadowColor: "#000",
-          shadowOpacity: 0.1,
-          shadowRadius: 10,
-          shadowOffset: { width: 0, height: -2 },
-          height: Platform.OS === "ios" ? 88 : 64,
-          paddingBottom: Platform.OS === "ios" ? 28 : 8,
+          backgroundColor: COLORS.bg,
+          borderTopWidth: 1,
+          borderTopColor: COLORS.border,
+          elevation: 0,
+          height: Platform.OS === "ios" ? 88 : 70,
+          paddingBottom: Platform.OS === "ios" ? 28 : 12,
           paddingTop: 8,
-          borderTopLeftRadius: Radius.xl,
-          borderTopRightRadius: Radius.xl,
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
           position: "absolute",
         },
         tabBarShowLabel: true,
@@ -40,17 +42,38 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="home" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <View style={{ alignItems: 'center' }}>
+              {focused && (
+                <View style={{ 
+                  position: 'absolute', 
+                  top: -10, 
+                  width: 40, 
+                  height: 3, 
+                  backgroundColor: COLORS.active, 
+                  borderRadius: 2 
+                }} />
+              )}
+              <Ionicons name={focused ? "home" : "home-outline"} size={26} color={color} />
+            </View>
           ),
         }}
       />
       <Tabs.Screen
         name="history"
         options={{
-          title: "Riwayat",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="bar-chart-2" size={size} color={color} />
+          title: "Workspace",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="grid-outline" size={26} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "Monitoring",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="pulse-outline" size={26} color={color} />
           ),
         }}
       />
@@ -58,17 +81,8 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: "Profile",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="user" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: "Settings",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="settings" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="person-outline" size={26} color={color} />
           ),
         }}
       />

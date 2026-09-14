@@ -5,23 +5,18 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { useAppTheme } from "../store/themeStore";
-import { useUserStore } from "../store/userStore";
 import Button from "../components/Button";
-import { Spacing, FontSize, Radius, Shadows } from "../constants/theme";
+import { Spacing, FontSize, Radius } from "../constants/theme";
 
-export default function LoginScreen() {
+export default function ForgotPasswordScreen() {
   const { colors } = useAppTheme();
-  const { name, updateProfile } = useUserStore();
-
-  const [inputUsername, setInputUsername] = useState("");
-  const [inputPassword, setInputPassword] = useState("");
+  
+  const [inputEmail, setInputEmail] = useState("");
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
-  const handleLogin = () => {
-    if (inputUsername) {
-      updateProfile({ name: inputUsername });
-    }
-    router.replace("/(tabs)" as any);
+  const handleReset = () => {
+    // Dummy reset action, just go back to login
+    router.back();
   };
 
   return (
@@ -50,72 +45,48 @@ export default function LoginScreen() {
               />
             </View>
             <Text style={[styles.title, { color: colors.text }]}>
-              Task<Text style={{ color: colors.accent }}>GO</Text>
+              Lupa<Text style={{ color: colors.accent }}>Password</Text>
             </Text>
-            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Selesaikan lebih banyak hal hari ini.</Text>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Jangan khawatir, mari atur ulang.</Text>
           </View>
 
           {/* Form Card */}
           <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.cardTitle, { color: colors.text }]}>Selamat Datang</Text>
+            <Text style={[styles.cardTitle, { color: colors.text }]}>Atur Ulang</Text>
             <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
-              Masuk untuk mengelola aktivitas Anda.
+              Masukkan email yang terdaftar untuk menerima tautan reset password.
             </Text>
             
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.text }]}>Email atau Username</Text>
+              <Text style={[styles.label, { color: colors.text }]}>Alamat Email</Text>
               <View style={[
                 styles.inputBox, 
-                { borderColor: focusedInput === 'user' ? colors.accent : colors.border, backgroundColor: colors.background }
+                { borderColor: focusedInput === 'email' ? colors.accent : colors.border, backgroundColor: colors.background }
               ]}>
-                <Feather name="user" size={20} color={focusedInput === 'user' ? colors.accent : colors.textSecondary} />
+                <Feather name="mail" size={20} color={focusedInput === 'email' ? colors.accent : colors.textSecondary} />
                 <TextInput
-                  value={inputUsername}
-                  onChangeText={setInputUsername}
-                  onFocus={() => setFocusedInput('user')}
+                  value={inputEmail}
+                  onChangeText={setInputEmail}
+                  onFocus={() => setFocusedInput('email')}
                   onBlur={() => setFocusedInput(null)}
-                  placeholder="Mis. amano / hello@contoh.com"
+                  placeholder="hello@contoh.com"
+                  keyboardType="email-address"
                   placeholderTextColor={colors.textSecondary}
                   style={[styles.input, { color: colors.text }]}
                 />
               </View>
             </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.text }]}>Password</Text>
-              <View style={[
-                styles.inputBox, 
-                { borderColor: focusedInput === 'pass' ? colors.accent : colors.border, backgroundColor: colors.background }
-              ]}>
-                <Feather name="lock" size={20} color={focusedInput === 'pass' ? colors.accent : colors.textSecondary} />
-                <TextInput
-                  value={inputPassword}
-                  onChangeText={setInputPassword}
-                  onFocus={() => setFocusedInput('pass')}
-                  onBlur={() => setFocusedInput(null)}
-                  placeholder="••••••••"
-                  placeholderTextColor={colors.textSecondary}
-                  secureTextEntry={true}
-                  style={[styles.input, { color: colors.text }]}
-                />
-              </View>
-            </View>
-
-            <TouchableOpacity style={styles.forgotPassword} onPress={() => router.push('/forgot-password' as any)}>
-              <Text style={[styles.forgotPasswordText, { color: colors.accent }]}>Lupa password?</Text>
-            </TouchableOpacity>
 
             <Button 
-              label="Masuk ke Aplikasi" 
+              label="Kirim Tautan Reset" 
               variant="primary" 
-              onPress={handleLogin} 
-              style={{ marginTop: Spacing.xs }} 
+              onPress={handleReset} 
+              style={{ marginTop: Spacing.sm }} 
             />
 
             <View style={styles.registerContainer}>
-              <Text style={[styles.registerText, { color: colors.textSecondary }]}>Belum punya akun? </Text>
-              <TouchableOpacity onPress={() => router.push('/register' as any)}>
-                <Text style={[styles.registerTextBold, { color: colors.accent }]}>Daftar di sini</Text>
+              <TouchableOpacity onPress={() => router.back()}>
+                <Text style={[styles.registerTextBold, { color: colors.accent }]}>Kembali ke Login</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -221,22 +192,10 @@ const styles = StyleSheet.create({
     right: 0,
     height: 320,
   },
-  forgotPassword: {
-    alignSelf: "flex-end",
-    marginBottom: Spacing.lg,
-  },
-  forgotPasswordText: {
-    fontSize: FontSize.sm,
-    fontWeight: "600",
-  },
   registerContainer: {
     flexDirection: "row",
     justifyContent: "center",
     marginTop: Spacing.xl,
-  },
-  registerText: {
-    fontSize: FontSize.sm,
-    fontWeight: "500",
   },
   registerTextBold: {
     fontSize: FontSize.sm,
