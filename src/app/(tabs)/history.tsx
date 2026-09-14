@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image, Alert } fr
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useUserStore } from "../../store/userStore";
 
 const COLORS = {
   bg: "#0f172a", // Dark slate background
@@ -18,6 +19,7 @@ const COLORS = {
 };
 
 export default function WorkspaceScreen() {
+  const { name, avatarUrl } = useUserStore();
   return (
     <SafeAreaView edges={["top"]} style={styles.safe}>
       {/* HEADER: PT Mitreka Solusi Indonesia */}
@@ -32,6 +34,13 @@ export default function WorkspaceScreen() {
           <View style={{ flex: 1 }}>
             <Text style={styles.companyTitle}>PT Mitreka Solusi Indonesia</Text>
             <Text style={styles.companySub}>Company Industry</Text>
+          </View>
+          <View style={styles.avatarContainer}>
+            {avatarUrl ? (
+              <Image source={{ uri: avatarUrl }} style={{ width: "100%", height: "100%" }} />
+            ) : (
+              <Text style={{ color: COLORS.text, fontWeight: "bold", fontSize: 16 }}>{name ? name.charAt(0).toUpperCase() : "?"}</Text>
+            )}
           </View>
         </View>
 
@@ -170,6 +179,7 @@ const styles = StyleSheet.create({
   topHeader: { padding: 20, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   companyHeader: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 16 },
   companyIconBox: { width: 48, height: 48, borderRadius: 8, alignItems: "center", justifyContent: "center" },
+  avatarContainer: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.card, alignItems: "center", justifyContent: "center", overflow: "hidden" },
   companyTitle: { fontSize: 20, fontWeight: "bold", color: COLORS.text },
   companySub: { fontSize: 13, color: COLORS.textMuted },
   actionRow: { flexDirection: "row", justifyContent: "flex-end", gap: 8 },

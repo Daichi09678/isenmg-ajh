@@ -44,16 +44,6 @@ export default function TabLayout() {
           title: "Home",
           tabBarIcon: ({ color, focused }) => (
             <View style={{ alignItems: 'center' }}>
-              {focused && (
-                <View style={{ 
-                  position: 'absolute', 
-                  top: -10, 
-                  width: 40, 
-                  height: 3, 
-                  backgroundColor: COLORS.active, 
-                  borderRadius: 2 
-                }} />
-              )}
               <Ionicons name={focused ? "home" : "home-outline"} size={26} color={color} />
             </View>
           ),

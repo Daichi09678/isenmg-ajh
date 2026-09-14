@@ -20,6 +20,7 @@ const COLORS = {
   mutedLight: "#94a3b8",
   white: "#f8fafc",
   danger: "#ef4444",
+  green: "#10b981",
 };
 
 export default function ProfileScreen() {
@@ -71,18 +72,7 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView edges={["top"]} style={[styles.safe, { backgroundColor: themeBg }]}>
-      {/* HEADER */}
-      <View style={[styles.header, { borderBottomColor: COLORS.border }]}>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-          <View style={styles.logoBox}>
-            <Ionicons name="person" size={14} color={COLORS.bg} />
-          </View>
-          <Text style={[styles.logoText, { color: themeText }]}>Profil</Text>
-        </View>
-        <Pressable onPress={() => setIsEditing(true)}>
-          <Feather name="edit-3" size={20} color={COLORS.mutedLight} />
-        </Pressable>
-      </View>
+      {/* HEADER DIHAPUS SESUAI PERMINTAAN */}
 
       <ScrollView contentContainerStyle={styles.contentPad} showsVerticalScrollIndicator={false}>
         
@@ -100,9 +90,14 @@ export default function ProfileScreen() {
                 <Text style={styles.avatarText}>{name ? name.charAt(0).toUpperCase() : "?"}</Text>
               )}
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.profileName} numberOfLines={1}>{name || "Tanpa Nama"}</Text>
-              <Text style={styles.profileEmail} numberOfLines={1}>{email || "Belum ada email"}</Text>
+            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <View style={{ flex: 1, paddingRight: 10 }}>
+                <Text style={styles.profileName} numberOfLines={1}>{name || "Tanpa Nama"}</Text>
+                <Text style={styles.profileEmail} numberOfLines={1}>{email || "Belum ada email"}</Text>
+              </View>
+              <Pressable onPress={() => setIsEditing(true)} style={{ padding: 8, backgroundColor: COLORS.cardAlt, borderRadius: 8 }}>
+                <Feather name="edit-3" size={16} color={COLORS.white} />
+              </Pressable>
             </View>
           </View>
         </View>
@@ -155,6 +150,27 @@ export default function ProfileScreen() {
               <Text style={[styles.menuText, { color: themeText }]}>Pencapaian & Badge</Text>
               <Feather name="chevron-right" size={16} color={COLORS.border} />
             </Pressable>
+          </View>
+        </View>
+
+        <View style={styles.menuSection}>
+          <Text style={[styles.sectionTitle, { color: themeText }]}>Riwayat Tugas (Selesai)</Text>
+          <View style={[styles.menuList, { backgroundColor: COLORS.card, paddingVertical: 12 }]}>
+            {tasks.filter(t => t.isDone).length === 0 ? (
+               <Text style={{color: COLORS.mutedLight, textAlign: 'center', marginVertical: 8, fontSize: 12}}>Belum ada tugas selesai.</Text>
+            ) : (
+               tasks.filter(t => t.isDone).slice(0, 5).map((t, i, arr) => (
+                  <View key={t.id} style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 10, borderBottomWidth: i === arr.length - 1 ? 0 : 1, borderBottomColor: COLORS.border}}>
+                     <View style={{width: 32, height: 32, borderRadius: 8, backgroundColor: 'rgba(16,185,129,0.1)', alignItems: 'center', justifyContent: 'center', marginRight: 12}}>
+                        <Feather name="check" size={16} color={COLORS.green} />
+                     </View>
+                     <View style={{flex: 1}}>
+                        <Text style={{color: COLORS.white, fontWeight: '600', fontSize: 13}}>{t.title}</Text>
+                        <Text style={{color: COLORS.mutedLight, fontSize: 11}}>Prioritas: {t.priority}</Text>
+                     </View>
+                  </View>
+               ))
+            )}
           </View>
         </View>
 

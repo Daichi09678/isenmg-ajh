@@ -60,8 +60,8 @@ export default function TaskDetailScreen() {
           <Feather name="arrow-left" size={24} color={colors.text} />
         </Pressable>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Detail Task</Text>
-        <Pressable onPress={() => router.push(`/add-task?id=${task.id}` as any)} hitSlop={8}>
-          <Feather name="edit-2" size={20} color={colors.text} />
+        <Pressable onPress={() => router.push(`/${task.taskType === 'Team' ? 'add-team-task' : 'add-task'}?id=${task.id}` as any)} hitSlop={8}>
+          <Feather name="edit-2" size={20} color="#3b82f6" />
         </Pressable>
       </View>
 
@@ -153,7 +153,7 @@ export default function TaskDetailScreen() {
           <Button
             label="Edit"
             variant="outline"
-            onPress={() => router.push(`/add-task?id=${task.id}` as any)}
+            onPress={() => router.push(`/${task.taskType === 'Team' ? 'add-team-task' : 'add-task'}?id=${task.id}` as any)}
             style={{ flex: 1 }}
           />
           <Button

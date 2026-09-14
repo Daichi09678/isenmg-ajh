@@ -8,17 +8,20 @@ import {
   Modal,
   StyleSheet,
   Platform,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useTaskStore } from "../../store/taskStore";
 import { useAppTheme } from "../../store/themeStore";
+import { useUserStore } from "../../store/userStore";
 
 // The photo shows a very dark, sleek UI.
 const COLORS = {
-  bg: "#16181f", // Main background
-  card: "#20232b", // Card background
-  border: "#333742",
+  bg: "#0f172a", // Main background
+  card: "#1e293b", // Card background
+  border: "#334155",
   text: "#ffffff",
   textMuted: "#a0a5b1",
   primary: "#4ade80", // The bright green FAB and active tab
@@ -33,7 +36,9 @@ export default function HomeTab() {
   const tasks = useTaskStore((s) => s.tasks);
   const addTask = useTaskStore((s) => s.addTask);
   const toggleDone = useTaskStore((s) => s.toggleDone);
+  const acceptJoinRequest = useTaskStore((s) => s.acceptJoinRequest);
   const { mode } = useAppTheme();
+  const { name, avatarUrl } = useUserStore();
 
   // Forcing dark theme colors based on the design request
   const themeBg = COLORS.bg;
@@ -42,6 +47,7 @@ export default function HomeTab() {
   const [query, setQuery] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [notifVisible, setNotifVisible] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<any>(null);
 
   // Form states
   const [formTitle, setFormTitle] = useState("");
@@ -49,12 +55,14 @@ export default function HomeTab() {
   const [formPriority, setFormPriority] = useState("Sedang");
   const [formDue, setFormDue] = useState("");
 
+  const personalTasks = useMemo(() => tasks.filter(t => t.taskType !== "Team"), [tasks]);
+
   const filteredTasks = useMemo(() => {
-    return tasks.filter((t) => {
+    return personalTasks.filter((t) => {
       const q = query.trim().toLowerCase();
       return !q || t.title.toLowerCase().includes(q);
     });
-  }, [tasks, query]);
+  }, [personalTasks, query]);
 
   function submitForm() {
     if (!formTitle.trim()) return;
@@ -81,7 +89,11 @@ export default function HomeTab() {
             <View style={styles.notifBadge} />
           </TouchableOpacity>
           <View style={styles.avatarContainer}>
-            <Ionicons name="person-circle" size={32} color={COLORS.textMuted} />
+            {avatarUrl ? (
+              <Image source={{ uri: avatarUrl }} style={{ width: "100%", height: "100%" }} />
+            ) : (
+              <Text style={{ color: COLORS.text, fontWeight: "bold", fontSize: 16 }}>{name ? name.charAt(0).toUpperCase() : "?"}</Text>
+            )}
           </View>
         </View>
       </View>
@@ -90,7 +102,7 @@ export default function HomeTab() {
         {/* GREETING */}
         <View style={styles.greetingSection}>
           <Text style={styles.greetingTitle}>Home</Text>
-          <Text style={styles.greetingSubtitle}>Welcome <Text style={{fontWeight: 'bold', color: themeText}}>Mukhamad Eko Arifudin</Text></Text>
+          <Text style={styles.greetingSubtitle}>Welcome <Text style={{fontWeight: 'bold', color: themeText}}>{name || "User"}</Text></Text>
         </View>
 
         {/* MY TASKS & SEARCH */}
@@ -110,7 +122,7 @@ export default function HomeTab() {
 
         {/* SUMMARY BOXES (Horizontal Scroll) */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.summaryScroll}>
-          <SummaryBox icon="people-outline" title="All Task" count={tasks.length} color={COLORS.blue} />
+          <SummaryBox icon="people-outline" title="All Task" count={personalTasks.length} color={COLORS.blue} />
           <SummaryBox icon="alert-circle-outline" title="Overdue" count={0} color={COLORS.danger} />
           <SummaryBox icon="calendar-outline" title="Today's Plan" count={0} color={COLORS.green} />
           <SummaryBox icon="calendar-clear-outline" title="Due Today" count={0} color={COLORS.orange} />
@@ -123,14 +135,16 @@ export default function HomeTab() {
             <Text style={{color: COLORS.textMuted, textAlign: 'center', marginTop: 20}}>Belum ada tugas.</Text>
           ) : (
             filteredTasks.map((t, idx) => (
-              <TaskCard key={t.id} item={t} index={idx} onToggle={() => toggleDone(t.id)} />
+              <TouchableOpacity key={t.id} activeOpacity={0.8} onPress={() => setSelectedTask(t)}>
+                <TaskCard item={t} index={idx} onToggle={() => toggleDone(t.id)} />
+              </TouchableOpacity>
             ))
           )}
         </View>
       </ScrollView>
 
       {/* FLOATING ACTION BUTTON */}
-      <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)} activeOpacity={0.8}>
+      <TouchableOpacity style={styles.fab} onPress={() => router.push("/add-task")} activeOpacity={0.8}>
         <Ionicons name="add" size={32} color={COLORS.bg} />
       </TouchableOpacity>
 
@@ -172,6 +186,76 @@ export default function HomeTab() {
               </TouchableOpacity>
             </View>
             <Text style={{color: COLORS.textMuted}}>Tidak ada notifikasi baru.</Text>
+          </View>
+        </View>
+      </Modal>
+
+      {/* MODAL DETAIL TUGAS */}
+      <Modal visible={!!selectedTask} animationType="slide" transparent onRequestClose={() => setSelectedTask(null)}>
+        <View style={styles.modalBackdrop}>
+          <View style={[styles.modalSheet, { backgroundColor: COLORS.card, maxHeight: "80%" }]}>
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: COLORS.text }]}>Detail Tugas</Text>
+              <TouchableOpacity onPress={() => setSelectedTask(null)}>
+                <Ionicons name="close" size={24} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            </View>
+            
+            {selectedTask && (
+              <ScrollView showsVerticalScrollIndicator={false}>
+                <Text style={{ fontSize: 20, fontWeight: "bold", color: COLORS.text, marginBottom: 12 }}>
+                  {selectedTask.title}
+                </Text>
+                
+                <Text style={{ fontSize: 14, color: COLORS.primary, fontWeight: "bold", marginBottom: 16 }}>
+                  Prioritas: {selectedTask.priority}
+                </Text>
+
+                <Text style={{ fontSize: 16, fontWeight: "600", color: COLORS.text, marginBottom: 8 }}>
+                  Anggota Tergabung ({selectedTask.members?.length || 0})
+                </Text>
+                <View style={{ marginBottom: 16 }}>
+                  {selectedTask.members?.map((m: string, idx: number) => (
+                    <View key={idx} style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
+                      <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: COLORS.bg, alignItems: "center", justifyContent: "center", marginRight: 8 }}>
+                        <Text style={{ color: COLORS.text, fontWeight: "bold" }}>{m.charAt(0).toUpperCase()}</Text>
+                      </View>
+                      <Text style={{ color: COLORS.text }}>{m}</Text>
+                    </View>
+                  ))}
+                  {(!selectedTask.members || selectedTask.members.length === 0) && (
+                    <Text style={{ color: COLORS.textMuted }}>Belum ada anggota.</Text>
+                  )}
+                </View>
+
+                <Text style={{ fontSize: 16, fontWeight: "600", color: COLORS.text, marginBottom: 8 }}>
+                  Permintaan Bergabung ({selectedTask.joinRequests?.length || 0})
+                </Text>
+                <View style={{ marginBottom: 16 }}>
+                  {selectedTask.joinRequests?.map((email: string, idx: number) => (
+                    <View key={idx} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8, backgroundColor: COLORS.bg, padding: 12, borderRadius: 8 }}>
+                      <Text style={{ color: COLORS.text, flex: 1 }}>{email}</Text>
+                      <TouchableOpacity 
+                        style={{ backgroundColor: COLORS.primary, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 }}
+                        onPress={() => {
+                          acceptJoinRequest(selectedTask.id, email);
+                          setSelectedTask({
+                            ...selectedTask,
+                            members: [...(selectedTask.members || []), email],
+                            joinRequests: selectedTask.joinRequests.filter((e: string) => e !== email)
+                          });
+                        }}
+                      >
+                        <Text style={{ color: COLORS.bg, fontWeight: "bold", fontSize: 12 }}>Terima</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                  {(!selectedTask.joinRequests || selectedTask.joinRequests.length === 0) && (
+                    <Text style={{ color: COLORS.textMuted }}>Tidak ada permintaan baru.</Text>
+                  )}
+                </View>
+              </ScrollView>
+            )}
           </View>
         </View>
       </Modal>
@@ -459,7 +543,7 @@ const styles = StyleSheet.create({
 
   fab: {
     position: "absolute",
-    bottom: 24,
+    bottom: 90,
     right: 24,
     width: 64,
     height: 64,

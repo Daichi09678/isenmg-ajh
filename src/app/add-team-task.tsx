@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import {
   View,
   Text,
+  TextInput,
   StyleSheet,
   ScrollView,
   Pressable,
   Switch,
   Platform,
   KeyboardAvoidingView,
-  SafeAreaView,
-  TextInput,
+  SafeAreaView
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { Feather } from "@expo/vector-icons";
@@ -32,7 +32,7 @@ const Palette = {
   surfaceAlt: "rgba(30, 41, 59, 0.5)",
 };
 
-export default function AddEditTaskScreen() {
+export default function AddEditTeamTaskScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const addTask = useTaskStore((s) => s.addTask);
   const updateTask = useTaskStore((s) => s.updateTask);
@@ -52,7 +52,7 @@ export default function AddEditTaskScreen() {
   const [reminder, setReminder] = useState(existingTask?.reminder ?? false);
   const [showPicker, setShowPicker] = useState(false);
   const [errors, setErrors] = useState<{ title?: string }>({});
-  const [category, setCategory] = useState(existingTask?.category ?? "Pekerjaan");
+  
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
   const validate = () => {
@@ -73,7 +73,8 @@ export default function AddEditTaskScreen() {
       priority,
       urgency,
       reminder,
-      taskType: "Personal" as const,
+      taskType: "Team" as const,
+      status: existingTask?.status || "Backlog",
     };
 
     if (isEditMode && existingTask) {
@@ -96,17 +97,15 @@ export default function AddEditTaskScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
+      <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
       >
         <ScrollView
           contentContainerStyle={styles.form}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="none"
+          keyboardShouldPersistTaps="always"
           showsVerticalScrollIndicator={false}
           bounces={false}
-          contentInsetAdjustmentBehavior="automatic"
         >
           {/* Header */}
           <View style={styles.header}>
@@ -121,7 +120,7 @@ export default function AddEditTaskScreen() {
               <Feather name="x" size={20} color={Palette.text} />
             </Pressable>
             <Text style={styles.headerTitle}>
-              {isEditMode ? "Edit Aktivitas" : "Buat Aktivitas"}
+              {isEditMode ? "Edit Tugas Tim" : "Tugas Tim Baru"}
             </Text>
             <View style={{ width: 40 }} />
           </View>
@@ -129,18 +128,16 @@ export default function AddEditTaskScreen() {
           {/* Hero / Header Section */}
           <View style={styles.heroSection}>
             <View style={styles.heroBadge}>
-              <Feather name="star" size={12} color={Palette.primary} />
-              <Text style={styles.heroBadgeText}>
-                {isEditMode ? "UPDATE" : "BARU"}
-              </Text>
+              <Feather name="star" size={14} color={Palette.primary} />
+              <Text style={styles.heroBadgeText}>WORKSPACE</Text>
             </View>
             <Text style={styles.heroTitle}>
-              {isEditMode ? "Perbarui Aktivitas" : "Aktivitas Pribadi"}
+              {isEditMode ? "Perbarui Tugas" : "Kolaborasi Tim"}
             </Text>
             <Text style={styles.heroSubtitle}>
               {isEditMode
-                ? "Sesuaikan kembali aktivitas yang sudah Anda buat."
-                : "Fokus pada apa yang penting hari ini."}
+                ? "Sesuaikan kembali tugas tim yang sudah dibuat."
+                : "Tambahkan tugas ke Backlog untuk dikerjakan bersama tim Anda."}
             </Text>
           </View>
 
@@ -211,49 +208,40 @@ export default function AddEditTaskScreen() {
               </View>
             </View>
 
-            {/* Deadline & Kategori Row */}
-            <View style={{ flexDirection: "row", gap: 16 }}>
-              {/* Deadline */}
-              <View style={[styles.field, { flex: 1 }]}>
-                <Text style={styles.label}>Tenggat Waktu</Text>
-                <Pressable
-                  onPress={() => setShowPicker(true)}
-                  style={({ pressed }) => [
-                    styles.inputContainer,
-                    pressed && { backgroundColor: Palette.surfaceAlt },
-                  ]}
-                >
-                  <Feather
-                    name="calendar"
-                    size={18}
-                    color={Palette.primary}
-                    style={styles.inputIcon}
-                  />
-                  <Text style={styles.dateText}>
-                    {formatDeadline(deadline.toISOString())}
-                  </Text>
-                  <Feather
-                    name="chevron-down"
-                    size={18}
-                    color={Palette.textMuted}
-                    style={{ marginRight: 16 }}
-                  />
-                </Pressable>
-              </View>
-
-              {/* Kategori */}
-              <View style={[styles.field, { flex: 1 }]}>
-                <Text style={styles.label}>Kategori</Text>
-                <View style={[styles.inputContainer, { paddingHorizontal: 16 }]}>
-                  <Feather
-                    name="tag"
-                    size={18}
-                    color={Palette.primary}
-                    style={{ marginRight: 12 }}
-                  />
-                  <Text style={styles.dateText}>{category}</Text>
-                </View>
-              </View>
+            {/* Deadline Row */}
+            <View style={styles.field}>
+              <Text style={styles.label}>Tenggat Waktu</Text>
+              <Pressable
+                onPress={() => setShowPicker(true)}
+                style={({ pressed }) => [
+                  styles.inputContainer,
+                  pressed && { backgroundColor: Palette.surfaceAlt },
+                ]}
+              >
+                <Feather
+                  name="calendar"
+                  size={18}
+                  color={Palette.primary}
+                  style={styles.inputIcon}
+                />
+                <Text style={styles.dateText}>
+                  {formatDeadline(deadline.toISOString())}
+                </Text>
+                <Feather
+                  name="chevron-down"
+                  size={18}
+                  color={Palette.textMuted}
+                  style={{ marginRight: 16 }}
+                />
+              </Pressable>
+              {showPicker && (
+                <DateTimePicker
+                  value={deadline}
+                  mode="date"
+                  display="default"
+                  onChange={onDateChange}
+                />
+              )}
             </View>
 
             {/* Priority */}
@@ -285,6 +273,72 @@ export default function AddEditTaskScreen() {
                           : p === "Medium"
                           ? "Sedang"
                           : "Rendah"}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Urgency */}
+            <View style={styles.field}>
+              <Text style={styles.label}>Tingkat Urgensi</Text>
+              <View style={styles.priorityRow}>
+                {URGENCIES.map((u) => {
+                  const isActive = u === urgency;
+                  return (
+                    <Pressable
+                      key={u}
+                      onPress={() => setUrgency(u)}
+                      style={[
+                        styles.priorityChip,
+                        isActive && {
+                          backgroundColor: "#ef4444",
+                          borderColor: "#ef4444",
+                        },
+                      ]}
+                    >
+                      {isActive && (
+                        <Feather name="alert-circle" size={12} color="#fff" />
+                      )}
+                      <Text
+                        style={[
+                          styles.priorityChipText,
+                          isActive && styles.priorityChipTextActive,
+                          { fontSize: 11 },
+                        ]}
+                      >
+                        {u}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Estimated Time */}
+            <View style={styles.field}>
+              <Text style={styles.label}>Estimasi Waktu Pengerjaan</Text>
+              <View style={styles.priorityRow}>
+                {ESTIMATED_TIMES.map((time) => {
+                  const isActive = time === estimatedTime;
+                  return (
+                    <Pressable
+                      key={time}
+                      onPress={() => setEstimatedTime(isActive ? "" : time)}
+                      style={[
+                        styles.priorityChip,
+                        isActive && styles.priorityChipActive,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.priorityChipText,
+                          isActive && styles.priorityChipTextActive,
+                          { fontSize: 11 },
+                        ]}
+                      >
+                        {time}
                       </Text>
                     </Pressable>
                   );
@@ -345,16 +399,6 @@ export default function AddEditTaskScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-
-      {/* DateTimePicker dipindah ke luar ScrollView agar tidak mengganggu layout */}
-      {showPicker && (
-        <DateTimePicker
-          value={deadline}
-          mode="date"
-          display={Platform.OS === "ios" ? "spinner" : "default"}
-          onChange={onDateChange}
-        />
-      )}
     </SafeAreaView>
   );
 }
@@ -393,7 +437,7 @@ const styles = StyleSheet.create({
   form: {
     flexGrow: 1,
     padding: 24,
-    paddingBottom: 40,
+    paddingBottom: 80,
   },
   heroSection: {
     marginBottom: 32,
@@ -435,11 +479,6 @@ const styles = StyleSheet.create({
     padding: 24,
     borderWidth: 1,
     borderColor: Palette.border,
-    shadowColor: Palette.text,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 12,
-    elevation: 2,
     gap: 24,
   },
   field: {
@@ -462,20 +501,25 @@ const styles = StyleSheet.create({
   },
   inputFocused: {
     borderColor: Palette.primary,
-    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+    shadowColor: Palette.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 3,
   },
   inputError: {
-    borderColor: '#ef4444',
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: Palette.text,
-    paddingRight: 16,
-    paddingVertical: 16,
+    borderColor: "#ef4444",
   },
   inputIcon: {
     paddingHorizontal: 16,
+  },
+  input: {
+    flex: 1,
+    fontSize: 15,
+    color: Palette.text,
+    fontWeight: "500",
+    paddingRight: 16,
+    paddingVertical: 16,
   },
   textAreaContainer: {
     alignItems: "flex-start",
@@ -516,11 +560,6 @@ const styles = StyleSheet.create({
   priorityChipActive: {
     backgroundColor: Palette.primary,
     borderColor: Palette.primary,
-    shadowColor: Palette.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 4,
   },
   priorityChipText: {
     fontSize: 13,
@@ -565,10 +604,7 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: "row",
     gap: 12,
-    padding: 24,
-    backgroundColor: Palette.bg,
-    borderTopWidth: 1,
-    borderTopColor: Palette.border,
+    paddingVertical: 24,
   },
   btnCancel: {
     flex: 1,
@@ -594,11 +630,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     paddingVertical: 16,
-    shadowColor: Palette.text,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
   },
   btnSaveText: {
     fontSize: 15,

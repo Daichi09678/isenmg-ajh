@@ -7,6 +7,7 @@ export default function RootLayout() {
       <Stack.Screen name="login" />
       <Stack.Screen name="(tabs)" /> 
       <Stack.Screen name="add-task" />
+      <Stack.Screen name="add-team-task" />
       <Stack.Screen name="task/[id]" />
       <Stack.Screen name="performance-report" />
       <Stack.Screen name="achievements" />

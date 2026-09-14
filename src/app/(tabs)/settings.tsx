@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Modal, Animated, TextInput, Switch } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useTaskStore } from "../../store/taskStore";
+import { useUserStore } from "../../store/userStore";
 
 const COLORS = {
   bg: "#0f172a", // Dark slate background
@@ -26,23 +28,115 @@ const ACTIVE_MEMBERS = [
   { id: "4", name: "Puspita Sari", initials: "PS", role: "Backend Developer", color: "#f59e0b" },
 ];
 
+const BlinkingDot = () => {
+  const opacity = React.useRef(new Animated.Value(0.2)).current;
+  
+  React.useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity, { toValue: 1, duration: 800, useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 0.2, duration: 800, useNativeDriver: true })
+      ])
+    ).start();
+  }, []);
+
+  return <Animated.View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.green, opacity }} />;
+};
+
+const BlinkingLiveDot = ({ isPaused }: { isPaused: boolean }) => {
+  const opacity = React.useRef(new Animated.Value(0.3)).current;
+  
+  React.useEffect(() => {
+    if (isPaused) {
+      opacity.setValue(1);
+      return;
+    }
+    
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity, { toValue: 1, duration: 1000, useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 0.3, duration: 1000, useNativeDriver: true })
+      ])
+    );
+    animation.start();
+    
+    return () => animation.stop();
+  }, [isPaused]);
+
+  return (
+    <Animated.View 
+      style={[
+        styles.liveDot, 
+        isPaused && { backgroundColor: COLORS.yellow },
+        { opacity }
+      ]} 
+    />
+  );
+};
+
 export default function MonitoringScreen() {
+  const tasks = useTaskStore((s) => s.tasks);
+  const updateTaskStatus = useTaskStore((s) => s.updateTaskStatus);
+  const addComment = useTaskStore((s) => s.addComment);
+  const { name } = useUserStore();
+
   const [isPaused, setIsPaused] = useState(false);
 
-  const backlogCount = 7;
-  const doingCount = 21;
-  const mrCount = 0;
-  const testingCount = 272;
-  const doneCount = 327;
-  const totalCount = backlogCount + doingCount + mrCount + testingCount + doneCount;
-  const progressPercent = Math.round((doneCount / totalCount) * 100);
+  const teamTasks = tasks.filter((t) => t.taskType === "Team");
+  const backlogTasks = teamTasks.filter((t) => t.status === "Backlog");
+  const doingTasks = teamTasks.filter((t) => t.status === "Doing");
+  const mrTasks = teamTasks.filter((t) => t.status === "MR");
+  const testingTasks = teamTasks.filter((t) => t.status === "Testing");
+  const doneTasks = teamTasks.filter((t) => t.status === "Done");
 
-  const showMembersModal = () => {
-    Alert.alert(
-      "Anggota Tergabung di Monitoring",
-      `4 Anggota sedang mengakses monitoring ini secara real-time:\n\n• Muhammad Ifrozin - Lead Developer (Online)\n• Vrika Nurrahman - QA Engineer (Online)\n• Farid Abdul Aziz - DevOps (Online)\n• Puspita Sari - Backend Developer (Online)\n• +2 Anggota lainnya`,
-      [{ text: "Tutup", style: "cancel" }]
-    );
+  const backlogCount = backlogTasks.length;
+  const doingCount = doingTasks.length;
+  const mrCount = mrTasks.length;
+  const testingCount = testingTasks.length;
+  const doneCount = doneTasks.length;
+  const totalCount = teamTasks.length;
+  const progressPercent = totalCount === 0 ? 0 : Math.round((doneCount / totalCount) * 100);
+
+  const [membersModalVisible, setMembersModalVisible] = useState(false);
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [taskDetail, setTaskDetail] = useState<any>(null);
+  const [quickUpdateColumn, setQuickUpdateColumn] = useState<string | null>(null);
+  const [quickUpdateText, setQuickUpdateText] = useState("");
+  const [commentText, setCommentText] = useState("");
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  
+  // Member Invite State
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("Viewer");
+  const [joinRequests, setJoinRequests] = useState([
+     { id: '101', email: 'johndoe@gmail.com', name: 'John Doe', requestedRole: 'Viewer' }
+  ]);
+
+  const handleSync = () => {
+    setIsSyncing(true);
+    setTimeout(() => {
+      setIsSyncing(false);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
+    }, 1500);
+  };
+
+  const handleQuickUpdate = () => {
+    if (!quickUpdateText.trim() || !quickUpdateColumn) return;
+    
+    useTaskStore.getState().addTask({
+      title: quickUpdateText.trim(),
+      description: "",
+      deadline: new Date().toISOString(),
+      category: "Kerja" as any,
+      priority: "Sedang" as any,
+      taskType: "Team",
+      status: quickUpdateColumn as any,
+      members: [name || "Anda"],
+    });
+    setQuickUpdateColumn(null);
+    setQuickUpdateText("");
   };
 
   return (
@@ -55,7 +149,7 @@ export default function MonitoringScreen() {
             <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
               <Text style={styles.headerTitle}>Mobile Asabri</Text>
               <View style={styles.liveBadge}>
-                <View style={[styles.liveDot, isPaused && { backgroundColor: COLORS.yellow }]} />
+                <BlinkingLiveDot isPaused={isPaused} />
                 <Text style={[styles.liveText, isPaused && { color: COLORS.yellow }]}>
                   {isPaused ? "Paused" : "Live"}
                 </Text>
@@ -68,7 +162,7 @@ export default function MonitoringScreen() {
           <TouchableOpacity 
             style={styles.avatarGroup}
             activeOpacity={0.7}
-            onPress={showMembersModal}
+            onPress={() => setMembersModalVisible(true)}
           >
             <View style={styles.avatarStack}>
               {ACTIVE_MEMBERS.map((member, idx) => (
@@ -132,7 +226,7 @@ export default function MonitoringScreen() {
 
           <TouchableOpacity 
             style={[styles.toolBtn, { backgroundColor: COLORS.green }]}
-            onPress={() => router.push("/add-task")}
+            onPress={() => router.push("/add-team-task")}
           >
             <Ionicons name="add" size={15} color={COLORS.text} />
             <Text style={styles.toolBtnText}>New Task</Text>
@@ -150,53 +244,312 @@ export default function MonitoringScreen() {
 
           <TouchableOpacity 
             style={styles.toolIconBtn}
-            onPress={() => Alert.alert("Filter", "Memfilter task berdasarkan tag, assignee, dan status.")}
+            onPress={() => setFilterModalVisible(true)}
           >
             <Ionicons name="filter-outline" size={15} color={COLORS.textMuted} />
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={styles.toolIconBtn}
-            onPress={() => Alert.alert("Sinkronisasi", "Data monitoring tugas telah diperbarui ke status terkini.")}
+            onPress={handleSync}
+            disabled={isSyncing}
           >
-            <Ionicons name="refresh-outline" size={15} color={COLORS.textMuted} />
+            <Ionicons name="refresh-outline" size={15} color={isSyncing ? COLORS.green : COLORS.textMuted} />
           </TouchableOpacity>
         </View>
+
+        {/* Sync Toast */}
+        {showToast && (
+          <View style={{ position: 'absolute', top: 16, right: 16, backgroundColor: COLORS.green, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6, zIndex: 50, elevation: 5 }}>
+            <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>Data tersinkronisasi</Text>
+          </View>
+        )}
       </View>
 
       {/* Kanban Board Columns */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.boardScroll}>
         <BoardColumn title="Backlog" count={backlogCount} color={COLORS.blue}>
-          <TaskCard title="Menambah reverse tunnel dari server dev ke vps mitreka" tag="ABR-55" author="Farid Abdul Aziz" />
-          <TaskCard title="[CMS-API] Pengecekan RBAC endpoints" tag="ABR-573" author="Puspita Sari" />
+          {backlogTasks.map((t) => (
+            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => setTaskDetail(t)} />
+          ))}
+          <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("Backlog")}>
+            <Ionicons name="add" size={16} color={COLORS.textMuted} />
+            <Text style={styles.newTaskText}>Update Progres</Text>
+          </TouchableOpacity>
         </BoardColumn>
         
         <BoardColumn title="Doing" count={doingCount} color={COLORS.text}>
-          <TaskCard title="Testing SPTB" desc="melakukan cek aplikasi SPTB dengan testcase" tag="ABR-469" author="Vrika Nurrahman" />
-          <TaskCard title="[API-CORE SERVICE] Survey" tag="ABR-542" author="Muhammad Ifrozin" />
+          {doingTasks.map((t) => (
+            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => setTaskDetail(t)} />
+          ))}
+          <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("Doing")}>
+            <Ionicons name="add" size={16} color={COLORS.textMuted} />
+            <Text style={styles.newTaskText}>Update Progres</Text>
+          </TouchableOpacity>
         </BoardColumn>
 
         <BoardColumn title="MR" count={mrCount} color={COLORS.text}>
-          <View style={styles.dropZone}>
-            <Text style={styles.dropText}>Drop task here</Text>
-          </View>
-          <TouchableOpacity 
-            style={styles.newTaskBtn}
-            onPress={() => router.push("/add-task")}
-          >
+          {mrTasks.length === 0 && (
+            <View style={styles.dropZone}>
+              <Text style={styles.dropText}>Drop task here</Text>
+            </View>
+          )}
+          {mrTasks.map((t) => (
+            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => setTaskDetail(t)} />
+          ))}
+          <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("MR")}>
             <Ionicons name="add" size={16} color={COLORS.textMuted} />
-            <Text style={styles.newTaskText}>New task</Text>
+            <Text style={styles.newTaskText}>Update Progres</Text>
           </TouchableOpacity>
         </BoardColumn>
         
         <BoardColumn title="Testing" count={testingCount} color={COLORS.yellow}>
-          <TaskCard title="bug fix foto profile tidak berdasarkan swafoto" tag="ABR-631" author="Muhammad Ifrozin" />
+          {testingTasks.map((t) => (
+            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => setTaskDetail(t)} />
+          ))}
+          <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("Testing")}>
+            <Ionicons name="add" size={16} color={COLORS.textMuted} />
+            <Text style={styles.newTaskText}>Update Progres</Text>
+          </TouchableOpacity>
         </BoardColumn>
         
         <BoardColumn title="Done" count={doneCount} color={COLORS.green}>
-          <TaskCard title="diskusi terkait bisnis proses OTP saat registrasi asmbo" tag="ABR-653" author="Muhammad Ifrozin" />
+          {doneTasks.map((t) => (
+            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => setTaskDetail(t)} />
+          ))}
+          <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("Done")}>
+            <Ionicons name="add" size={16} color={COLORS.textMuted} />
+            <Text style={styles.newTaskText}>Update Progres</Text>
+          </TouchableOpacity>
         </BoardColumn>
       </ScrollView>
+
+      {/* CUSTOM MODALS */}
+      {/* 1. Modal Anggota */}
+      <Modal visible={membersModalVisible} animationType="fade" transparent onRequestClose={() => setMembersModalVisible(false)}>
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Anggota Tergabung</Text>
+              <TouchableOpacity onPress={() => setMembersModalVisible(false)}>
+                <Ionicons name="close" size={24} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={{maxHeight: 400}} showsVerticalScrollIndicator={false}>
+              
+              {/* Join Requests Section */}
+              {joinRequests.length > 0 && (
+                 <View style={{marginBottom: 20}}>
+                    <Text style={{color: COLORS.text, fontWeight: 'bold', marginBottom: 8}}>Permintaan Bergabung</Text>
+                    {joinRequests.map(req => (
+                       <View key={req.id} style={{backgroundColor: COLORS.bg, padding: 12, borderRadius: 8, marginBottom: 8}}>
+                          <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                             <View>
+                               <Text style={{color: COLORS.text, fontWeight: 'bold', fontSize: 13}}>{req.name}</Text>
+                               <Text style={{color: COLORS.textMuted, fontSize: 11}}>{req.email}</Text>
+                             </View>
+                             <TouchableOpacity onPress={() => setJoinRequests(joinRequests.map(r => r.id === req.id ? {...r, requestedRole: r.requestedRole === 'Viewer' ? 'Editor' : 'Viewer'} : r))} style={{backgroundColor: COLORS.card, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4, borderWidth: 1, borderColor: COLORS.border}}>
+                               <Text style={{color: COLORS.textMuted, fontSize: 11}}>{req.requestedRole}</Text>
+                             </TouchableOpacity>
+                          </View>
+                          <View style={{flexDirection: 'row', gap: 8, marginTop: 12}}>
+                             <TouchableOpacity onPress={() => setJoinRequests(joinRequests.filter(r => r.id !== req.id))} style={{flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 6, borderWidth: 1, borderColor: COLORS.border}}>
+                               <Text style={{color: COLORS.text, fontSize: 12, fontWeight: 'bold'}}>Tolak</Text>
+                             </TouchableOpacity>
+                             <TouchableOpacity onPress={() => setJoinRequests(joinRequests.filter(r => r.id !== req.id))} style={{flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 6, backgroundColor: COLORS.blue}}>
+                               <Text style={{color: '#fff', fontSize: 12, fontWeight: 'bold'}}>Terima</Text>
+                             </TouchableOpacity>
+                          </View>
+                       </View>
+                    ))}
+                 </View>
+              )}
+
+              {/* Invite Section */}
+              <View style={{marginBottom: 20}}>
+                <Text style={{color: COLORS.text, fontWeight: 'bold', marginBottom: 8}}>Undang Anggota</Text>
+                <View style={{flexDirection: 'row', gap: 8, marginBottom: 8}}>
+                   <TextInput
+                     placeholder="Masukkan email..."
+                     placeholderTextColor={COLORS.textMuted}
+                     value={inviteEmail}
+                     onChangeText={setInviteEmail}
+                     style={{flex: 1, backgroundColor: COLORS.bg, borderWidth: 1, borderColor: COLORS.border, borderRadius: 8, paddingHorizontal: 12, color: COLORS.text, fontSize: 12}}
+                   />
+                   <TouchableOpacity onPress={() => setInviteRole(inviteRole === 'Viewer' ? 'Editor' : 'Viewer')} style={{backgroundColor: COLORS.bg, borderWidth: 1, borderColor: COLORS.border, borderRadius: 8, paddingHorizontal: 12, justifyContent: 'center'}}>
+                     <Text style={{color: COLORS.textMuted, fontSize: 12}}>{inviteRole}</Text>
+                   </TouchableOpacity>
+                </View>
+                <TouchableOpacity onPress={() => {setInviteEmail("");}} style={{backgroundColor: COLORS.blue, paddingVertical: 10, borderRadius: 8, alignItems: 'center'}}>
+                   <Text style={{color: '#fff', fontWeight: 'bold', fontSize: 12}}>Kirim Undangan</Text>
+                </TouchableOpacity>
+              </View>
+
+              <Text style={{color: COLORS.textMuted, fontSize: 12, marginBottom: 16}}>
+                {ACTIVE_MEMBERS.length} Anggota sedang mengakses monitoring ini secara real-time.
+              </Text>
+              {ACTIVE_MEMBERS.map(m => (
+                <View key={m.id} style={{flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 12}}>
+                  <View style={[styles.memberAvatar, {backgroundColor: m.color, width: 36, height: 36, borderRadius: 18}]}>
+                     <Text style={{color: '#fff', fontWeight: 'bold'}}>{m.initials}</Text>
+                  </View>
+                  <View style={{flex: 1}}>
+                    <Text style={{color: COLORS.text, fontWeight: 'bold'}}>{m.name}</Text>
+                    <Text style={{color: COLORS.textMuted, fontSize: 12}}>{m.role}</Text>
+                  </View>
+                  <View style={{flexDirection: 'row', alignItems: 'center', gap: 6}}>
+                    <BlinkingDot />
+                    <Text style={{color: COLORS.green, fontSize: 12}}>Online</Text>
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* 2. Modal Filter */}
+      <Modal visible={filterModalVisible} animationType="slide" transparent onRequestClose={() => setFilterModalVisible(false)}>
+        <View style={[styles.modalBackdrop, { justifyContent: 'flex-end' }]}>
+          <View style={[styles.modalContent, { borderBottomLeftRadius: 0, borderBottomRightRadius: 0, paddingBottom: 40 }]}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Filter Task</Text>
+              <TouchableOpacity onPress={() => setFilterModalVisible(false)}>
+                <Ionicons name="close" size={24} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            </View>
+            <Text style={{color: COLORS.text, fontWeight: 'bold', marginBottom: 8, marginTop: 12}}>Prioritas</Text>
+            <View style={{flexDirection: 'row', gap: 8, marginBottom: 16}}>
+               <View style={styles.filterChip}><Text style={styles.filterChipText}>High</Text></View>
+               <View style={styles.filterChip}><Text style={styles.filterChipText}>Medium</Text></View>
+               <View style={styles.filterChip}><Text style={styles.filterChipText}>Low</Text></View>
+            </View>
+            <Text style={{color: COLORS.text, fontWeight: 'bold', marginBottom: 8}}>Status</Text>
+            <View style={{flexDirection: 'row', gap: 8, marginBottom: 16, flexWrap: 'wrap'}}>
+               <View style={styles.filterChip}><Text style={styles.filterChipText}>Backlog</Text></View>
+               <View style={styles.filterChip}><Text style={styles.filterChipText}>Doing</Text></View>
+               <View style={styles.filterChip}><Text style={styles.filterChipText}>Testing</Text></View>
+               <View style={styles.filterChip}><Text style={styles.filterChipText}>Done</Text></View>
+            </View>
+            <TouchableOpacity style={styles.applyFilterBtn} onPress={() => setFilterModalVisible(false)}>
+               <Text style={{color: '#fff', fontWeight: 'bold'}}>Terapkan Filter</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* 3. Modal Task Detail */}
+      <Modal visible={!!taskDetail} animationType="slide" transparent onRequestClose={() => setTaskDetail(null)}>
+        <View style={styles.modalBackdrop}>
+          <View style={[styles.modalContent, { maxHeight: '90%' }]}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>T-{taskDetail?.id}</Text>
+              <TouchableOpacity onPress={() => setTaskDetail(null)}>
+                <Ionicons name="close" size={24} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            </View>
+            
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <Text style={{color: COLORS.text, fontSize: 18, fontWeight: 'bold', marginBottom: 12}}>{taskDetail?.title}</Text>
+              {taskDetail?.description ? <Text style={{color: COLORS.textMuted, marginBottom: 16}}>{taskDetail.description}</Text> : null}
+              
+              <View style={{flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 20}}>
+                 <Ionicons name="person-circle" size={24} color={COLORS.textMuted} />
+                 <Text style={{color: COLORS.text, fontSize: 14}}>Ditugaskan kepada <Text style={{fontWeight: 'bold'}}>{taskDetail?.members?.[0] || 'Unknown'}</Text></Text>
+              </View>
+
+              <Text style={{color: COLORS.text, fontWeight: 'bold', marginBottom: 8}}>Ubah Status</Text>
+              <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24}}>
+                {["Backlog", "Doing", "MR", "Testing", "Done"].map(status => (
+                  <TouchableOpacity 
+                    key={status}
+                    style={[styles.filterChip, taskDetail?.status === status && { backgroundColor: COLORS.blue, borderColor: COLORS.blue }]}
+                    onPress={() => {
+                      updateTaskStatus(taskDetail.id, status as any);
+                      setTaskDetail({ ...taskDetail, status });
+                    }}
+                  >
+                    <Text style={[styles.filterChipText, taskDetail?.status === status && { color: '#fff' }]}>{status}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={{color: COLORS.text, fontWeight: 'bold', marginBottom: 12}}>Riwayat Progres & Komentar</Text>
+              {taskDetail?.comments?.map((c: any) => (
+                <View key={c.id} style={{backgroundColor: COLORS.taskBg, padding: 12, borderRadius: 8, marginBottom: 8}}>
+                  <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4}}>
+                    <Text style={{color: COLORS.blue, fontWeight: 'bold', fontSize: 13}}>{c.author}</Text>
+                    <Text style={{color: COLORS.textMuted, fontSize: 11}}>{new Date(c.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</Text>
+                  </View>
+                  <Text style={{color: COLORS.text, fontSize: 14}}>{c.text}</Text>
+                </View>
+              ))}
+              {(!taskDetail?.comments || taskDetail.comments.length === 0) && (
+                <Text style={{color: COLORS.textMuted, fontSize: 13, fontStyle: 'italic', marginBottom: 16}}>Belum ada komentar.</Text>
+              )}
+            </ScrollView>
+
+            <View style={{flexDirection: 'row', gap: 8, marginTop: 16, paddingTop: 16, borderTopWidth: 1, borderTopColor: COLORS.border}}>
+              <TextInput 
+                placeholder="Balas / Tulis update..."
+                placeholderTextColor={COLORS.textMuted}
+                style={{flex: 1, backgroundColor: COLORS.taskBg, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, color: COLORS.text}}
+                value={commentText}
+                onChangeText={setCommentText}
+              />
+              <TouchableOpacity 
+                style={{backgroundColor: COLORS.green, borderRadius: 20, paddingHorizontal: 20, justifyContent: 'center'}}
+                onPress={() => {
+                  if (commentText.trim()) {
+                    addComment(taskDetail.id, name || "Anda", commentText.trim());
+                    // Optimistically update local task detail state
+                    setTaskDetail({
+                      ...taskDetail,
+                      comments: [...(taskDetail.comments || []), { id: Date.now().toString(), author: name || "Anda", text: commentText.trim(), createdAt: new Date().toISOString() }]
+                    });
+                    setCommentText("");
+                  }
+                }}
+              >
+                <Ionicons name="send" size={16} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* 4. Modal Quick Update Progres */}
+      <Modal visible={!!quickUpdateColumn} animationType="slide" transparent onRequestClose={() => setQuickUpdateColumn(null)}>
+        <View style={[styles.modalBackdrop, { justifyContent: 'flex-end' }]}>
+          <View style={[styles.modalContent, { borderBottomLeftRadius: 0, borderBottomRightRadius: 0, paddingBottom: 40 }]}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Log Aktivitas: {quickUpdateColumn}</Text>
+              <TouchableOpacity onPress={() => setQuickUpdateColumn(null)}>
+                <Ionicons name="close" size={24} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            </View>
+            <Text style={{color: COLORS.textMuted, marginBottom: 12}}>Catat apa saja yang baru Anda lakukan untuk progres tim. Ini akan ditambahkan sebagai kartu baru di kolom {quickUpdateColumn}.</Text>
+            
+            <TextInput 
+              placeholder="Saya baru saja menyelesaikan..."
+              placeholderTextColor={COLORS.textMuted}
+              style={{backgroundColor: COLORS.taskBg, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, color: COLORS.text, minHeight: 100, textAlignVertical: 'top', marginBottom: 16}}
+              multiline
+              value={quickUpdateText}
+              onChangeText={setQuickUpdateText}
+              autoFocus
+            />
+            
+            <TouchableOpacity 
+              style={[styles.applyFilterBtn, { backgroundColor: COLORS.green }]} 
+              onPress={handleQuickUpdate}
+            >
+              <Text style={{color: '#fff', fontWeight: 'bold'}}>Simpan Progres</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
     </SafeAreaView>
   );
 }
@@ -217,12 +570,12 @@ function BoardColumn({ title, count, color, children }: any) {
   );
 }
 
-function TaskCard({ title, desc, tag, author }: any) {
+function TaskCard({ title, desc, tag, author, commentCount, onSelect }: any) {
   return (
     <TouchableOpacity 
       style={styles.taskCard}
       activeOpacity={0.8}
-      onPress={() => Alert.alert(`Task ${tag}`, `${title}\n\nDibuat oleh: ${author}`)}
+      onPress={onSelect}
     >
       <Text style={styles.taskTitle}>{title}</Text>
       {desc ? <Text style={styles.taskDesc} numberOfLines={2}>{desc}</Text> : null}
@@ -234,7 +587,12 @@ function TaskCard({ title, desc, tag, author }: any) {
         <View style={{ alignItems: "flex-end", flex: 1 }}>
           <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
             <Text style={styles.taskTag}>{tag}</Text>
-            <Ionicons name="chatbubble-outline" size={12} color={COLORS.textMuted} />
+            {commentCount > 0 && (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <Ionicons name="chatbubble-outline" size={12} color={COLORS.textMuted} />
+                <Text style={{ fontSize: 10, color: COLORS.textMuted }}>{commentCount}</Text>
+              </View>
+            )}
           </View>
           <Text style={styles.taskAuthor}>Created by {author}</Text>
         </View>
@@ -360,4 +718,13 @@ const styles = StyleSheet.create({
   dropText: { fontSize: 12, color: COLORS.textMuted },
   newTaskBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, backgroundColor: COLORS.bg, padding: 12, borderRadius: 8 },
   newTaskText: { fontSize: 12, color: COLORS.textMuted, fontWeight: "600" },
+  
+  // Custom Modals
+  modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', padding: 16 },
+  modalContent: { backgroundColor: COLORS.card, borderRadius: 16, padding: 20, borderWidth: 1, borderColor: COLORS.border },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', color: COLORS.text },
+  filterChip: { backgroundColor: COLORS.bg, borderWidth: 1, borderColor: COLORS.border, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 },
+  filterChipText: { color: COLORS.textMuted, fontSize: 13, fontWeight: '600' },
+  applyFilterBtn: { backgroundColor: COLORS.blue, padding: 14, borderRadius: 8, alignItems: 'center', marginTop: 8 },
 });

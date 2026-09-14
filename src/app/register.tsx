@@ -1,16 +1,22 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, Image, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { useAppTheme } from "../store/themeStore";
 import { useUserStore } from "../store/userStore";
 import Button from "../components/Button";
 import { Spacing, FontSize, Radius } from "../constants/theme";
 
+const COLORS = {
+  bg: "#0f172a",
+  card: "#1e293b",
+  border: "#334155",
+  text: "#f8fafc",
+  textMuted: "#94a3b8",
+  accent: "#4ade80",
+};
+
 export default function RegisterScreen() {
-  const { colors } = useAppTheme();
   const { updateProfile } = useUserStore();
 
   const [inputName, setInputName] = useState("");
@@ -26,11 +32,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <LinearGradient 
-        colors={['#241608', 'transparent']} 
-        style={styles.topGradient} 
-      />
+    <SafeAreaView style={[styles.container, { backgroundColor: COLORS.bg }]}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
@@ -43,52 +45,45 @@ export default function RegisterScreen() {
         >
           {/* Logo & Hero Section */}
           <View style={styles.heroContainer}>
-            <View style={[styles.logoBox, { borderColor: colors.border, backgroundColor: colors.surface }]}>
-              <Image 
-                source={require("../../assets/images/iconsaja.png")} 
-                style={styles.logo} 
-                resizeMode="contain" 
-              />
-            </View>
-            <Text style={[styles.title, { color: colors.text }]}>
-              Buat<Text style={{ color: colors.accent }}>Akun</Text>
+            <Text style={[styles.title, { color: COLORS.text }]}>
+              Task <Text style={{ color: COLORS.accent }}>Flow</Text>
             </Text>
-            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Mulai kelola tugasmu hari ini.</Text>
+            <Text style={[styles.subtitle, { color: COLORS.textMuted }]}>Mulai kelola tugasmu hari ini.</Text>
           </View>
 
           {/* Form Card */}
-          <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.cardTitle, { color: colors.text }]}>Daftar Baru</Text>
-            <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
+          <View style={[styles.card, { backgroundColor: COLORS.card, borderColor: COLORS.border }]}>
+            <Text style={[styles.cardTitle, { color: COLORS.text }]}>Daftar Baru</Text>
+            <Text style={[styles.cardSubtitle, { color: COLORS.textMuted }]}>
               Lengkapi data di bawah untuk bergabung.
             </Text>
             
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.text }]}>Nama Lengkap</Text>
+              <Text style={[styles.label, { color: COLORS.text }]}>Nama Lengkap</Text>
               <View style={[
                 styles.inputBox, 
-                { borderColor: focusedInput === 'name' ? colors.accent : colors.border, backgroundColor: colors.background }
+                { borderColor: focusedInput === 'name' ? COLORS.accent : COLORS.border, backgroundColor: COLORS.bg }
               ]}>
-                <Feather name="user" size={20} color={focusedInput === 'name' ? colors.accent : colors.textSecondary} />
+                <Feather name="user" size={20} color={focusedInput === 'name' ? COLORS.accent : COLORS.textMuted} />
                 <TextInput
                   value={inputName}
                   onChangeText={setInputName}
                   onFocus={() => setFocusedInput('name')}
                   onBlur={() => setFocusedInput(null)}
                   placeholder="Mis. Amano"
-                  placeholderTextColor={colors.textSecondary}
-                  style={[styles.input, { color: colors.text }]}
+                  placeholderTextColor={COLORS.textMuted}
+                  style={[styles.input, { color: COLORS.text }]}
                 />
               </View>
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.text }]}>Email</Text>
+              <Text style={[styles.label, { color: COLORS.text }]}>Email</Text>
               <View style={[
                 styles.inputBox, 
-                { borderColor: focusedInput === 'email' ? colors.accent : colors.border, backgroundColor: colors.background }
+                { borderColor: focusedInput === 'email' ? COLORS.accent : COLORS.border, backgroundColor: COLORS.bg }
               ]}>
-                <Feather name="mail" size={20} color={focusedInput === 'email' ? colors.accent : colors.textSecondary} />
+                <Feather name="mail" size={20} color={focusedInput === 'email' ? COLORS.accent : COLORS.textMuted} />
                 <TextInput
                   value={inputEmail}
                   onChangeText={setInputEmail}
@@ -96,43 +91,43 @@ export default function RegisterScreen() {
                   onBlur={() => setFocusedInput(null)}
                   placeholder="hello@contoh.com"
                   keyboardType="email-address"
-                  placeholderTextColor={colors.textSecondary}
-                  style={[styles.input, { color: colors.text }]}
+                  placeholderTextColor={COLORS.textMuted}
+                  style={[styles.input, { color: COLORS.text }]}
                 />
               </View>
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.text }]}>Password</Text>
+              <Text style={[styles.label, { color: COLORS.text }]}>Password</Text>
               <View style={[
                 styles.inputBox, 
-                { borderColor: focusedInput === 'pass' ? colors.accent : colors.border, backgroundColor: colors.background }
+                { borderColor: focusedInput === 'pass' ? COLORS.accent : COLORS.border, backgroundColor: COLORS.bg }
               ]}>
-                <Feather name="lock" size={20} color={focusedInput === 'pass' ? colors.accent : colors.textSecondary} />
+                <Feather name="lock" size={20} color={focusedInput === 'pass' ? COLORS.accent : COLORS.textMuted} />
                 <TextInput
                   value={inputPassword}
                   onChangeText={setInputPassword}
                   onFocus={() => setFocusedInput('pass')}
                   onBlur={() => setFocusedInput(null)}
                   placeholder="••••••••"
-                  placeholderTextColor={colors.textSecondary}
+                  placeholderTextColor={COLORS.textMuted}
                   secureTextEntry={true}
-                  style={[styles.input, { color: colors.text }]}
+                  style={[styles.input, { color: COLORS.text }]}
                 />
               </View>
             </View>
 
             <Button 
-              label="Buat Akun Sekarang" 
+              label="Buat Akun" 
               variant="primary" 
               onPress={handleRegister} 
-              style={{ marginTop: Spacing.sm }} 
+              style={{ marginTop: Spacing.xs, backgroundColor: '#1e3a8a', borderColor: '#1e3a8a' }} 
             />
 
             <View style={styles.registerContainer}>
-              <Text style={[styles.registerText, { color: colors.textSecondary }]}>Sudah punya akun? </Text>
+              <Text style={[styles.registerText, { color: COLORS.textMuted }]}>Sudah punya akun? </Text>
               <TouchableOpacity onPress={() => router.back()}>
-                <Text style={[styles.registerTextBold, { color: colors.accent }]}>Masuk di sini</Text>
+                <Text style={[styles.registerTextBold, { color: COLORS.accent }]}>Masuk di sini</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -155,24 +150,6 @@ const styles = StyleSheet.create({
   heroContainer: {
     alignItems: "center",
     marginBottom: Spacing.xxl,
-  },
-  logoBox: {
-    width: 80,
-    height: 80,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: Spacing.lg,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  logo: {
-    width: 48,
-    height: 48,
   },
   title: {
     fontSize: FontSize.xxxl,
@@ -230,13 +207,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     fontSize: FontSize.md,
     fontWeight: "500",
-  },
-  topGradient: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 320,
   },
   registerContainer: {
     flexDirection: "row",
