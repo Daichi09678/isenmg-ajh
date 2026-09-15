@@ -9,18 +9,29 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useAppTheme } from "../store/themeStore";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTaskStore } from "../store/taskStore";
 import { Spacing, Radius } from "../constants/theme";
 
 const { width } = Dimensions.get("window");
 
-export default function PerformanceReportScreen() {
-  const { mode, colors } = useAppTheme();
-  const tasks = useTaskStore((s) => s.tasks);
+const COLORS = {
+  bg: "#0f172a", // Dark slate background
+  card: "#1e293b", // Column background
+  taskBg: "#0f172a", // Task card inside column
+  border: "#334155",
+  text: "#f8fafc",
+  textMuted: "#94a3b8",
+  blue: "#3b82f6",
+  green: "#10b981",
+  yellow: "#fbbf24",
+  purple: "#8b5cf6",
+  amber: "#f59e0b",
+  rose: "#f43f5e",
+};
 
-  const isDark = mode === "dark";
+export default function PerformanceReportScreen() {
+  const tasks = useTaskStore((s) => s.tasks);
 
   // Calculations
   const totalTasks = tasks.length;
@@ -51,57 +62,57 @@ export default function PerformanceReportScreen() {
   const categories = Object.keys(categoriesMap);
 
   return (
-    <SafeAreaView edges={["top"]} style={[styles.safe, { backgroundColor: colors.background }]}>
+    <SafeAreaView edges={["top"]} style={[styles.safe, { backgroundColor: COLORS.bg }]}>
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: colors.border }]}>
+      <View style={[styles.header, { borderBottomColor: COLORS.border, backgroundColor: "#162032" }]}>
         <Pressable
-          style={[styles.backBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          style={[styles.backBtn, { backgroundColor: COLORS.card, borderColor: COLORS.border }]}
           onPress={() => router.back()}
         >
-          <Feather name="chevron-left" size={22} color={colors.text} />
+          <Feather name="chevron-left" size={22} color={COLORS.text} />
         </Pressable>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Laporan Kinerja</Text>
+        <Text style={[styles.headerTitle, { color: COLORS.text }]}>Laporan Kinerja</Text>
         <View style={{ width: 40 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Main Score Card */}
-        <View style={[styles.mainScoreCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <View style={[styles.mainScoreCard, { backgroundColor: COLORS.card, borderColor: COLORS.border }]}>
           <View style={styles.scoreRow}>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.scoreBadge, { color: colors.accent, backgroundColor: isDark ? "rgba(217,105,31,0.2)" : "#fdede2" }]}>
+              <Text style={[styles.scoreBadge, { color: COLORS.blue, backgroundColor: "rgba(59, 130, 246, 0.15)" }]}>
                 Performa Keseluruhan
               </Text>
-              <Text style={[styles.completionRateText, { color: colors.text }]}>
+              <Text style={[styles.completionRateText, { color: COLORS.text }]}>
                 {completionRate}%
               </Text>
-              <Text style={[styles.completionSub, { color: colors.textSecondary }]}>
+              <Text style={[styles.completionSub, { color: COLORS.textMuted }]}>
                 {completedTasks} dari {totalTasks} tugas telah diselesaikan
               </Text>
             </View>
 
             <View style={styles.progressCircleContainer}>
-              <View style={[styles.progressCircleBg, { borderColor: isDark ? "#4a3219" : "#e8decb" }]}>
+              <View style={[styles.progressCircleBg, { borderColor: "rgba(59, 130, 246, 0.2)" }]}>
                 <View
                   style={[
                     styles.progressCircleFill,
                     {
-                      borderColor: colors.accent,
+                      borderColor: COLORS.blue,
                       transform: [{ rotate: `${(completionRate / 100) * 360}deg` }],
                     },
                   ]}
                 />
-                <Feather name="award" size={28} color={colors.accent} />
+                <Feather name="award" size={28} color={COLORS.blue} />
               </View>
             </View>
           </View>
 
           {/* Progress Bar Line */}
-          <View style={[styles.progressBarTrack, { backgroundColor: isDark ? "#4a3219" : "#ebdcc7" }]}>
+          <View style={[styles.progressBarTrack, { backgroundColor: COLORS.bg }]}>
             <View
               style={[
                 styles.progressBarFill,
-                { width: `${completionRate}%`, backgroundColor: colors.accent },
+                { width: `${completionRate}%`, backgroundColor: COLORS.blue },
               ]}
             />
           </View>
@@ -109,34 +120,34 @@ export default function PerformanceReportScreen() {
 
         {/* 3 Metric Cards */}
         <View style={styles.metricRow}>
-          <View style={[styles.metricCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <View style={[styles.metricIconWrap, { backgroundColor: "rgba(16, 185, 129, 0.12)" }]}>
-              <Feather name="check-circle" size={18} color="#10B981" />
+          <View style={[styles.metricCard, { backgroundColor: COLORS.card, borderColor: COLORS.border }]}>
+            <View style={[styles.metricIconWrap, { backgroundColor: "rgba(16, 185, 129, 0.15)" }]}>
+              <Feather name="check-circle" size={18} color={COLORS.green} />
             </View>
-            <Text style={[styles.metricNumber, { color: colors.text }]}>{completedTasks}</Text>
-            <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>Selesai</Text>
+            <Text style={[styles.metricNumber, { color: COLORS.text }]}>{completedTasks}</Text>
+            <Text style={[styles.metricLabel, { color: COLORS.textMuted }]}>Selesai</Text>
           </View>
 
-          <View style={[styles.metricCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <View style={[styles.metricIconWrap, { backgroundColor: "rgba(217, 105, 31, 0.12)" }]}>
-              <Feather name="clock" size={18} color={colors.accent} />
+          <View style={[styles.metricCard, { backgroundColor: COLORS.card, borderColor: COLORS.border }]}>
+            <View style={[styles.metricIconWrap, { backgroundColor: "rgba(245, 158, 11, 0.15)" }]}>
+              <Feather name="clock" size={18} color={COLORS.amber} />
             </View>
-            <Text style={[styles.metricNumber, { color: colors.text }]}>{pendingTasks}</Text>
-            <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>Tertunda</Text>
+            <Text style={[styles.metricNumber, { color: COLORS.text }]}>{pendingTasks}</Text>
+            <Text style={[styles.metricLabel, { color: COLORS.textMuted }]}>Tertunda</Text>
           </View>
 
-          <View style={[styles.metricCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <View style={[styles.metricIconWrap, { backgroundColor: "rgba(245, 158, 11, 0.12)" }]}>
-              <Feather name="zap" size={18} color="#F59E0B" />
+          <View style={[styles.metricCard, { backgroundColor: COLORS.card, borderColor: COLORS.border }]}>
+            <View style={[styles.metricIconWrap, { backgroundColor: "rgba(139, 92, 246, 0.15)" }]}>
+              <Feather name="zap" size={18} color={COLORS.purple} />
             </View>
-            <Text style={[styles.metricNumber, { color: colors.text }]}>3 Hari</Text>
-            <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>Streak</Text>
+            <Text style={[styles.metricNumber, { color: COLORS.text }]}>3 Hari</Text>
+            <Text style={[styles.metricLabel, { color: COLORS.textMuted }]}>Streak</Text>
           </View>
         </View>
 
         {/* Breakdown Prioritas */}
-        <View style={[styles.sectionBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={[styles.sectionHeading, { color: colors.text }]}>
+        <View style={[styles.sectionBox, { backgroundColor: COLORS.card, borderColor: COLORS.border }]}>
+          <Text style={[styles.sectionHeading, { color: COLORS.text }]}>
             Penyelesaian Berdasarkan Prioritas
           </Text>
 
@@ -144,19 +155,19 @@ export default function PerformanceReportScreen() {
           <View style={styles.priorityItem}>
             <View style={styles.priorityHeaderRow}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                <View style={[styles.priorityDot, { backgroundColor: "#EF4444" }]} />
-                <Text style={[styles.priorityName, { color: colors.text }]}>Prioritas Tinggi</Text>
+                <View style={[styles.priorityDot, { backgroundColor: COLORS.rose }]} />
+                <Text style={[styles.priorityName, { color: COLORS.text }]}>Prioritas Tinggi</Text>
               </View>
-              <Text style={[styles.priorityRatio, { color: colors.textSecondary }]}>
+              <Text style={[styles.priorityRatio, { color: COLORS.textMuted }]}>
                 {highDone} / {highPriority.length}
               </Text>
             </View>
-            <View style={[styles.miniBarTrack, { backgroundColor: isDark ? "#4a3219" : "#ebdcc7" }]}>
+            <View style={[styles.miniBarTrack, { backgroundColor: COLORS.bg }]}>
               <View
                 style={[
                   styles.miniBarFill,
                   {
-                    backgroundColor: "#EF4444",
+                    backgroundColor: COLORS.rose,
                     width: highPriority.length > 0 ? `${(highDone / highPriority.length) * 100}%` : "0%",
                   },
                 ]}
@@ -168,19 +179,19 @@ export default function PerformanceReportScreen() {
           <View style={styles.priorityItem}>
             <View style={styles.priorityHeaderRow}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                <View style={[styles.priorityDot, { backgroundColor: "#d9691f" }]} />
-                <Text style={[styles.priorityName, { color: colors.text }]}>Prioritas Sedang</Text>
+                <View style={[styles.priorityDot, { backgroundColor: COLORS.amber }]} />
+                <Text style={[styles.priorityName, { color: COLORS.text }]}>Prioritas Sedang</Text>
               </View>
-              <Text style={[styles.priorityRatio, { color: colors.textSecondary }]}>
+              <Text style={[styles.priorityRatio, { color: COLORS.textMuted }]}>
                 {mediumDone} / {mediumPriority.length}
               </Text>
             </View>
-            <View style={[styles.miniBarTrack, { backgroundColor: isDark ? "#4a3219" : "#ebdcc7" }]}>
+            <View style={[styles.miniBarTrack, { backgroundColor: COLORS.bg }]}>
               <View
                 style={[
                   styles.miniBarFill,
                   {
-                    backgroundColor: "#d9691f",
+                    backgroundColor: COLORS.amber,
                     width: mediumPriority.length > 0 ? `${(mediumDone / mediumPriority.length) * 100}%` : "0%",
                   },
                 ]}
@@ -192,19 +203,19 @@ export default function PerformanceReportScreen() {
           <View style={styles.priorityItem}>
             <View style={styles.priorityHeaderRow}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                <View style={[styles.priorityDot, { backgroundColor: "#10B981" }]} />
-                <Text style={[styles.priorityName, { color: colors.text }]}>Prioritas Rendah</Text>
+                <View style={[styles.priorityDot, { backgroundColor: COLORS.green }]} />
+                <Text style={[styles.priorityName, { color: COLORS.text }]}>Prioritas Rendah</Text>
               </View>
-              <Text style={[styles.priorityRatio, { color: colors.textSecondary }]}>
+              <Text style={[styles.priorityRatio, { color: COLORS.textMuted }]}>
                 {lowDone} / {lowPriority.length}
               </Text>
             </View>
-            <View style={[styles.miniBarTrack, { backgroundColor: isDark ? "#4a3219" : "#ebdcc7" }]}>
+            <View style={[styles.miniBarTrack, { backgroundColor: COLORS.bg }]}>
               <View
                 style={[
                   styles.miniBarFill,
                   {
-                    backgroundColor: "#10B981",
+                    backgroundColor: COLORS.green,
                     width: lowPriority.length > 0 ? `${(lowDone / lowPriority.length) * 100}%` : "0%",
                   },
                 ]}
@@ -215,8 +226,8 @@ export default function PerformanceReportScreen() {
 
         {/* Kategori Tugas */}
         {categories.length > 0 && (
-          <View style={[styles.sectionBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.sectionHeading, { color: colors.text }]}>
+          <View style={[styles.sectionBox, { backgroundColor: COLORS.card, borderColor: COLORS.border }]}>
+            <Text style={[styles.sectionHeading, { color: COLORS.text }]}>
               Statistik Kategori
             </Text>
             <View style={styles.categoryGrid}>
@@ -228,14 +239,14 @@ export default function PerformanceReportScreen() {
                     key={cat}
                     style={[
                       styles.categoryCard,
-                      { backgroundColor: isDark ? "#241209" : "#fbf7ef", borderColor: colors.border },
+                      { backgroundColor: COLORS.bg, borderColor: COLORS.border },
                     ]}
                   >
                     <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                      <Text style={[styles.categoryTitle, { color: colors.text }]}>{cat}</Text>
-                      <Text style={[styles.categoryPct, { color: colors.accent }]}>{pct}%</Text>
+                      <Text style={[styles.categoryTitle, { color: COLORS.text }]}>{cat}</Text>
+                      <Text style={[styles.categoryPct, { color: COLORS.blue }]}>{pct}%</Text>
                     </View>
-                    <Text style={[styles.categorySub, { color: colors.textSecondary }]}>
+                    <Text style={[styles.categorySub, { color: COLORS.textMuted }]}>
                       {info.done} dari {info.total} selesai
                     </Text>
                   </View>
@@ -246,12 +257,12 @@ export default function PerformanceReportScreen() {
         )}
 
         {/* Productivity Insight Card */}
-        <View style={[styles.insightCard, { backgroundColor: isDark ? "#241209" : "#fff8f0", borderColor: colors.accent }]}>
+        <View style={[styles.insightCard, { backgroundColor: "rgba(59, 130, 246, 0.1)", borderColor: COLORS.blue }]}>
           <View style={styles.insightHeader}>
-            <MaterialCommunityIcons name="lightbulb-on-outline" size={20} color={colors.accent} />
-            <Text style={[styles.insightTitle, { color: colors.accent }]}>Evaluasi Produktivitas</Text>
+            <MaterialCommunityIcons name="lightbulb-on-outline" size={20} color={COLORS.blue} />
+            <Text style={[styles.insightTitle, { color: COLORS.blue }]}>Evaluasi Produktivitas</Text>
           </View>
-          <Text style={[styles.insightText, { color: colors.text }]}>
+          <Text style={[styles.insightText, { color: COLORS.text }]}>
             {completionRate >= 80
               ? "Luar biasa! Tingkat penyelesaian tugas Anda sangat tinggi. Pertahankan konsistensi ini untuk mencapai target lebih cepat."
               : completionRate >= 50

@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
   ScrollView,
   Pressable,
   Switch,
   Platform,
   KeyboardAvoidingView,
-  SafeAreaView
+  SafeAreaView,
+  TextInput,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { Feather } from "@expo/vector-icons";
@@ -97,15 +97,17 @@ export default function AddEditTeamTaskScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
       >
         <ScrollView
           contentContainerStyle={styles.form}
-          keyboardShouldPersistTaps="always"
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="none"
           showsVerticalScrollIndicator={false}
           bounces={false}
+          contentInsetAdjustmentBehavior="automatic"
         >
           {/* Header */}
           <View style={styles.header}>
@@ -128,8 +130,10 @@ export default function AddEditTeamTaskScreen() {
           {/* Hero / Header Section */}
           <View style={styles.heroSection}>
             <View style={styles.heroBadge}>
-              <Feather name="star" size={14} color={Palette.primary} />
-              <Text style={styles.heroBadgeText}>WORKSPACE</Text>
+              <Feather name="star" size={12} color={Palette.primary} />
+              <Text style={styles.heroBadgeText}>
+                {isEditMode ? "UPDATE" : "WORKSPACE"}
+              </Text>
             </View>
             <Text style={styles.heroTitle}>
               {isEditMode ? "Perbarui Tugas" : "Kolaborasi Tim"}
@@ -208,7 +212,7 @@ export default function AddEditTeamTaskScreen() {
               </View>
             </View>
 
-            {/* Deadline Row */}
+            {/* Deadline */}
             <View style={styles.field}>
               <Text style={styles.label}>Tenggat Waktu</Text>
               <Pressable
@@ -234,14 +238,6 @@ export default function AddEditTeamTaskScreen() {
                   style={{ marginRight: 16 }}
                 />
               </Pressable>
-              {showPicker && (
-                <DateTimePicker
-                  value={deadline}
-                  mode="date"
-                  display="default"
-                  onChange={onDateChange}
-                />
-              )}
             </View>
 
             {/* Priority */}
@@ -399,6 +395,16 @@ export default function AddEditTeamTaskScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* DateTimePicker dipindah ke luar ScrollView agar tidak mengganggu layout */}
+      {showPicker && (
+        <DateTimePicker
+          value={deadline}
+          mode="date"
+          display={Platform.OS === "ios" ? "spinner" : "default"}
+          onChange={onDateChange}
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -437,7 +443,7 @@ const styles = StyleSheet.create({
   form: {
     flexGrow: 1,
     padding: 24,
-    paddingBottom: 80,
+    paddingBottom: 40,
   },
   heroSection: {
     marginBottom: 32,
@@ -479,6 +485,11 @@ const styles = StyleSheet.create({
     padding: 24,
     borderWidth: 1,
     borderColor: Palette.border,
+    shadowColor: Palette.text,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 2,
     gap: 24,
   },
   field: {
@@ -501,25 +512,20 @@ const styles = StyleSheet.create({
   },
   inputFocused: {
     borderColor: Palette.primary,
-    shadowColor: Palette.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 3,
+    backgroundColor: 'rgba(59, 130, 246, 0.05)',
   },
   inputError: {
-    borderColor: "#ef4444",
-  },
-  inputIcon: {
-    paddingHorizontal: 16,
+    borderColor: '#ef4444',
   },
   input: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 16,
     color: Palette.text,
-    fontWeight: "500",
     paddingRight: 16,
     paddingVertical: 16,
+  },
+  inputIcon: {
+    paddingHorizontal: 16,
   },
   textAreaContainer: {
     alignItems: "flex-start",
@@ -560,6 +566,11 @@ const styles = StyleSheet.create({
   priorityChipActive: {
     backgroundColor: Palette.primary,
     borderColor: Palette.primary,
+    shadowColor: Palette.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
   },
   priorityChipText: {
     fontSize: 13,
@@ -604,7 +615,10 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: "row",
     gap: 12,
-    paddingVertical: 24,
+    padding: 24,
+    backgroundColor: Palette.bg,
+    borderTopWidth: 1,
+    borderTopColor: Palette.border,
   },
   btnCancel: {
     flex: 1,
@@ -630,6 +644,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     paddingVertical: 16,
+    shadowColor: Palette.text,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   btnSaveText: {
     fontSize: 15,

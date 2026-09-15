@@ -12,14 +12,25 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import { Feather, Ionicons } from "@expo/vector-icons";
-import { useAppTheme } from "../store/themeStore";
-import { Spacing, Radius, FontSize } from "../constants/theme";
+import { Feather } from "@expo/vector-icons";
+import { Spacing, Radius } from "../constants/theme";
+
+const COLORS = {
+  bg: "#0f172a", // Dark slate background
+  card: "#1e293b", // Column background
+  taskBg: "#0f172a", // Task card inside column
+  border: "#334155",
+  text: "#f8fafc",
+  textMuted: "#94a3b8",
+  blue: "#3b82f6",
+  green: "#10b981",
+  yellow: "#fbbf24",
+  purple: "#8b5cf6",
+  amber: "#f59e0b",
+  rose: "#f43f5e",
+};
 
 export default function ChangePasswordScreen() {
-  const { mode, colors } = useAppTheme();
-  const isDark = mode === "dark";
-
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -70,20 +81,20 @@ export default function ChangePasswordScreen() {
   };
 
   return (
-    <SafeAreaView edges={["top"]} style={[styles.safe, { backgroundColor: colors.background }]}>
+    <SafeAreaView edges={["top"]} style={[styles.safe, { backgroundColor: COLORS.bg }]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
       >
         {/* Header */}
-        <View style={[styles.header, { borderBottomColor: colors.border }]}>
+        <View style={[styles.header, { borderBottomColor: COLORS.border, backgroundColor: "#162032" }]}>
           <Pressable
-            style={[styles.backBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+            style={[styles.backBtn, { backgroundColor: COLORS.card, borderColor: COLORS.border }]}
             onPress={() => router.back()}
           >
-            <Feather name="chevron-left" size={22} color={colors.text} />
+            <Feather name="chevron-left" size={22} color={COLORS.text} />
           </Pressable>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Ubah Password</Text>
+          <Text style={[styles.headerTitle, { color: COLORS.text }]}>Ubah Password</Text>
           <View style={{ width: 40 }} />
         </View>
 
@@ -92,86 +103,86 @@ export default function ChangePasswordScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.cardDesc, { color: colors.textSecondary }]}>
+          <View style={[styles.card, { backgroundColor: COLORS.card, borderColor: COLORS.border }]}>
+            <Text style={[styles.cardDesc, { color: COLORS.textMuted }]}>
               Pastikan password baru Anda kuat dan belum pernah digunakan pada akun lain.
             </Text>
 
             {/* Error banner */}
             {errorMessage ? (
-              <View style={[styles.errorBanner, { backgroundColor: "#fee2e2", borderColor: "#fca5a5" }]}>
-                <Feather name="alert-circle" size={16} color="#b91c1c" />
-                <Text style={styles.errorBannerText}>{errorMessage}</Text>
+              <View style={[styles.errorBanner, { backgroundColor: "rgba(244, 63, 94, 0.15)", borderColor: "rgba(244, 63, 94, 0.3)" }]}>
+                <Feather name="alert-circle" size={16} color={COLORS.rose} />
+                <Text style={[styles.errorBannerText, { color: COLORS.rose }]}>{errorMessage}</Text>
               </View>
             ) : null}
 
             {/* Input: Old Password */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.text }]}>Password Saat Ini</Text>
-              <View style={[styles.inputBox, { borderColor: colors.border, backgroundColor: colors.background }]}>
-                <Feather name="lock" size={18} color={colors.textSecondary} />
+              <Text style={[styles.label, { color: COLORS.text }]}>Password Saat Ini</Text>
+              <View style={[styles.inputBox, { borderColor: COLORS.border, backgroundColor: COLORS.bg }]}>
+                <Feather name="lock" size={18} color={COLORS.textMuted} />
                 <TextInput
                   value={oldPassword}
                   onChangeText={setOldPassword}
                   secureTextEntry={!showOld}
                   placeholder="Masukkan password saat ini"
-                  placeholderTextColor={colors.textSecondary}
-                  style={[styles.input, { color: colors.text }]}
+                  placeholderTextColor={COLORS.textMuted}
+                  style={[styles.input, { color: COLORS.text }]}
                 />
                 <Pressable onPress={() => setShowOld(!showOld)} hitSlop={10}>
-                  <Feather name={showOld ? "eye" : "eye-off"} size={18} color={colors.textSecondary} />
+                  <Feather name={showOld ? "eye" : "eye-off"} size={18} color={COLORS.textMuted} />
                 </Pressable>
               </View>
             </View>
 
             {/* Input: New Password */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.text }]}>Password Baru</Text>
-              <View style={[styles.inputBox, { borderColor: colors.border, backgroundColor: colors.background }]}>
-                <Feather name="key" size={18} color={colors.textSecondary} />
+              <Text style={[styles.label, { color: COLORS.text }]}>Password Baru</Text>
+              <View style={[styles.inputBox, { borderColor: COLORS.border, backgroundColor: COLORS.bg }]}>
+                <Feather name="key" size={18} color={COLORS.textMuted} />
                 <TextInput
                   value={newPassword}
                   onChangeText={setNewPassword}
                   secureTextEntry={!showNew}
                   placeholder="Masukkan password baru"
-                  placeholderTextColor={colors.textSecondary}
-                  style={[styles.input, { color: colors.text }]}
+                  placeholderTextColor={COLORS.textMuted}
+                  style={[styles.input, { color: COLORS.text }]}
                 />
                 <Pressable onPress={() => setShowNew(!showNew)} hitSlop={10}>
-                  <Feather name={showNew ? "eye" : "eye-off"} size={18} color={colors.textSecondary} />
+                  <Feather name={showNew ? "eye" : "eye-off"} size={18} color={COLORS.textMuted} />
                 </Pressable>
               </View>
             </View>
 
             {/* Input: Confirm Password */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.text }]}>Konfirmasi Password Baru</Text>
-              <View style={[styles.inputBox, { borderColor: colors.border, backgroundColor: colors.background }]}>
-                <Feather name="check" size={18} color={colors.textSecondary} />
+              <Text style={[styles.label, { color: COLORS.text }]}>Konfirmasi Password Baru</Text>
+              <View style={[styles.inputBox, { borderColor: COLORS.border, backgroundColor: COLORS.bg }]}>
+                <Feather name="check" size={18} color={COLORS.textMuted} />
                 <TextInput
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
                   secureTextEntry={!showConfirm}
                   placeholder="Ketik ulang password baru"
-                  placeholderTextColor={colors.textSecondary}
-                  style={[styles.input, { color: colors.text }]}
+                  placeholderTextColor={COLORS.textMuted}
+                  style={[styles.input, { color: COLORS.text }]}
                 />
                 <Pressable onPress={() => setShowConfirm(!showConfirm)} hitSlop={10}>
-                  <Feather name={showConfirm ? "eye" : "eye-off"} size={18} color={colors.textSecondary} />
+                  <Feather name={showConfirm ? "eye" : "eye-off"} size={18} color={COLORS.textMuted} />
                 </Pressable>
               </View>
             </View>
 
             {/* Checklist criteria */}
-            <View style={[styles.criteriaBox, { backgroundColor: isDark ? "#241209" : "#fbf7ef", borderColor: colors.border }]}>
-              <Text style={[styles.criteriaTitle, { color: colors.text }]}>Kriteria Password Kuat:</Text>
+            <View style={[styles.criteriaBox, { backgroundColor: COLORS.bg, borderColor: COLORS.border }]}>
+              <Text style={[styles.criteriaTitle, { color: COLORS.text }]}>Kriteria Password Kuat:</Text>
               <View style={styles.criteriaItem}>
                 <Feather
                   name={hasMinLength ? "check-circle" : "circle"}
                   size={14}
-                  color={hasMinLength ? "#10B981" : colors.textSecondary}
+                  color={hasMinLength ? COLORS.green : COLORS.textMuted}
                 />
-                <Text style={[styles.criteriaText, { color: hasMinLength ? colors.text : colors.textSecondary }]}>
+                <Text style={[styles.criteriaText, { color: hasMinLength ? COLORS.text : COLORS.textMuted }]}>
                   Minimal 8 karakter
                 </Text>
               </View>
@@ -179,9 +190,9 @@ export default function ChangePasswordScreen() {
                 <Feather
                   name={hasNumber && hasLetter ? "check-circle" : "circle"}
                   size={14}
-                  color={hasNumber && hasLetter ? "#10B981" : colors.textSecondary}
+                  color={hasNumber && hasLetter ? COLORS.green : COLORS.textMuted}
                 />
-                <Text style={[styles.criteriaText, { color: hasNumber && hasLetter ? colors.text : colors.textSecondary }]}>
+                <Text style={[styles.criteriaText, { color: hasNumber && hasLetter ? COLORS.text : COLORS.textMuted }]}>
                   Mengandung huruf dan angka
                 </Text>
               </View>
@@ -189,9 +200,9 @@ export default function ChangePasswordScreen() {
                 <Feather
                   name={isMatching ? "check-circle" : "circle"}
                   size={14}
-                  color={isMatching ? "#10B981" : colors.textSecondary}
+                  color={isMatching ? COLORS.green : COLORS.textMuted}
                 />
-                <Text style={[styles.criteriaText, { color: isMatching ? colors.text : colors.textSecondary }]}>
+                <Text style={[styles.criteriaText, { color: isMatching ? COLORS.text : COLORS.textMuted }]}>
                   Konfirmasi password sama persis
                 </Text>
               </View>
@@ -199,7 +210,7 @@ export default function ChangePasswordScreen() {
 
             {/* Submit Button */}
             <Pressable
-              style={[styles.submitBtn, { backgroundColor: colors.accent }]}
+              style={[styles.submitBtn, { backgroundColor: COLORS.blue }]}
               onPress={handleSubmit}
             >
               <Text style={styles.submitBtnText}>Simpan Password Baru</Text>
@@ -211,16 +222,16 @@ export default function ChangePasswordScreen() {
       {/* Success Modal */}
       <Modal visible={showSuccessModal} transparent animationType="fade">
         <View style={styles.modalBackdrop}>
-          <View style={[styles.successModalSheet, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={[styles.successModalSheet, { backgroundColor: COLORS.card, borderColor: COLORS.border }]}>
             <View style={[styles.successIconWrap, { backgroundColor: "rgba(16, 185, 129, 0.15)" }]}>
-              <Feather name="check" size={32} color="#10B981" />
+              <Feather name="check" size={32} color={COLORS.green} />
             </View>
-            <Text style={[styles.successTitle, { color: colors.text }]}>Password Berhasil Diubah!</Text>
-            <Text style={[styles.successSubtitle, { color: colors.textSecondary }]}>
+            <Text style={[styles.successTitle, { color: COLORS.text }]}>Password Berhasil Diubah!</Text>
+            <Text style={[styles.successSubtitle, { color: COLORS.textMuted }]}>
               Kata sandi akun Anda telah diperbarui dengan aman. Silakan gunakan password baru ini untuk masuk berikutnya.
             </Text>
             <Pressable
-              style={[styles.successBtn, { backgroundColor: colors.accent }]}
+              style={[styles.successBtn, { backgroundColor: COLORS.blue }]}
               onPress={handleFinish}
             >
               <Text style={styles.successBtnText}>Selesai</Text>
@@ -278,7 +289,6 @@ const styles = StyleSheet.create({
   },
   errorBannerText: {
     fontSize: 12,
-    color: "#b91c1c",
     fontWeight: "600",
     flex: 1,
   },
@@ -337,7 +347,7 @@ const styles = StyleSheet.create({
   },
   modalBackdrop: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.55)",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
     alignItems: "center",
     justifyContent: "center",
     padding: 24,

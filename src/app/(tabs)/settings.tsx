@@ -81,6 +81,8 @@ export default function MonitoringScreen() {
   const { name } = useUserStore();
 
   const [isPaused, setIsPaused] = useState(false);
+  const [activeProject, setActiveProject] = useState("Mobile Asabri");
+  const [projectModalVisible, setProjectModalVisible] = useState(false);
 
   const teamTasks = tasks.filter((t) => t.taskType === "Team");
   const backlogTasks = teamTasks.filter((t) => t.status === "Backlog");
@@ -147,7 +149,13 @@ export default function MonitoringScreen() {
         <View style={styles.headerTop}>
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-              <Text style={styles.headerTitle}>Mobile Asabri</Text>
+              <TouchableOpacity 
+                style={{ flexDirection: "row", alignItems: "center", gap: 4 }} 
+                onPress={() => setProjectModalVisible(true)}
+              >
+                <Text style={styles.headerTitle}>{activeProject}</Text>
+                <Ionicons name="chevron-down" size={16} color={COLORS.text} />
+              </TouchableOpacity>
               <View style={styles.liveBadge}>
                 <BlinkingLiveDot isPaused={isPaused} />
                 <Text style={[styles.liveText, isPaused && { color: COLORS.yellow }]}>
@@ -226,7 +234,7 @@ export default function MonitoringScreen() {
 
           <TouchableOpacity 
             style={[styles.toolBtn, { backgroundColor: COLORS.green }]}
-            onPress={() => router.push("/add-team-task")}
+            onPress={() => router.push("/add-team-task" as any)}
           >
             <Ionicons name="add" size={15} color={COLORS.text} />
             <Text style={styles.toolBtnText}>New Task</Text>
@@ -514,6 +522,32 @@ export default function MonitoringScreen() {
                 <Ionicons name="send" size={16} color="#fff" />
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal Project Switcher */}
+      <Modal visible={projectModalVisible} animationType="fade" transparent onRequestClose={() => setProjectModalVisible(false)}>
+        <View style={styles.modalBackdrop}>
+          <View style={[styles.modalContent, { width: "80%", alignSelf: 'center' }]}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Pilih Project</Text>
+              <TouchableOpacity onPress={() => setProjectModalVisible(false)}>
+                <Ionicons name="close" size={24} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity 
+              style={[styles.filterChip, activeProject === "Mobile Asabri" && { backgroundColor: COLORS.blue, borderColor: COLORS.blue }, { marginBottom: 8 }]}
+              onPress={() => { setActiveProject("Mobile Asabri"); setProjectModalVisible(false); }}
+            >
+              <Text style={[styles.filterChipText, activeProject === "Mobile Asabri" && { color: "#fff" }]}>Mobile Asabri</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.filterChip, activeProject === "Project ESDM" && { backgroundColor: COLORS.blue, borderColor: COLORS.blue }]}
+              onPress={() => { setActiveProject("Project ESDM"); setProjectModalVisible(false); }}
+            >
+              <Text style={[styles.filterChipText, activeProject === "Project ESDM" && { color: "#fff" }]}>Project ESDM</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>

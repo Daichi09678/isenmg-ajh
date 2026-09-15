@@ -9,7 +9,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useAppTheme } from "../store/themeStore";
 import { useTaskStore } from "../store/taskStore";
 import { Spacing, Radius } from "../constants/theme";
 
@@ -24,11 +23,23 @@ interface BadgeItem {
   rewardXp: number;
 }
 
-export default function AchievementsScreen() {
-  const { mode, colors } = useAppTheme();
-  const tasks = useTaskStore((s) => s.tasks);
+const COLORS = {
+  bg: "#0f172a", // Dark slate background
+  card: "#1e293b", // Column background
+  taskBg: "#0f172a", // Task card inside column
+  border: "#334155",
+  text: "#f8fafc",
+  textMuted: "#94a3b8",
+  blue: "#3b82f6",
+  green: "#10b981",
+  yellow: "#fbbf24",
+  purple: "#8b5cf6",
+  amber: "#f59e0b",
+  rose: "#f43f5e",
+};
 
-  const isDark = mode === "dark";
+export default function AchievementsScreen() {
+  const tasks = useTaskStore((s) => s.tasks);
 
   const totalDone = tasks.filter((t) => t.isDone).length;
   const hasHighPriorityDone = tasks.some(
@@ -111,36 +122,36 @@ export default function AchievementsScreen() {
   const unlockedCount = badges.filter((b) => b.isUnlocked).length;
 
   return (
-    <SafeAreaView edges={["top"]} style={[styles.safe, { backgroundColor: colors.background }]}>
+    <SafeAreaView edges={["top"]} style={[styles.safe, { backgroundColor: COLORS.bg }]}>
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: colors.border }]}>
+      <View style={[styles.header, { borderBottomColor: COLORS.border, backgroundColor: "#162032" }]}>
         <Pressable
-          style={[styles.backBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          style={[styles.backBtn, { backgroundColor: COLORS.card, borderColor: COLORS.border }]}
           onPress={() => router.back()}
         >
-          <Feather name="chevron-left" size={22} color={colors.text} />
+          <Feather name="chevron-left" size={22} color={COLORS.text} />
         </Pressable>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Pencapaian & Badge</Text>
+        <Text style={[styles.headerTitle, { color: COLORS.text }]}>Pencapaian & Badge</Text>
         <View style={{ width: 40 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Level & XP Hero Card */}
-        <View style={[styles.levelCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <View style={[styles.levelCard, { backgroundColor: COLORS.card, borderColor: COLORS.border }]}>
           <View style={styles.levelHeader}>
-            <View style={[styles.levelBadgeWrap, { backgroundColor: colors.accent }]}>
+            <View style={[styles.levelBadgeWrap, { backgroundColor: COLORS.amber }]}>
               <MaterialCommunityIcons name="trophy-variant" size={28} color="#FFFFFF" />
             </View>
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                <Text style={[styles.levelText, { color: colors.text }]}>Level {currentLevel}</Text>
-                <View style={[styles.rankTag, { backgroundColor: isDark ? "rgba(217,105,31,0.2)" : "#fdede2" }]}>
-                  <Text style={[styles.rankTagText, { color: colors.accent }]}>
+                <Text style={[styles.levelText, { color: COLORS.text }]}>Level {currentLevel}</Text>
+                <View style={[styles.rankTag, { backgroundColor: "rgba(245, 158, 11, 0.15)" }]}>
+                  <Text style={[styles.rankTagText, { color: COLORS.amber }]}>
                     {currentLevel >= 3 ? "Produktif Handal" : currentLevel >= 2 ? "Produktif Aktif" : "Penjelajah Pemula"}
                   </Text>
                 </View>
               </View>
-              <Text style={[styles.xpCount, { color: colors.textSecondary }]}>
+              <Text style={[styles.xpCount, { color: COLORS.textMuted }]}>
                 {currentXp} Total XP Terkumpul
               </Text>
             </View>
@@ -149,18 +160,18 @@ export default function AchievementsScreen() {
           {/* Level Progress */}
           <View style={styles.xpProgressContainer}>
             <View style={styles.xpRatioRow}>
-              <Text style={[styles.xpRatioText, { color: colors.textSecondary }]}>
+              <Text style={[styles.xpRatioText, { color: COLORS.textMuted }]}>
                 Menuju Level {currentLevel + 1}
               </Text>
-              <Text style={[styles.xpRatioText, { color: colors.accent, fontWeight: "700" }]}>
+              <Text style={[styles.xpRatioText, { color: COLORS.amber, fontWeight: "700" }]}>
                 {xpInCurrentLevel} / {xpPerLevel} XP
               </Text>
             </View>
-            <View style={[styles.xpTrack, { backgroundColor: isDark ? "#4a3219" : "#ebdcc7" }]}>
+            <View style={[styles.xpTrack, { backgroundColor: COLORS.bg }]}>
               <View
                 style={[
                   styles.xpFill,
-                  { width: `${levelProgressPct}%`, backgroundColor: colors.accent },
+                  { width: `${levelProgressPct}%`, backgroundColor: COLORS.amber },
                 ]}
               />
             </View>
@@ -169,11 +180,11 @@ export default function AchievementsScreen() {
 
         {/* Badge Summary Header */}
         <View style={styles.summaryRow}>
-          <Text style={[styles.summaryTitle, { color: colors.text }]}>
+          <Text style={[styles.summaryTitle, { color: COLORS.text }]}>
             Daftar Lencana
           </Text>
-          <View style={[styles.unlockedTag, { backgroundColor: isDark ? "#33200c" : "#f1e6d0" }]}>
-            <Text style={[styles.unlockedTagText, { color: colors.text }]}>
+          <View style={[styles.unlockedTag, { backgroundColor: "rgba(59, 130, 246, 0.15)" }]}>
+            <Text style={[styles.unlockedTagText, { color: COLORS.blue }]}>
               {unlockedCount} / {badges.length} Terbuka
             </Text>
           </View>
@@ -188,8 +199,8 @@ export default function AchievementsScreen() {
                 style={[
                   styles.badgeCard,
                   {
-                    backgroundColor: colors.surface,
-                    borderColor: b.isUnlocked ? colors.accent : colors.border,
+                    backgroundColor: COLORS.card,
+                    borderColor: b.isUnlocked ? COLORS.blue : COLORS.border,
                     opacity: b.isUnlocked ? 1 : 0.75,
                   },
                 ]}
@@ -199,19 +210,15 @@ export default function AchievementsScreen() {
                     styles.badgeIconBox,
                     {
                       backgroundColor: b.isUnlocked
-                        ? isDark
-                          ? "rgba(217,105,31,0.2)"
-                          : "#fdede2"
-                        : isDark
-                        ? "#33200c"
-                        : "#e8decb",
+                        ? "rgba(59, 130, 246, 0.15)"
+                        : "rgba(148, 163, 184, 0.1)",
                     },
                   ]}
                 >
                   <Feather
                     name={b.icon}
                     size={24}
-                    color={b.isUnlocked ? colors.accent : colors.textSecondary}
+                    color={b.isUnlocked ? COLORS.blue : COLORS.textMuted}
                   />
                   {!b.isUnlocked && (
                     <View style={styles.lockOverlay}>
@@ -222,30 +229,30 @@ export default function AchievementsScreen() {
 
                 <View style={{ flex: 1, gap: 4 }}>
                   <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                    <Text style={[styles.badgeName, { color: colors.text }]}>{b.title}</Text>
-                    <View style={[styles.rewardTag, { backgroundColor: isDark ? "#241209" : "#f5ebd8" }]}>
-                      <Text style={[styles.rewardText, { color: colors.accent }]}>+{b.rewardXp} XP</Text>
+                    <Text style={[styles.badgeName, { color: COLORS.text }]}>{b.title}</Text>
+                    <View style={[styles.rewardTag, { backgroundColor: "rgba(16, 185, 129, 0.15)" }]}>
+                      <Text style={[styles.rewardText, { color: COLORS.green }]}>+{b.rewardXp} XP</Text>
                     </View>
                   </View>
 
-                  <Text style={[styles.badgeDesc, { color: colors.textSecondary }]}>
+                  <Text style={[styles.badgeDesc, { color: COLORS.textMuted }]}>
                     {b.description}
                   </Text>
 
                   {/* Progress Bar inside badge */}
                   <View style={styles.badgeProgressRow}>
-                    <View style={[styles.badgeMiniTrack, { backgroundColor: isDark ? "#4a3219" : "#ebdcc7" }]}>
+                    <View style={[styles.badgeMiniTrack, { backgroundColor: COLORS.bg }]}>
                       <View
                         style={[
                           styles.badgeMiniFill,
                           {
-                            backgroundColor: b.isUnlocked ? "#10B981" : colors.accent,
+                            backgroundColor: b.isUnlocked ? COLORS.green : COLORS.blue,
                             width: `${(b.progress / b.maxProgress) * 100}%`,
                           },
                         ]}
                       />
                     </View>
-                    <Text style={[styles.badgeProgressText, { color: colors.textSecondary }]}>
+                    <Text style={[styles.badgeProgressText, { color: COLORS.textMuted }]}>
                       {b.progress}/{b.maxProgress}
                     </Text>
                   </View>
@@ -384,7 +391,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: -2,
     right: -2,
-    backgroundColor: "#78716c",
+    backgroundColor: "#334155",
     width: 18,
     height: 18,
     borderRadius: 9,
