@@ -6,20 +6,7 @@ import { router } from "expo-router";
 import { useTaskStore } from "../../store/taskStore";
 import { useUserStore } from "../../store/userStore";
 
-const COLORS = {
-  bg: "#0f172a", // Dark slate background
-  card: "#1e293b", // Column background
-  taskBg: "#0f172a", // Task card inside column
-  border: "#334155",
-  text: "#f8fafc",
-  textMuted: "#94a3b8",
-  blue: "#3b82f6",
-  green: "#10b981",
-  yellow: "#fbbf24",
-  purple: "#8b5cf6",
-  amber: "#f59e0b",
-  rose: "#f43f5e",
-};
+import { useAppTheme } from "../../store/themeStore";
 
 const ACTIVE_MEMBERS = [
   { id: "1", name: "Muhammad Ifrozin", initials: "MI", role: "Lead Developer", color: "#3b82f6" },
@@ -28,7 +15,7 @@ const ACTIVE_MEMBERS = [
   { id: "4", name: "Puspita Sari", initials: "PS", role: "Backend Developer", color: "#f59e0b" },
 ];
 
-const BlinkingDot = () => {
+const BlinkingDot = ({ COLORS }: any) => {
   const opacity = React.useRef(new Animated.Value(0.2)).current;
   
   React.useEffect(() => {
@@ -43,7 +30,7 @@ const BlinkingDot = () => {
   return <Animated.View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.green, opacity }} />;
 };
 
-const BlinkingLiveDot = ({ isPaused }: { isPaused: boolean }) => {
+const BlinkingLiveDot = ({ isPaused, COLORS, styles }: { isPaused: boolean, COLORS: any, styles: any }) => {
   const opacity = React.useRef(new Animated.Value(0.3)).current;
   
   React.useEffect(() => {
@@ -75,6 +62,27 @@ const BlinkingLiveDot = ({ isPaused }: { isPaused: boolean }) => {
 };
 
 export default function MonitoringScreen() {
+  const { colors } = useAppTheme();
+  
+  const COLORS = React.useMemo(() => ({
+    bg: colors.background,
+    card: colors.surface,
+    taskBg: colors.background,
+    border: colors.border,
+    text: colors.text,
+    textMuted: colors.textSecondary,
+    blue: "#3b82f6",
+    green: "#10b981",
+    yellow: "#fbbf24",
+    purple: "#8b5cf6",
+    amber: "#f59e0b",
+    rose: "#f43f5e",
+    danger: "#ef4444",
+    surfaceAlt: colors.surface,
+  }), [colors]);
+
+  const styles = React.useMemo(() => getStyles(COLORS), [COLORS]);
+
   const tasks = useTaskStore((s) => s.tasks);
   const updateTaskStatus = useTaskStore((s) => s.updateTaskStatus);
   const addComment = useTaskStore((s) => s.addComment);
@@ -84,7 +92,14 @@ export default function MonitoringScreen() {
   const [activeProject, setActiveProject] = useState("Mobile Asabri");
   const [projectModalVisible, setProjectModalVisible] = useState(false);
 
-  const teamTasks = tasks.filter((t) => t.taskType === "Team");
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const teamTasks = tasks.filter((t) => {
+    if (t.taskType !== "Team") return false;
+    if (searchQuery && !t.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    return true;
+  });
   const backlogTasks = teamTasks.filter((t) => t.status === "Backlog");
   const doingTasks = teamTasks.filter((t) => t.status === "Doing");
   const mrTasks = teamTasks.filter((t) => t.status === "MR");
@@ -141,54 +156,141 @@ export default function MonitoringScreen() {
     setQuickUpdateText("");
   };
 
+  function BoardColumn({ title, count, color, children }: any) {
+    return (
+      <View style={styles.column}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+          <Text style={[styles.columnTitle, { color }]}>{title}</Text>
+          <View style={styles.countBadge}>
+            <Text style={styles.countBadgeText}>{count}</Text>
+          </View>
+        </View>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
+          {children}
+        </ScrollView>
+      </View>
+    );
+  }
+
+  function TaskCard({ title, desc, tag, author, commentCount, onSelect, index = 1 }: any) {
+    return (
+      <TouchableOpacity 
+        style={styles.taskCard}
+        activeOpacity={0.8}
+        onPress={onSelect}
+      >
+        <View style={styles.taskHeaderRow}>
+          <View style={[styles.pauseBtn, { backgroundColor: index % 2 === 0 ? COLORS.danger : COLORS.green }]}>
+            <Ionicons name={index % 2 === 0 ? "pause" : "play"} size={12} color={COLORS.bg} />
+          </View>
+          <Text style={styles.taskTagText}>[DGM-223]</Text>
+          <Text style={styles.taskTitle} numberOfLines={1}>{title}</Text>
+          <Ionicons name="ellipsis-vertical" size={14} color={COLORS.textMuted} style={{marginLeft: 'auto'}} />
+        </View>
+
+        {desc ? <Text style={styles.taskDesc} numberOfLines={2}>{desc}</Text> : null}
+
+        <View style={styles.taskDetailsGrid}>
+          <View style={styles.detailCell}>
+            <Text style={styles.detailLabel}>Due Date</Text>
+            <Text style={styles.detailValue}>Hari ini</Text>
+          </View>
+          <View style={styles.detailCell}>
+            <Text style={styles.detailLabel}>Urgency</Text>
+            <Text style={styles.detailValue}>High</Text>
+          </View>
+        </View>
+        
+        <View style={styles.taskFooter}>
+          <View style={styles.taskAvatarGroup}>
+             <View style={styles.miniAvatar}><Text style={styles.miniAvatarText}>{author ? author.charAt(0).toUpperCase() : "U"}</Text></View>
+             <View style={[styles.miniAvatar, {marginLeft: -8, backgroundColor: COLORS.blue}]}><Text style={styles.miniAvatarText}>M</Text></View>
+          </View>
+          <View style={styles.tagGroup}>
+             <Text style={styles.projectTag}>{tag}</Text>
+             {commentCount > 0 && (
+               <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+                 <Ionicons name="chatbubble-outline" size={10} color={COLORS.textMuted} />
+                 <Text style={{ fontSize: 9, color: COLORS.textMuted }}>{commentCount}</Text>
+               </View>
+             )}
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
   return (
     <SafeAreaView edges={["top"]} style={styles.safe}>
       {/* BAR MONITORING: Header, Avatar Anggota, Tools, & Progress Bar */}
       <View style={styles.monitoringBar}>
         {/* Top Row: Title + Project Status & Avatar Anggota in the top right */}
         <View style={styles.headerTop}>
-          <View style={{ flex: 1 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-              <TouchableOpacity 
-                style={{ flexDirection: "row", alignItems: "center", gap: 4 }} 
-                onPress={() => setProjectModalVisible(true)}
-              >
-                <Text style={styles.headerTitle}>{activeProject}</Text>
-                <Ionicons name="chevron-down" size={16} color={COLORS.text} />
-              </TouchableOpacity>
-              <View style={styles.liveBadge}>
-                <BlinkingLiveDot isPaused={isPaused} />
-                <Text style={[styles.liveText, isPaused && { color: COLORS.yellow }]}>
-                  {isPaused ? "Paused" : "Live"}
-                </Text>
-              </View>
-            </View>
-            <Text style={styles.headerSub}>Workspace Task Monitoring</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 12, flex: 1 }}>
+            {isSearching ? (
+              <TextInput 
+                autoFocus
+                style={{ flex: 1, height: 36, backgroundColor: COLORS.card, borderRadius: 8, paddingHorizontal: 12, color: COLORS.text, borderWidth: 1, borderColor: COLORS.blue }}
+                placeholder="Cari tugas..."
+                placeholderTextColor={COLORS.textMuted}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+              />
+            ) : (
+              <>
+                <TouchableOpacity 
+                  style={{ flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: COLORS.card, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, borderWidth: 1, borderColor: COLORS.border }} 
+                  onPress={() => setProjectModalVisible(true)}
+                >
+                  <Text style={styles.headerTitle}>{activeProject}</Text>
+                  <Ionicons name="chevron-down" size={16} color={COLORS.text} />
+                </TouchableOpacity>
+                
+                <View style={[styles.liveBadge, { backgroundColor: 'transparent', borderWidth: 0, paddingHorizontal: 0 }]}>
+                  <BlinkingLiveDot isPaused={isPaused} COLORS={COLORS} styles={styles} />
+                  <Text style={[styles.liveText, isPaused && { color: COLORS.yellow }]}>
+                    {isPaused ? "Paused" : "Live"}
+                  </Text>
+                </View>
+              </>
+            )}
           </View>
 
-          {/* Avatar Anggota: Foto profil / inisial orang-orang yang sudah tergabung & akses monitoring */}
-          <TouchableOpacity 
-            style={styles.avatarGroup}
-            activeOpacity={0.7}
-            onPress={() => setMembersModalVisible(true)}
-          >
-            <View style={styles.avatarStack}>
-              {ACTIVE_MEMBERS.map((member, idx) => (
-                <View 
-                  key={member.id} 
-                  style={[
-                    styles.memberAvatar, 
-                    { backgroundColor: member.color, marginLeft: idx === 0 ? 0 : -8, zIndex: 10 - idx }
-                  ]}
-                >
-                  <Text style={styles.avatarText}>{member.initials}</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <TouchableOpacity 
+              style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: isSearching ? COLORS.blue : COLORS.card, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: isSearching ? COLORS.blue : COLORS.border }}
+              activeOpacity={0.7}
+              onPress={() => {
+                if (isSearching) setSearchQuery("");
+                setIsSearching(!isSearching);
+              }}
+            >
+              <Ionicons name={isSearching ? "close" : "search"} size={16} color={isSearching ? COLORS.bg : COLORS.textMuted} />
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.avatarGroup, { paddingRight: 0 }]}
+              activeOpacity={0.7}
+              onPress={() => setMembersModalVisible(true)}
+            >
+              <View style={styles.avatarStack}>
+                {ACTIVE_MEMBERS.map((member, idx) => (
+                  <View 
+                    key={member.id} 
+                    style={[
+                      styles.memberAvatar, 
+                      { backgroundColor: member.color, marginLeft: idx === 0 ? 0 : -8, zIndex: 10 - idx }
+                    ]}
+                  >
+                    <Text style={styles.avatarText}>{member.initials}</Text>
+                  </View>
+                ))}
+                <View style={[styles.memberAvatar, styles.avatarMore, { marginLeft: -8, zIndex: 1 }]}>
+                  <Text style={styles.avatarMoreText}>+2</Text>
                 </View>
-              ))}
-              <View style={[styles.memberAvatar, styles.avatarMore, { marginLeft: -8, zIndex: 1 }]}>
-                <Text style={styles.avatarMoreText}>+2</Text>
               </View>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Progress Bar: Persentase kemajuan keseluruhan proyek/workspace */}
@@ -406,7 +508,7 @@ export default function MonitoringScreen() {
                     <Text style={{color: COLORS.textMuted, fontSize: 12}}>{m.role}</Text>
                   </View>
                   <View style={{flexDirection: 'row', alignItems: 'center', gap: 6}}>
-                    <BlinkingDot />
+                    <BlinkingDot COLORS={COLORS} />
                     <Text style={{color: COLORS.green, fontSize: 12}}>Online</Text>
                   </View>
                 </View>
@@ -588,60 +690,14 @@ export default function MonitoringScreen() {
   );
 }
 
-function BoardColumn({ title, count, color, children }: any) {
-  return (
-    <View style={styles.column}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-        <Text style={[styles.columnTitle, { color }]}>{title}</Text>
-        <View style={styles.countBadge}>
-          <Text style={styles.countBadgeText}>{count}</Text>
-        </View>
-      </View>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
-        {children}
-      </ScrollView>
-    </View>
-  );
-}
 
-function TaskCard({ title, desc, tag, author, commentCount, onSelect }: any) {
-  return (
-    <TouchableOpacity 
-      style={styles.taskCard}
-      activeOpacity={0.8}
-      onPress={onSelect}
-    >
-      <Text style={styles.taskTitle}>{title}</Text>
-      {desc ? <Text style={styles.taskDesc} numberOfLines={2}>{desc}</Text> : null}
-      
-      <View style={styles.taskFooter}>
-        <View style={styles.avatar}>
-          <Ionicons name="person" size={12} color="#000" />
-        </View>
-        <View style={{ alignItems: "flex-end", flex: 1 }}>
-          <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
-            <Text style={styles.taskTag}>{tag}</Text>
-            {commentCount > 0 && (
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <Ionicons name="chatbubble-outline" size={12} color={COLORS.textMuted} />
-                <Text style={{ fontSize: 10, color: COLORS.textMuted }}>{commentCount}</Text>
-              </View>
-            )}
-          </View>
-          <Text style={styles.taskAuthor}>Created by {author}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-}
-
-const styles = StyleSheet.create({
+const getStyles = (COLORS: any) => StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.bg },
   monitoringBar: { 
     paddingHorizontal: 16, 
     paddingTop: 12, 
     paddingBottom: 16, 
-    backgroundColor: "#162032", 
+    backgroundColor: COLORS.surface, 
     borderBottomWidth: 1, 
     borderBottomColor: COLORS.border 
   },
@@ -675,27 +731,27 @@ const styles = StyleSheet.create({
     height: 30, 
     borderRadius: 15, 
     borderWidth: 2, 
-    borderColor: "#162032", 
+    borderColor: COLORS.surface, 
     alignItems: "center", 
     justifyContent: "center" 
   },
   avatarText: { fontSize: 10, fontWeight: "bold", color: "#fff" },
-  avatarMore: { backgroundColor: "#334155" },
+  avatarMore: { backgroundColor: COLORS.border },
   avatarMoreText: { fontSize: 10, fontWeight: "bold", color: COLORS.textMuted },
 
   // Progress Bar
   progressContainer: { 
-    backgroundColor: "rgba(15, 23, 42, 0.6)", 
+    backgroundColor: COLORS.surfaceAlt || COLORS.bg, 
     borderRadius: 10, 
     padding: 10, 
     borderWidth: 1, 
-    borderColor: "rgba(51, 65, 85, 0.5)",
+    borderColor: COLORS.border,
     marginBottom: 12
   },
   progressHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 6 },
   progressLabel: { fontSize: 11, fontWeight: "600", color: COLORS.textMuted },
   progressPercent: { fontSize: 12, fontWeight: "bold", color: COLORS.green },
-  progressBarTrack: { height: 6, backgroundColor: "#334155", borderRadius: 3, overflow: "hidden", marginBottom: 6 },
+  progressBarTrack: { height: 6, backgroundColor: COLORS.surfaceAlt || COLORS.border, borderRadius: 3, overflow: "hidden", marginBottom: 6 },
   progressBarFill: { height: "100%", backgroundColor: COLORS.green, borderRadius: 3 },
   statsRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   statsSummary: { fontSize: 10, color: COLORS.textMuted },
@@ -721,7 +777,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 1,
     borderColor: COLORS.border,
-    backgroundColor: "rgba(30, 41, 59, 0.5)"
+    backgroundColor: COLORS.surfaceAlt
   },
   toolBtnOutlineText: { fontSize: 11, fontWeight: "600", color: COLORS.textMuted },
   toolIconBtn: { 
@@ -730,24 +786,33 @@ const styles = StyleSheet.create({
     borderRadius: 6, 
     borderWidth: 1, 
     borderColor: COLORS.border, 
-    backgroundColor: "rgba(30, 41, 59, 0.5)",
+    backgroundColor: COLORS.surfaceAlt,
     alignItems: "center", 
     justifyContent: "center" 
   },
 
   // Board
   boardScroll: { padding: 16, gap: 16, paddingBottom: 100 },
-  column: { width: 280, backgroundColor: COLORS.card, borderRadius: 12, padding: 12, maxHeight: "100%" },
-  columnTitle: { fontSize: 14, fontWeight: "bold" },
-  countBadge: { backgroundColor: "rgba(0,0,0,0.25)", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 10 },
+  column: { width: 300, backgroundColor: COLORS.card, borderRadius: 8, padding: 12, maxHeight: "100%", borderWidth: 1, borderColor: COLORS.border },
+  columnTitle: { fontSize: 13, fontWeight: "bold", color: COLORS.blue },
+  countBadge: { backgroundColor: "rgba(0,0,0,0.3)", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 10 },
   countBadgeText: { fontSize: 11, fontWeight: "bold", color: COLORS.textMuted },
-  taskCard: { backgroundColor: COLORS.taskBg, borderRadius: 8, padding: 12, borderWidth: 1, borderColor: COLORS.border },
-  taskTitle: { fontSize: 13, fontWeight: "600", color: COLORS.text, marginBottom: 6 },
+  taskCard: { backgroundColor: COLORS.taskBg, borderRadius: 8, padding: 14, borderWidth: 1, borderColor: COLORS.blue, elevation: 3, shadowColor: COLORS.blue, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4 },
+  taskHeaderRow: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
+  pauseBtn: { width: 20, height: 20, borderRadius: 6, alignItems: "center", justifyContent: "center", marginRight: 6 },
+  taskTagText: { color: COLORS.textMuted, fontSize: 10, fontWeight: "500", marginRight: 6 },
+  taskTitle: { flex: 1, fontSize: 13, fontWeight: "600", color: COLORS.blue },
   taskDesc: { fontSize: 11, color: COLORS.textMuted, marginBottom: 8 },
-  taskFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 8 },
-  avatar: { width: 24, height: 24, borderRadius: 12, backgroundColor: "#ccc", alignItems: "center", justifyContent: "center" },
-  taskTag: { fontSize: 11, color: COLORS.textMuted, fontWeight: "600" },
-  taskAuthor: { fontSize: 10, color: COLORS.textMuted, marginTop: 4 },
+  taskDetailsGrid: { flexDirection: "row", justifyContent: "space-between", borderTopWidth: 1, borderTopColor: COLORS.border, paddingTop: 8, marginBottom: 8 },
+  detailCell: { flex: 1 },
+  detailLabel: { fontSize: 9, color: COLORS.textMuted, marginBottom: 2 },
+  detailValue: { fontSize: 11, color: COLORS.text, fontWeight: "500" },
+  taskFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", borderTopWidth: 1, borderTopColor: COLORS.border, paddingTop: 8 },
+  taskAvatarGroup: { flexDirection: "row", alignItems: "center" },
+  miniAvatar: { width: 20, height: 20, borderRadius: 10, backgroundColor: COLORS.amber, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: COLORS.card },
+  miniAvatarText: { color: COLORS.bg, fontSize: 9, fontWeight: "bold" },
+  tagGroup: { flexDirection: "row", gap: 6, alignItems: "center" },
+  projectTag: { fontSize: 10, fontWeight: "600", color: COLORS.text },
   dropZone: { borderWidth: 1, borderColor: COLORS.border, borderStyle: "dashed", borderRadius: 8, padding: 16, alignItems: "center", marginBottom: 12 },
   dropText: { fontSize: 12, color: COLORS.textMuted },
   newTaskBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, backgroundColor: COLORS.bg, padding: 12, borderRadius: 8 },

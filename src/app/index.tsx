@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, Animated, Easing, Image } from "react-native";
 import { router } from "expo-router";
 import { Spacing, FontSize, Radius } from "../constants/theme";
+import { useAppTheme } from "../store/themeStore";
 
 const TAGLINE = "Kelola tugasmu, satu per satu.";
 const TOTAL_DURATION = 2000;
 
 export default function AnimatedSplashScreen() {
+  const { colors } = useAppTheme();
   const logoOpacity = useRef(new Animated.Value(0)).current;
   const logoScale = useRef(new Animated.Value(0.7)).current;
   const progressWidth = useRef(new Animated.Value(0)).current;
@@ -58,7 +60,7 @@ export default function AnimatedSplashScreen() {
   });
 
   return (
-    <View style={[styles.container, { backgroundColor: "#0f172a" }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.center}>
         <Animated.View
           style={{
@@ -67,12 +69,12 @@ export default function AnimatedSplashScreen() {
             marginBottom: Spacing.sm,
           }}
         >
-          <Text style={[styles.appName, { color: "#f8fafc" }]}>
-            Task <Text style={{ color: "#4ade80" }}>Flow</Text>
+          <Text style={[styles.appName, { color: colors.text }]}>
+            Task <Text style={{ color: colors.accent }}>Flow</Text>
           </Text>
         </Animated.View>
 
-        <Text style={[styles.tagline, { color: "#94a3b8" }]}>
+        <Text style={[styles.tagline, { color: colors.textSecondary }]}>
           {typedText}
           <Text style={{ opacity: typedText.length < TAGLINE.length ? 1 : 0 }}>
             |
@@ -81,15 +83,15 @@ export default function AnimatedSplashScreen() {
       </View>
 
       <View style={styles.progressSection}>
-        <View style={[styles.progressTrack, { backgroundColor: "#334155" }]}>
+        <View style={[styles.progressTrack, { backgroundColor: colors.border }]}>
           <Animated.View
             style={[
               styles.progressFill,
-              { width: widthInterpolated, backgroundColor: "#4ade80" },
+              { width: widthInterpolated, backgroundColor: colors.accent },
             ]}
           />
         </View>
-        <Text style={[styles.loadingText, { color: "#94a3b8" }]}>
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
           Memuat aktivitas kamu...
         </Text>
       </View>

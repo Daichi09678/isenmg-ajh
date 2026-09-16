@@ -11,6 +11,7 @@ import {
   SafeAreaView,
   TextInput,
 } from "react-native";
+import { useAppTheme } from "../store/themeStore";
 import { router, useLocalSearchParams } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -33,6 +34,29 @@ const Palette = {
 };
 
 export default function AddEditTaskScreen() {
+  const { colors, mode } = useAppTheme();
+  const COLORS = React.useMemo(() => ({
+    bg: colors.background,
+    card: colors.surface,
+    taskBg: colors.background,
+    border: colors.border,
+    text: colors.text,
+    textMuted: colors.textSecondary,
+    blue: "#3b82f6",
+    green: "#10b981",
+    yellow: "#fbbf24",
+    purple: "#8b5cf6",
+    amber: "#f59e0b",
+    rose: "#f43f5e",
+    accent: colors.accent,
+    white: colors.surface === "#ffffff" ? "#ffffff" : colors.text,
+    danger: "#ef4444",
+    primary: colors.accent,
+    surface: colors.surface,
+    surfaceAlt: mode === 'dark' ? "rgba(30, 41, 59, 0.5)" : "rgba(241, 245, 249, 0.5)",
+  }), [colors, mode]);
+  const styles = React.useMemo(() => getStyles(COLORS), [COLORS]);
+
   const { id } = useLocalSearchParams<{ id?: string }>();
   const addTask = useTaskStore((s) => s.addTask);
   const updateTask = useTaskStore((s) => s.updateTask);
@@ -118,7 +142,7 @@ export default function AddEditTaskScreen() {
                 pressed && { opacity: 0.7 },
               ]}
             >
-              <Feather name="x" size={20} color={Palette.text} />
+              <Feather name="x" size={20} color={COLORS.text} />
             </Pressable>
             <Text style={styles.headerTitle}>
               {isEditMode ? "Edit Aktivitas" : "Buat Aktivitas"}
@@ -129,7 +153,7 @@ export default function AddEditTaskScreen() {
           {/* Hero / Header Section */}
           <View style={styles.heroSection}>
             <View style={styles.heroBadge}>
-              <Feather name="star" size={12} color={Palette.primary} />
+              <Feather name="star" size={12} color={COLORS.primary} />
               <Text style={styles.heroBadgeText}>
                 {isEditMode ? "UPDATE" : "BARU"}
               </Text>
@@ -158,7 +182,7 @@ export default function AddEditTaskScreen() {
                 <Feather
                   name="edit-2"
                   size={18}
-                  color={focusedInput === 'title' ? Palette.primary : Palette.textMuted}
+                  color={focusedInput === 'title' ? COLORS.primary : COLORS.textMuted}
                   style={styles.inputIcon}
                 />
                 <TextInput
@@ -170,7 +194,7 @@ export default function AddEditTaskScreen() {
                   onFocus={() => setFocusedInput('title')}
                   onBlur={() => setFocusedInput(null)}
                   placeholder="Mis: Menyelesaikan desain laporan"
-                  placeholderTextColor={Palette.textMuted}
+                  placeholderTextColor={COLORS.textMuted}
                   style={styles.input}
                   autoCorrect={false}
                 />
@@ -193,7 +217,7 @@ export default function AddEditTaskScreen() {
                 <Feather
                   name="align-left"
                   size={18}
-                  color={focusedInput === 'desc' ? Palette.primary : Palette.textMuted}
+                  color={focusedInput === 'desc' ? COLORS.primary : COLORS.textMuted}
                   style={[styles.inputIcon, { marginTop: 16 }]}
                 />
                 <TextInput
@@ -202,7 +226,7 @@ export default function AddEditTaskScreen() {
                   onFocus={() => setFocusedInput('desc')}
                   onBlur={() => setFocusedInput(null)}
                   placeholder="Tambahkan catatan atau detail..."
-                  placeholderTextColor={Palette.textMuted}
+                  placeholderTextColor={COLORS.textMuted}
                   multiline
                   numberOfLines={4}
                   style={[styles.input, styles.textArea]}
@@ -220,13 +244,13 @@ export default function AddEditTaskScreen() {
                   onPress={() => setShowPicker(true)}
                   style={({ pressed }) => [
                     styles.inputContainer,
-                    pressed && { backgroundColor: Palette.surfaceAlt },
+                    pressed && { backgroundColor: COLORS.surfaceAlt },
                   ]}
                 >
                   <Feather
                     name="calendar"
                     size={18}
-                    color={Palette.primary}
+                    color={COLORS.primary}
                     style={styles.inputIcon}
                   />
                   <Text style={styles.dateText}>
@@ -235,7 +259,7 @@ export default function AddEditTaskScreen() {
                   <Feather
                     name="chevron-down"
                     size={18}
-                    color={Palette.textMuted}
+                    color={COLORS.textMuted}
                     style={{ marginRight: 16 }}
                   />
                 </Pressable>
@@ -248,7 +272,7 @@ export default function AddEditTaskScreen() {
                   <Feather
                     name="tag"
                     size={18}
-                    color={Palette.primary}
+                    color={COLORS.primary}
                     style={{ marginRight: 12 }}
                   />
                   <Text style={styles.dateText}>{category}</Text>
@@ -299,7 +323,7 @@ export default function AddEditTaskScreen() {
                   <Feather
                     name="bell"
                     size={20}
-                    color={reminder ? Palette.primary : Palette.textMuted}
+                    color={reminder ? COLORS.primary : COLORS.textMuted}
                   />
                 </View>
                 <View>
@@ -312,9 +336,9 @@ export default function AddEditTaskScreen() {
               <Switch
                 value={reminder}
                 onValueChange={setReminder}
-                trackColor={{ false: Palette.border, true: Palette.primary }}
+                trackColor={{ false: COLORS.border, true: COLORS.primary }}
                 thumbColor={"#fff"}
-                ios_backgroundColor={Palette.border}
+                ios_backgroundColor={COLORS.border}
               />
             </View>
           </View>
@@ -359,10 +383,10 @@ export default function AddEditTaskScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (COLORS: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Palette.bg,
+    backgroundColor: COLORS.bg,
   },
   header: {
     flexDirection: "row",
@@ -371,23 +395,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Palette.border,
-    backgroundColor: "rgba(15, 23, 42, 0.95)",
+    borderBottomColor: COLORS.border,
+    backgroundColor: COLORS.bg,
   },
   backButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Palette.surfaceAlt,
+    backgroundColor: COLORS.surfaceAlt,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: Palette.border,
+    borderColor: COLORS.border,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: Palette.text,
+    color: COLORS.text,
     fontFamily: Platform.OS === "ios" ? "Georgia" : "serif",
   },
   form: {
@@ -414,28 +438,28 @@ const styles = StyleSheet.create({
   heroBadgeText: {
     fontSize: 10,
     fontWeight: "800",
-    color: Palette.primary,
+    color: COLORS.primary,
     letterSpacing: 1.5,
   },
   heroTitle: {
     fontSize: 32,
     fontWeight: "800",
-    color: Palette.text,
+    color: COLORS.text,
     fontFamily: Platform.OS === "ios" ? "Georgia" : "serif",
     marginBottom: 8,
   },
   heroSubtitle: {
     fontSize: 14,
-    color: Palette.textMuted,
+    color: COLORS.textMuted,
     lineHeight: 22,
   },
   card: {
-    backgroundColor: Palette.surface,
+    backgroundColor: COLORS.surface,
     borderRadius: 24,
     padding: 24,
     borderWidth: 1,
-    borderColor: Palette.border,
-    shadowColor: Palette.text,
+    borderColor: COLORS.border,
+    shadowColor: COLORS.text,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 12,
@@ -448,20 +472,20 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: "700",
-    color: Palette.text,
+    color: COLORS.text,
     marginLeft: 4,
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Palette.surfaceAlt,
+    backgroundColor: COLORS.surfaceAlt,
     borderWidth: 1,
-    borderColor: Palette.border,
+    borderColor: COLORS.border,
     borderRadius: 16,
     minHeight: 56,
   },
   inputFocused: {
-    borderColor: Palette.primary,
+    borderColor: COLORS.primary,
     backgroundColor: 'rgba(59, 130, 246, 0.05)',
   },
   inputError: {
@@ -470,7 +494,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: Palette.text,
+    color: COLORS.text,
     paddingRight: 16,
     paddingVertical: 16,
   },
@@ -489,7 +513,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: "600",
-    color: Palette.text,
+    color: COLORS.text,
   },
   errorText: {
     fontSize: 12,
@@ -508,15 +532,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 6,
     borderWidth: 1,
-    borderColor: Palette.border,
+    borderColor: COLORS.border,
     borderRadius: 12,
     paddingVertical: 14,
-    backgroundColor: Palette.surfaceAlt,
+    backgroundColor: COLORS.surfaceAlt,
   },
   priorityChipActive: {
-    backgroundColor: Palette.primary,
-    borderColor: Palette.primary,
-    shadowColor: Palette.primary,
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+    shadowColor: COLORS.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
@@ -525,7 +549,7 @@ const styles = StyleSheet.create({
   priorityChipText: {
     fontSize: 13,
     fontWeight: "700",
-    color: Palette.textMuted,
+    color: COLORS.textMuted,
   },
   priorityChipTextActive: {
     color: "#fff",
@@ -536,7 +560,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 24,
     borderTopWidth: 1,
-    borderTopColor: Palette.border,
+    borderTopColor: COLORS.border,
     marginTop: 4,
   },
   reminderTextContainer: {
@@ -548,33 +572,33 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Palette.surfaceAlt,
+    backgroundColor: COLORS.surfaceAlt,
     alignItems: "center",
     justifyContent: "center",
   },
   reminderTitle: {
     fontSize: 14,
     fontWeight: "800",
-    color: Palette.text,
+    color: COLORS.text,
     marginBottom: 2,
   },
   reminderSubtitle: {
     fontSize: 12,
-    color: Palette.textMuted,
+    color: COLORS.textMuted,
   },
   actions: {
     flexDirection: "row",
     gap: 12,
     padding: 24,
-    backgroundColor: Palette.bg,
+    backgroundColor: COLORS.bg,
     borderTopWidth: 1,
-    borderTopColor: Palette.border,
+    borderTopColor: COLORS.border,
   },
   btnCancel: {
     flex: 1,
     backgroundColor: "transparent",
     borderWidth: 1,
-    borderColor: Palette.border,
+    borderColor: COLORS.border,
     borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",
@@ -583,18 +607,18 @@ const styles = StyleSheet.create({
   btnCancelText: {
     fontSize: 15,
     fontWeight: "700",
-    color: Palette.text,
+    color: COLORS.text,
   },
   btnSave: {
     flex: 1.5,
     flexDirection: "row",
-    backgroundColor: Palette.primary,
+    backgroundColor: COLORS.primary,
     borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
     paddingVertical: 16,
-    shadowColor: Palette.text,
+    shadowColor: COLORS.text,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,

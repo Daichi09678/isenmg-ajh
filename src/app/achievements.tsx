@@ -6,6 +6,7 @@ import {
   ScrollView,
   Pressable,
 } from "react-native";
+import { useAppTheme } from "../store/themeStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -23,22 +24,29 @@ interface BadgeItem {
   rewardXp: number;
 }
 
-const COLORS = {
-  bg: "#0f172a", // Dark slate background
-  card: "#1e293b", // Column background
-  taskBg: "#0f172a", // Task card inside column
-  border: "#334155",
-  text: "#f8fafc",
-  textMuted: "#94a3b8",
-  blue: "#3b82f6",
-  green: "#10b981",
-  yellow: "#fbbf24",
-  purple: "#8b5cf6",
-  amber: "#f59e0b",
-  rose: "#f43f5e",
-};
 
 export default function AchievementsScreen() {
+  const { colors } = useAppTheme();
+  const COLORS = React.useMemo(() => ({
+    bg: colors.background,
+    card: colors.surface,
+    taskBg: colors.background,
+    border: colors.border,
+    text: colors.text,
+    textMuted: colors.textSecondary,
+    blue: "#3b82f6",
+    green: "#10b981",
+    yellow: "#fbbf24",
+    purple: "#8b5cf6",
+    amber: "#f59e0b",
+    rose: "#f43f5e",
+    accent: colors.accent,
+    white: colors.surface === "#ffffff" ? "#ffffff" : colors.text,
+    danger: "#ef4444",
+    primary: colors.accent,
+  }), [colors]);
+  const styles = React.useMemo(() => getStyles(COLORS), [COLORS]);
+
   const tasks = useTaskStore((s) => s.tasks);
 
   const totalDone = tasks.filter((t) => t.isDone).length;
@@ -266,7 +274,7 @@ export default function AchievementsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (COLORS: any) => StyleSheet.create({
   safe: { flex: 1 },
   header: {
     flexDirection: "row",

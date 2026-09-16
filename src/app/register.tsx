@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, Image, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from "react-native";
+import { useAppTheme } from "../store/themeStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Feather } from "@expo/vector-icons";
@@ -7,16 +8,28 @@ import { useUserStore } from "../store/userStore";
 import Button from "../components/Button";
 import { Spacing, FontSize, Radius } from "../constants/theme";
 
-const COLORS = {
-  bg: "#0f172a",
-  card: "#1e293b",
-  border: "#334155",
-  text: "#f8fafc",
-  textMuted: "#94a3b8",
-  accent: "#4ade80",
-};
 
 export default function RegisterScreen() {
+  const { colors } = useAppTheme();
+  const COLORS = React.useMemo(() => ({
+    bg: colors.background,
+    card: colors.surface,
+    taskBg: colors.background,
+    border: colors.border,
+    text: colors.text,
+    textMuted: colors.textSecondary,
+    blue: "#3b82f6",
+    green: "#10b981",
+    yellow: "#fbbf24",
+    purple: "#8b5cf6",
+    amber: "#f59e0b",
+    rose: "#f43f5e",
+    accent: colors.accent,
+    white: colors.surface === "#ffffff" ? "#ffffff" : colors.text,
+    danger: "#ef4444",
+  }), [colors]);
+  const styles = React.useMemo(() => getStyles(COLORS), [COLORS]);
+
   const { updateProfile } = useUserStore();
 
   const [inputName, setInputName] = useState("");
@@ -137,7 +150,7 @@ export default function RegisterScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (COLORS: any) => StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -222,3 +235,4 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 });
+

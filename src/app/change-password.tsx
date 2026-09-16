@@ -12,25 +12,32 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import { useAppTheme } from "../store/themeStore";
 import { Feather } from "@expo/vector-icons";
 import { Spacing, Radius } from "../constants/theme";
 
-const COLORS = {
-  bg: "#0f172a", // Dark slate background
-  card: "#1e293b", // Column background
-  taskBg: "#0f172a", // Task card inside column
-  border: "#334155",
-  text: "#f8fafc",
-  textMuted: "#94a3b8",
-  blue: "#3b82f6",
-  green: "#10b981",
-  yellow: "#fbbf24",
-  purple: "#8b5cf6",
-  amber: "#f59e0b",
-  rose: "#f43f5e",
-};
 
 export default function ChangePasswordScreen() {
+  const { colors } = useAppTheme();
+  const COLORS = React.useMemo(() => ({
+    bg: colors.background,
+    card: colors.surface,
+    taskBg: colors.background,
+    border: colors.border,
+    text: colors.text,
+    textMuted: colors.textSecondary,
+    blue: "#3b82f6",
+    green: "#10b981",
+    yellow: "#fbbf24",
+    purple: "#8b5cf6",
+    amber: "#f59e0b",
+    rose: "#f43f5e",
+    accent: colors.accent,
+    white: colors.surface === "#ffffff" ? "#ffffff" : colors.text,
+    danger: "#ef4444",
+  }), [colors]);
+  const styles = React.useMemo(() => getStyles(COLORS), [COLORS]);
+
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -79,15 +86,14 @@ export default function ChangePasswordScreen() {
     setShowSuccessModal(false);
     router.back();
   };
-
-  return (
+  return (
     <SafeAreaView edges={["top"]} style={[styles.safe, { backgroundColor: COLORS.bg }]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
       >
         {/* Header */}
-        <View style={[styles.header, { borderBottomColor: COLORS.border, backgroundColor: "#162032" }]}>
+        <View style={[styles.header, { borderBottomColor: COLORS.border, backgroundColor: COLORS.bg }]}>
           <Pressable
             style={[styles.backBtn, { backgroundColor: COLORS.card, borderColor: COLORS.border }]}
             onPress={() => router.back()}
@@ -243,7 +249,7 @@ export default function ChangePasswordScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (COLORS: any) => StyleSheet.create({
   safe: { flex: 1 },
   header: {
     flexDirection: "row",
@@ -391,3 +397,4 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 });
+

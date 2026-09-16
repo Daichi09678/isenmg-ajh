@@ -5,21 +5,91 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useUserStore } from "../../store/userStore";
 
-const COLORS = {
-  bg: "#0f172a", // Dark slate background
-  card: "#1e293b", // Card background
-  border: "#334155",
-  text: "#f8fafc",
-  textMuted: "#94a3b8",
-  primary: "#3b82f6", // Blue for buttons
-  primaryLight: "#0ea5e9",
-  green: "#10b981", // Create button
-  yellow: "#fbbf24", // Star icon
-  purple: "#8b5cf6",
-};
+import { useAppTheme } from "../../store/themeStore";
+
 
 export default function WorkspaceScreen() {
   const { name, avatarUrl } = useUserStore();
+  const { colors } = useAppTheme();
+
+  const COLORS = React.useMemo(() => ({
+    bg: colors.background,
+    card: colors.surface,
+    border: colors.border,
+    text: colors.text,
+    textMuted: colors.textSecondary,
+    primary: "#2563EB", 
+    primaryLight: "#3B82F6",
+    green: "#10b981",
+    yellow: "#fbbf24",
+    purple: "#8b5cf6",
+  }), [colors]);
+
+  const styles = React.useMemo(() => getStyles(COLORS), [COLORS]);
+
+  function CollapsibleSection({ title, count, icon, color, initiallyCollapsed = false, children }: any) {
+    const [isCollapsed, setIsCollapsed] = React.useState(initiallyCollapsed);
+  
+    return (
+      <View style={{ marginBottom: isCollapsed ? 16 : 0 }}>
+        <TouchableOpacity 
+          style={styles.sectionHeader} 
+          onPress={() => setIsCollapsed(!isCollapsed)}
+          activeOpacity={0.7}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <Ionicons name={icon as any} size={16} color={color} />
+            <Text style={[styles.sectionTitle, { color: color || COLORS.text }]}>{title}</Text>
+            <Text style={styles.sectionCount}>({count})</Text>
+          </View>
+          <Ionicons name={isCollapsed ? "chevron-down" : "chevron-up"} size={16} color={COLORS.textMuted} />
+        </TouchableOpacity>
+        {!isCollapsed && (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalList}>
+            {children}
+          </ScrollView>
+        )}
+      </View>
+    );
+  }
+  
+  function WorkspaceCard({ title, subtitle, bg, textColor = COLORS.text, isUpload }: any) {
+    return (
+      <TouchableOpacity 
+        style={[styles.workspaceCard]}
+        activeOpacity={0.8}
+        onPress={() => router.push("/(tabs)/settings")}
+      >
+        {isUpload ? (
+          <View style={{ flex: 1, backgroundColor: COLORS.card, alignItems: "center", justifyContent: "center" }}>
+             <Ionicons name="cloud-upload-outline" size={32} color={COLORS.textMuted} />
+             <Text style={{color: COLORS.textMuted, fontSize: 13, marginTop: 8}}>Personal Workspace</Text>
+          </View>
+        ) : (
+          <>
+            <View style={{ height: 75, backgroundColor: bg, padding: 12 }}>
+              <View style={styles.bookmarkIcon}>
+                <Ionicons name="bookmark" size={12} color="#fff" />
+              </View>
+              {subtitle ? (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                  <Text style={[styles.cardSubtitle, { color: textColor }]}>{subtitle}</Text>
+                </View>
+              ) : null}
+            </View>
+            <View style={styles.cardFooter}>
+              <Text style={styles.cardTitle}>{title}</Text>
+              <View style={{ flexDirection: "row", gap: 6 }}>
+                <View style={styles.cardIconBox}><Ionicons name="person" size={10} color="#fff" /></View>
+                <View style={styles.cardIconBox}><Ionicons name="star" size={10} color={COLORS.yellow} /></View>
+              </View>
+            </View>
+          </>
+        )}
+      </TouchableOpacity>
+    );
+  }
+
   return (
     <SafeAreaView edges={["top"]} style={styles.safe}>
       {/* HEADER: PT Mitreka Solusi Indonesia */}
@@ -46,7 +116,7 @@ export default function WorkspaceScreen() {
 
         <View style={styles.actionRow}>
           <TouchableOpacity 
-            style={[styles.actionBtn, { backgroundColor: COLORS.primary }]}
+            style={[styles.actionBtn, { backgroundColor: COLORS.card, borderWidth: 1, borderColor: COLORS.primary }]}
             onPress={() => router.push("/export-tasks")}
           >
             <Ionicons name="download-outline" size={14} color={COLORS.text} />
@@ -56,11 +126,11 @@ export default function WorkspaceScreen() {
             style={[styles.actionBtn, { backgroundColor: COLORS.green }]}
             onPress={() => router.push("/create-workspace")}
           >
-            <Ionicons name="add" size={14} color={COLORS.text} />
-            <Text style={styles.actionText}>Create</Text>
+            <Ionicons name="add" size={14} color={COLORS.bg} />
+            <Text style={[styles.actionText, {color: COLORS.bg}]}>Create</Text>
           </TouchableOpacity>
           <TouchableOpacity 
-            style={[styles.actionBtn, { backgroundColor: COLORS.primaryLight }]}
+            style={[styles.actionBtn, { backgroundColor: COLORS.primary }]}
             onPress={() => router.push("/join-workspace")}
           >
             <Ionicons name="person-add-outline" size={14} color={COLORS.text} />
@@ -111,70 +181,7 @@ export default function WorkspaceScreen() {
   );
 }
 
-function CollapsibleSection({ title, count, icon, color, initiallyCollapsed = false, children }: any) {
-  const [isCollapsed, setIsCollapsed] = React.useState(initiallyCollapsed);
-
-  return (
-    <View style={{ marginBottom: isCollapsed ? 16 : 0 }}>
-      <TouchableOpacity 
-        style={styles.sectionHeader} 
-        onPress={() => setIsCollapsed(!isCollapsed)}
-        activeOpacity={0.7}
-      >
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <Ionicons name={icon as any} size={16} color={color} />
-          <Text style={[styles.sectionTitle, { color: color || COLORS.text }]}>{title}</Text>
-          <Text style={styles.sectionCount}>({count})</Text>
-        </View>
-        <Ionicons name={isCollapsed ? "chevron-down" : "chevron-up"} size={16} color={COLORS.textMuted} />
-      </TouchableOpacity>
-      {!isCollapsed && (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalList}>
-          {children}
-        </ScrollView>
-      )}
-    </View>
-  );
-}
-
-function WorkspaceCard({ title, subtitle, bg, textColor = COLORS.text, isUpload }: any) {
-  return (
-    <TouchableOpacity 
-      style={[styles.workspaceCard, { backgroundColor: bg }]}
-      activeOpacity={0.8}
-      onPress={() => router.push("/(tabs)/settings")}
-    >
-      {isUpload ? (
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-           <Ionicons name="cloud-upload-outline" size={32} color={COLORS.textMuted} />
-        </View>
-      ) : (
-        <View style={{ flex: 1, padding: 12 }}>
-          {/* Card Content */}
-          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: 'flex-start' }}>
-             <View style={styles.bookmarkIcon}>
-               <Ionicons name="bookmark" size={16} color={COLORS.text} />
-             </View>
-             <View style={{ flexDirection: "row", gap: 4 }}>
-               <View style={styles.cardIconBox}><Ionicons name="person" size={12} color={COLORS.text} /></View>
-               <View style={styles.cardIconBox}><Ionicons name="star" size={12} color={COLORS.yellow} /></View>
-             </View>
-          </View>
-          {subtitle ? (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-              <Text style={[styles.cardSubtitle, { color: textColor }]}>{subtitle}</Text>
-            </View>
-          ) : null}
-        </View>
-      )}
-      <View style={styles.cardFooter}>
-        <Text style={styles.cardTitle}>{title}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-}
-
-const styles = StyleSheet.create({
+const getStyles = (COLORS: any) => StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.bg },
   topHeader: { padding: 20, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   companyHeader: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 16 },
@@ -187,13 +194,13 @@ const styles = StyleSheet.create({
   actionText: { fontSize: 13, fontWeight: "600", color: COLORS.text },
   contentPad: { padding: 20, paddingBottom: 100 },
   sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 8, marginBottom: 12 },
-  sectionTitle: { fontSize: 16, fontWeight: "600" },
-  sectionCount: { fontSize: 14, color: COLORS.textMuted },
+  sectionTitle: { fontSize: 15, fontWeight: "600" },
+  sectionCount: { fontSize: 13, color: COLORS.textMuted },
   horizontalList: { gap: 12, paddingBottom: 16 },
-  workspaceCard: { width: 240, height: 140, borderRadius: 12, overflow: "hidden", borderWidth: 1, borderColor: COLORS.border },
-  cardFooter: { backgroundColor: COLORS.card, padding: 12, borderTopWidth: 1, borderTopColor: COLORS.border },
-  cardTitle: { fontSize: 13, fontWeight: "600", color: COLORS.text },
+  workspaceCard: { width: 220, height: 130, borderRadius: 12, overflow: "hidden", borderWidth: 1, borderColor: COLORS.border, backgroundColor: COLORS.card },
+  cardFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 12, borderTopWidth: 1, borderTopColor: COLORS.border, backgroundColor: COLORS.card, flex: 1 },
+  cardTitle: { fontSize: 12, fontWeight: "600", color: COLORS.text, flex: 1 },
   cardSubtitle: { fontSize: 12, fontWeight: "bold", textAlign: 'center' },
-  cardIconBox: { width: 24, height: 24, borderRadius: 4, backgroundColor: "rgba(0,0,0,0.3)", alignItems: "center", justifyContent: "center" },
-  bookmarkIcon: { width: 24, height: 32, backgroundColor: 'rgba(0,0,0,0.3)', alignItems: 'center', justifyContent: 'center', borderBottomLeftRadius: 4, borderBottomRightRadius: 4, marginTop: -12 },
+  cardIconBox: { width: 22, height: 22, borderRadius: 4, backgroundColor: "rgba(128,128,128,0.2)", alignItems: "center", justifyContent: "center" },
+  bookmarkIcon: { position: "absolute", top: 0, left: 12, width: 20, height: 28, backgroundColor: 'rgba(0,0,0,0.2)', alignItems: 'center', justifyContent: 'center', borderBottomLeftRadius: 4, borderBottomRightRadius: 4 },
 });

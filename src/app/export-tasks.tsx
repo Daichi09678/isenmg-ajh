@@ -1,20 +1,33 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from "react-native";
+import { useAppTheme } from "../store/themeStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 
-const COLORS = {
-  bg: "#0f172a",
-  card: "#1e293b",
-  border: "#334155",
-  text: "#f8fafc",
-  textMuted: "#94a3b8",
-  primary: "#3b82f6",
-  green: "#10b981",
-};
 
 export default function ExportTasksScreen() {
+  const { colors } = useAppTheme();
+  const COLORS = React.useMemo(() => ({
+    bg: colors.background,
+    card: colors.surface,
+    taskBg: colors.background,
+    border: colors.border,
+    text: colors.text,
+    textMuted: colors.textSecondary,
+    blue: "#3b82f6",
+    green: "#10b981",
+    yellow: "#fbbf24",
+    purple: "#8b5cf6",
+    amber: "#f59e0b",
+    rose: "#f43f5e",
+    accent: colors.accent,
+    white: colors.surface === "#ffffff" ? "#ffffff" : colors.text,
+    danger: "#ef4444",
+    primary: colors.accent,
+  }), [colors]);
+  const styles = React.useMemo(() => getStyles(COLORS), [COLORS]);
+
   const [format, setFormat] = useState<"CSV" | "JSON">("CSV");
   const [isExporting, setIsExporting] = useState(false);
 
@@ -85,7 +98,7 @@ export default function ExportTasksScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (COLORS: any) => StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.bg },
   header: { 
     flexDirection: "row", 
@@ -127,3 +140,4 @@ const styles = StyleSheet.create({
   },
   submitText: { fontSize: 16, fontWeight: "bold", color: COLORS.text }
 });
+

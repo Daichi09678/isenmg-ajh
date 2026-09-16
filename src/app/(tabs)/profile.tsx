@@ -1,34 +1,41 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Pressable, Modal, TextInput, ImageBackground, Image } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Pressable, Modal, TextInput, ImageBackground, Image, Switch } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useUserStore } from "../../store/userStore";
 import { useTaskStore } from "../../store/taskStore";
+import { useAppTheme } from "../../store/themeStore";
 
-const COLORS = {
-  bg: "#0f172a", // Dark slate background
-  card: "#1e293b", 
-  cardAlt: "#334155",
-  border: "#475569",
-  dark: "#0f172a",
-  darkBg: "#020617",
-  accent: "#3b82f6",
-  accentSoft: "#60a5fa",
-  muted: "#64748b",
-  mutedLight: "#94a3b8",
-  white: "#f8fafc",
-  danger: "#ef4444",
-  green: "#10b981",
-};
 
 export default function ProfileScreen() {
   const { name, email, backgroundUrl, avatarUrl, updateProfile } = useUserStore();
   const tasks = useTaskStore((s) => s.tasks);
+  const { mode, colors, toggleTheme } = useAppTheme();
   
-  const themeBg = COLORS.bg;
-  const themeText = COLORS.white;
+  const COLORS = React.useMemo(() => ({
+    bg: colors.background,
+    card: colors.surface,
+    cardAlt: mode === 'dark' ? "#334155" : "rgba(241, 245, 249, 0.8)",
+    border: colors.border,
+    dark: colors.background,
+    darkBg: colors.background,
+    accent: colors.accent,
+    accentSoft: "#60a5fa",
+    muted: colors.textSecondary,
+    mutedLight: colors.textSecondary,
+    white: colors.surface === "#ffffff" ? "#0f172a" : colors.text,
+    danger: "#ef4444",
+    green: "#10b981",
+  }), [colors, mode]);
+  const styles = React.useMemo(() => getStyles(COLORS), [COLORS]);
+
+  const themeBg = colors.background;
+  const themeText = colors.text;
+  const cardBg = colors.surface;
+  const cardBorder = colors.border;
+  const cardAlt = mode === 'dark' ? "#334155" : "#f1f5f9";
 
   const totalDone = tasks.filter(t => t.isDone).length;
 
@@ -177,6 +184,19 @@ export default function ProfileScreen() {
         <View style={styles.menuSection}>
           <Text style={[styles.sectionTitle, { color: themeText }]}>Akun</Text>
           <View style={[styles.menuList, { backgroundColor: COLORS.card }]}>
+            <View style={styles.menuItem}>
+              <View style={[styles.menuIconWrap, { backgroundColor: COLORS.cardAlt }]}>
+                <Feather name={mode === "dark" ? "moon" : "sun"} size={16} color={COLORS.mutedLight} />
+              </View>
+              <Text style={[styles.menuText, { color: themeText }]}>Mode Gelap</Text>
+              <Switch
+                value={mode === "dark"}
+                onValueChange={toggleTheme}
+                trackColor={{ false: "#cbd5e1", true: "#3b82f6" }}
+                thumbColor={"#ffffff"}
+              />
+            </View>
+            <View style={[styles.menuDivider, { backgroundColor: COLORS.border }]} />
             <Pressable
               style={styles.menuItem}
               onPress={() => router.push("/change-password" as any)}
@@ -302,7 +322,7 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (COLORS: any) => StyleSheet.create({
   safe: { flex: 1 },
   header: {
     flexDirection: "row",

@@ -3,6 +3,7 @@ import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Platform, View } from "react-native";
 import { Radius } from "../../constants/theme";
+import { useAppTheme } from "../../store/themeStore";
 
 // Colors based on the photo
 const COLORS = {
@@ -13,16 +14,18 @@ const COLORS = {
 };
 
 export default function TabLayout() {
+  const { colors } = useAppTheme();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: COLORS.active,
-        tabBarInactiveTintColor: COLORS.inactive,
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
-          backgroundColor: COLORS.bg,
+          backgroundColor: colors.surface,
           borderTopWidth: 1,
-          borderTopColor: COLORS.border,
+          borderTopColor: colors.border,
           elevation: 0,
           height: Platform.OS === "ios" ? 88 : 70,
           paddingBottom: Platform.OS === "ios" ? 28 : 12,

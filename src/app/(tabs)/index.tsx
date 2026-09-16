@@ -17,30 +17,30 @@ import { useTaskStore } from "../../store/taskStore";
 import { useAppTheme } from "../../store/themeStore";
 import { useUserStore } from "../../store/userStore";
 
-// The photo shows a very dark, sleek UI.
-const COLORS = {
-  bg: "#0f172a", // Main background
-  card: "#1e293b", // Card background
-  border: "#334155",
-  text: "#ffffff",
-  textMuted: "#a0a5b1",
-  primary: "#4ade80", // The bright green FAB and active tab
-  danger: "#ef4444", // Red badge / Overdue
-  blue: "#3b82f6", // All task
-  green: "#10b981", // Today's plan
-  orange: "#f59e0b", // Due today
-  purple: "#8b5cf6", // Upcoming
-};
-
 export default function HomeTab() {
   const tasks = useTaskStore((s) => s.tasks);
   const addTask = useTaskStore((s) => s.addTask);
   const toggleDone = useTaskStore((s) => s.toggleDone);
   const acceptJoinRequest = useTaskStore((s) => s.acceptJoinRequest);
-  const { mode } = useAppTheme();
+  const { mode, colors } = useAppTheme();
   const { name, avatarUrl } = useUserStore();
 
-  // Forcing dark theme colors based on the design request
+  const COLORS = useMemo(() => ({
+    bg: colors.background,
+    card: colors.surface,
+    border: colors.border,
+    text: colors.text,
+    textMuted: colors.textSecondary,
+    primary: colors.accent,
+    danger: "#ef4444",
+    blue: "#3b82f6",
+    green: "#10b981",
+    orange: "#f59e0b",
+    purple: "#8b5cf6",
+  }), [colors]);
+
+  const styles = useMemo(() => getStyles(COLORS), [COLORS]);
+
   const themeBg = COLORS.bg;
   const themeText = COLORS.text;
   
@@ -58,11 +58,25 @@ export default function HomeTab() {
   const personalTasks = useMemo(() => tasks.filter(t => t.taskType !== "Team"), [tasks]);
 
   const filteredTasks = useMemo(() => {
-    return personalTasks.filter((t) => {
-      const q = query.trim().toLowerCase();
-      return !q || t.title.toLowerCase().includes(q);
-    });
+    if (!query) return personalTasks;
+    return personalTasks.filter(t => t.title.toLowerCase().includes(query.toLowerCase()));
   }, [personalTasks, query]);
+
+  const [currentTime, setCurrentTime] = useState("");
+  React.useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+      const wibDate = new Date(utc + (3600000 * 7));
+      const h = String(wibDate.getHours()).padStart(2, '0');
+      const m = String(wibDate.getMinutes()).padStart(2, '0');
+      const s = String(wibDate.getSeconds()).padStart(2, '0');
+      setCurrentTime(`${h}:${m}:${s} WIB`);
+    };
+    updateTime();
+    const timer = setInterval(updateTime, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   function submitForm() {
     if (!formTitle.trim()) return;
@@ -82,17 +96,27 @@ export default function HomeTab() {
     <SafeAreaView edges={["top"]} style={[styles.safe, { backgroundColor: themeBg }]}>
       {/* HEADER: Task Flow, Bell, Avatar */}
       <View style={styles.header}>
-        <Text style={[styles.logoText, { color: themeText }]}>Task Flow</Text>
+        <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
+          <Text style={[styles.logoText, { color: themeText }]}>Task Flow</Text>
+        </View>
         <View style={styles.headerRight}>
+          <View style={[styles.timerPill, { backgroundColor: COLORS.green }]}>
+            <Ionicons name="time-outline" size={12} color={COLORS.bg} />
+            <Text style={[styles.timerPillText, { color: COLORS.bg }]}>{currentTime}</Text>
+          </View>
+          <View style={styles.teamBadge}>
+            <Ionicons name="people" size={12} color={COLORS.primary} />
+            <Text style={styles.teamBadgeText}>3</Text>
+          </View>
           <TouchableOpacity onPress={() => setNotifVisible(true)} style={styles.notifBtn}>
-            <Ionicons name="notifications-outline" size={24} color={themeText} />
+            <Ionicons name="notifications-outline" size={22} color={themeText} />
             <View style={styles.notifBadge} />
           </TouchableOpacity>
           <View style={styles.avatarContainer}>
             {avatarUrl ? (
               <Image source={{ uri: avatarUrl }} style={{ width: "100%", height: "100%" }} />
             ) : (
-              <Text style={{ color: COLORS.text, fontWeight: "bold", fontSize: 16 }}>{name ? name.charAt(0).toUpperCase() : "?"}</Text>
+              <Text style={{ color: COLORS.text, fontWeight: "bold", fontSize: 14 }}>{name ? name.charAt(0).toUpperCase() : "?"}</Text>
             )}
           </View>
         </View>
@@ -108,25 +132,30 @@ export default function HomeTab() {
         {/* MY TASKS & SEARCH */}
         <View style={styles.myTasksSection}>
           <Text style={styles.sectionTitle}>My Tasks</Text>
-          <View style={styles.searchBar}>
-            <Ionicons name="search" size={20} color={COLORS.textMuted} style={styles.searchIcon} />
-            <TextInput
-              value={query}
-              onChangeText={setQuery}
-              placeholder="Search..."
-              placeholderTextColor={COLORS.textMuted}
-              style={[styles.searchInput, { color: themeText }]}
-            />
+          <View style={styles.searchRow}>
+            <View style={styles.searchBar}>
+              <Ionicons name="search" size={20} color={COLORS.textMuted} style={styles.searchIcon} />
+              <TextInput
+                value={query}
+                onChangeText={setQuery}
+                placeholder="Search Task..."
+                placeholderTextColor={COLORS.textMuted}
+                style={[styles.searchInput, { color: themeText }]}
+              />
+            </View>
+            <TouchableOpacity style={styles.filterBtn} onPress={() => {}}>
+              <Ionicons name="options-outline" size={22} color={themeText} />
+            </TouchableOpacity>
           </View>
         </View>
 
         {/* SUMMARY BOXES (Horizontal Scroll) */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.summaryScroll}>
-          <SummaryBox icon="people-outline" title="All Task" count={personalTasks.length} color={COLORS.blue} />
-          <SummaryBox icon="alert-circle-outline" title="Overdue" count={0} color={COLORS.danger} />
-          <SummaryBox icon="calendar-outline" title="Today's Plan" count={0} color={COLORS.green} />
-          <SummaryBox icon="calendar-clear-outline" title="Due Today" count={0} color={COLORS.orange} />
-          <SummaryBox icon="time-outline" title="Upcoming" count={0} color={COLORS.purple} />
+          <SummaryBox title="All Task" count="0 / 1" color={COLORS.blue} />
+          <SummaryBox title="Overdue" count="0 / 0" color={COLORS.danger} />
+          <SummaryBox title="Today's Plan" count="0 / 0" color={COLORS.green} />
+          <SummaryBox title="Due Today" count="0 / 0" color={COLORS.orange} />
+          <SummaryBox title="Upcoming" count="0 / 0" color={COLORS.purple} />
         </ScrollView>
 
         {/* TASK LIST */}
@@ -178,14 +207,34 @@ export default function HomeTab() {
       {/* MODAL NOTIFIKASI */}
       <Modal visible={notifVisible} animationType="slide" transparent onRequestClose={() => setNotifVisible(false)}>
         <View style={styles.modalBackdrop}>
-          <View style={[styles.modalSheet, { backgroundColor: COLORS.card }]}>
+          <View style={[styles.modalSheet, { backgroundColor: COLORS.card, maxHeight: "80%" }]}>
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, { color: COLORS.text }]}>Notifikasi</Text>
               <TouchableOpacity onPress={() => setNotifVisible(false)}>
                 <Ionicons name="close" size={24} color={COLORS.textMuted} />
               </TouchableOpacity>
             </View>
-            <Text style={{color: COLORS.textMuted}}>Tidak ada notifikasi baru.</Text>
+            
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingBottom: 20 }}>
+              {[
+                { id: 1, title: "Tugas Baru", desc: "Anda ditugaskan pada 'Perbaikan UI Dashboard' oleh Fikri.", time: "10 mnt lalu", icon: "briefcase", color: COLORS.blue },
+                { id: 2, title: "Tenggat Waktu Dekat", desc: "Tugas 'Laporan Keuangan Q3' akan jatuh tempo besok.", time: "1 jam lalu", icon: "warning", color: COLORS.orange },
+                { id: 3, title: "Komentar Baru", desc: "Rina mengomentari tugas 'API Integration'.", time: "3 jam lalu", icon: "chatbubble", color: COLORS.green },
+                { id: 4, title: "Sistem Update", desc: "Maintenance server dijadwalkan malam ini pukul 23:00 WIB.", time: "5 jam lalu", icon: "construct", color: COLORS.textMuted },
+                { id: 5, title: "Permintaan Bergabung", desc: "Budi ingin bergabung ke workspace 'Mobile Asabri'.", time: "Kemarin", icon: "person-add", color: COLORS.purple },
+              ].map(notif => (
+                <View key={notif.id} style={{ flexDirection: "row", alignItems: "center", gap: 12, padding: 12, backgroundColor: COLORS.bg, borderRadius: 12, borderWidth: 1, borderColor: COLORS.border }}>
+                  <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: notif.color + '20', alignItems: 'center', justifyContent: 'center' }}>
+                    <Ionicons name={notif.icon as any} size={20} color={notif.color} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "bold", color: COLORS.text }}>{notif.title}</Text>
+                    <Text style={{ fontSize: 12, color: COLORS.textMuted, marginTop: 2, lineHeight: 18 }}>{notif.desc}</Text>
+                    <Text style={{ fontSize: 10, color: COLORS.primary, marginTop: 4, fontWeight: "600" }}>{notif.time}</Text>
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
           </View>
         </View>
       </Modal>
@@ -202,58 +251,95 @@ export default function HomeTab() {
             </View>
             
             {selectedTask && (
-              <ScrollView showsVerticalScrollIndicator={false}>
-                <Text style={{ fontSize: 20, fontWeight: "bold", color: COLORS.text, marginBottom: 12 }}>
+              <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
+                {/* Header Row: Category & Status */}
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                   <View style={{ backgroundColor: COLORS.blue + '20', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 }}>
+                     <Text style={{ color: COLORS.blue, fontWeight: "600", fontSize: 12 }}>{selectedTask.category || "Kerja"}</Text>
+                   </View>
+                   <View style={{ backgroundColor: selectedTask.isDone ? COLORS.green + '20' : COLORS.orange + '20', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 }}>
+                     <Text style={{ color: selectedTask.isDone ? COLORS.green : COLORS.orange, fontWeight: "600", fontSize: 12 }}>
+                       {selectedTask.isDone ? "Selesai" : "In Progress"}
+                     </Text>
+                   </View>
+                </View>
+
+                {/* Title & Priority */}
+                <Text style={{ fontSize: 24, fontWeight: "bold", color: COLORS.text, marginBottom: 12 }}>
                   {selectedTask.title}
                 </Text>
                 
-                <Text style={{ fontSize: 14, color: COLORS.primary, fontWeight: "bold", marginBottom: 16 }}>
-                  Prioritas: {selectedTask.priority}
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 16, marginBottom: 24 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                    <Ionicons name="flag" size={16} color={selectedTask.priority === "Tinggi" ? COLORS.danger : COLORS.primary} />
+                    <Text style={{ color: COLORS.textMuted, fontSize: 13 }}>{selectedTask.priority}</Text>
+                  </View>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                    <Ionicons name="calendar" size={16} color={COLORS.textMuted} />
+                    <Text style={{ color: COLORS.textMuted, fontSize: 13 }}>{selectedTask.deadline || "Tidak ada tenggat"}</Text>
+                  </View>
+                </View>
+
+                {/* Deskripsi */}
+                <Text style={{ fontSize: 16, fontWeight: "600", color: COLORS.text, marginBottom: 8 }}>Deskripsi</Text>
+                <Text style={{ color: COLORS.textMuted, fontSize: 14, lineHeight: 22, marginBottom: 24 }}>
+                  {selectedTask.description || "Tidak ada deskripsi detail untuk tugas ini. Anda dapat menambahkan deskripsi lebih lanjut nanti."}
                 </Text>
 
-                <Text style={{ fontSize: 16, fontWeight: "600", color: COLORS.text, marginBottom: 8 }}>
-                  Anggota Tergabung ({selectedTask.members?.length || 0})
+                {/* Anggota Tergabung */}
+                <Text style={{ fontSize: 16, fontWeight: "600", color: COLORS.text, marginBottom: 12 }}>
+                  Anggota Tim ({selectedTask.members?.length || 0})
                 </Text>
-                <View style={{ marginBottom: 16 }}>
+                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
                   {selectedTask.members?.map((m: string, idx: number) => (
-                    <View key={idx} style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
-                      <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: COLORS.bg, alignItems: "center", justifyContent: "center", marginRight: 8 }}>
-                        <Text style={{ color: COLORS.text, fontWeight: "bold" }}>{m.charAt(0).toUpperCase()}</Text>
+                    <View key={idx} style={{ flexDirection: "row", alignItems: "center", backgroundColor: COLORS.bg, padding: 6, borderRadius: 20, paddingRight: 16, borderWidth: 1, borderColor: COLORS.border }}>
+                      <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: COLORS.primary, alignItems: "center", justifyContent: "center", marginRight: 8 }}>
+                        <Text style={{ color: COLORS.bg, fontWeight: "bold", fontSize: 12 }}>{m.charAt(0).toUpperCase()}</Text>
                       </View>
-                      <Text style={{ color: COLORS.text }}>{m}</Text>
+                      <Text style={{ color: COLORS.text, fontSize: 13, fontWeight: "500" }}>{m}</Text>
                     </View>
                   ))}
                   {(!selectedTask.members || selectedTask.members.length === 0) && (
-                    <Text style={{ color: COLORS.textMuted }}>Belum ada anggota.</Text>
+                    <Text style={{ color: COLORS.textMuted, fontSize: 13, fontStyle: "italic" }}>Belum ada anggota yang bergabung.</Text>
                   )}
                 </View>
 
-                <Text style={{ fontSize: 16, fontWeight: "600", color: COLORS.text, marginBottom: 8 }}>
-                  Permintaan Bergabung ({selectedTask.joinRequests?.length || 0})
-                </Text>
-                <View style={{ marginBottom: 16 }}>
-                  {selectedTask.joinRequests?.map((email: string, idx: number) => (
-                    <View key={idx} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8, backgroundColor: COLORS.bg, padding: 12, borderRadius: 8 }}>
-                      <Text style={{ color: COLORS.text, flex: 1 }}>{email}</Text>
-                      <TouchableOpacity 
-                        style={{ backgroundColor: COLORS.primary, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 }}
-                        onPress={() => {
-                          acceptJoinRequest(selectedTask.id, email);
-                          setSelectedTask({
-                            ...selectedTask,
-                            members: [...(selectedTask.members || []), email],
-                            joinRequests: selectedTask.joinRequests.filter((e: string) => e !== email)
-                          });
-                        }}
-                      >
-                        <Text style={{ color: COLORS.bg, fontWeight: "bold", fontSize: 12 }}>Terima</Text>
-                      </TouchableOpacity>
+                {/* Permintaan Bergabung */}
+                {selectedTask.joinRequests && selectedTask.joinRequests.length > 0 && (
+                  <>
+                    <Text style={{ fontSize: 16, fontWeight: "600", color: COLORS.text, marginBottom: 12 }}>
+                      Permintaan Bergabung ({selectedTask.joinRequests.length})
+                    </Text>
+                    <View style={{ marginBottom: 16 }}>
+                      {selectedTask.joinRequests.map((email: string, idx: number) => (
+                        <View key={idx} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8, backgroundColor: COLORS.bg, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: COLORS.border }}>
+                          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                            <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.orange, alignItems: "center", justifyContent: "center" }}>
+                              <Text style={{ color: COLORS.bg, fontWeight: "bold", fontSize: 14 }}>{email.charAt(0).toUpperCase()}</Text>
+                            </View>
+                            <View>
+                              <Text style={{ color: COLORS.text, fontWeight: "600", fontSize: 14 }}>{email.split('@')[0]}</Text>
+                              <Text style={{ color: COLORS.textMuted, fontSize: 12 }}>{email}</Text>
+                            </View>
+                          </View>
+                          <TouchableOpacity 
+                            style={{ backgroundColor: COLORS.primary, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8 }}
+                            onPress={() => {
+                              acceptJoinRequest(selectedTask.id, email);
+                              setSelectedTask({
+                                ...selectedTask,
+                                members: [...(selectedTask.members || []), email],
+                                joinRequests: selectedTask.joinRequests.filter((e: string) => e !== email)
+                              });
+                            }}
+                          >
+                            <Text style={{ color: COLORS.bg, fontWeight: "bold", fontSize: 13 }}>Terima</Text>
+                          </TouchableOpacity>
+                        </View>
+                      ))}
                     </View>
-                  ))}
-                  {(!selectedTask.joinRequests || selectedTask.joinRequests.length === 0) && (
-                    <Text style={{ color: COLORS.textMuted }}>Tidak ada permintaan baru.</Text>
-                  )}
-                </View>
+                  </>
+                )}
               </ScrollView>
             )}
           </View>
@@ -262,78 +348,62 @@ export default function HomeTab() {
 
     </SafeAreaView>
   );
-}
-
-// Komponen Kotak Ringkasan
-function SummaryBox({ icon, title, count, color }: any) {
-  return (
-    <View style={[styles.summaryBox, { borderColor: color }]}>
-      <Ionicons name={icon as any} size={24} color={color} style={{ marginBottom: 4 }} />
-      <Text style={[styles.summaryTitle, { color: color }]}>{title}</Text>
-      <Text style={[styles.summaryCount, { color: color }]}>{count}</Text>
-    </View>
-  );
-}
-
-// Komponen Kartu Tugas (Mirip di Screenshot)
-function TaskCard({ item, index, onToggle }: any) {
-  return (
-    <View style={styles.taskCard}>
-      <View style={styles.taskCardHeader}>
-        <Text style={styles.taskTag}>[TSK-{index + 101}]</Text>
-        <Ionicons name="chevron-up" size={20} color={COLORS.textMuted} />
+  // Komponen Kotak Ringkasan
+  function SummaryBox({ title, count, color }: any) {
+    return (
+      <View style={[styles.summaryBox, { borderColor: color }]}>
+        <Text style={[styles.summaryTitle, { color }]}>{title}</Text>
+        <Text style={[styles.summaryCount, { color }]}>{count}</Text>
       </View>
-      <Text style={styles.taskTitle}>{item.title}</Text>
-      
-      <View style={styles.taskTimerRow}>
-        <View style={styles.pauseBtn}>
-          <Ionicons name="pause" size={16} color={COLORS.danger} />
-        </View>
-        <View style={styles.timerBadge}>
-          <Text style={styles.timerText}>00:42:33</Text>
-        </View>
-      </View>
+    );
+  }
 
-      <View style={styles.taskDetailsGrid}>
-        <View style={styles.detailCell}>
-          <Text style={styles.detailLabel}>Created Date</Text>
-          <Text style={styles.detailValue}>Hari ini</Text>
+  // Komponen Kartu Tugas (Mirip di Screenshot)
+  function TaskCard({ item, index, onToggle }: any) {
+    return (
+      <View style={styles.taskCard}>
+        <View style={styles.taskHeaderRow}>
+          <View style={[styles.pauseBtn, { backgroundColor: index % 2 === 0 ? COLORS.danger : COLORS.green }]}>
+            <Ionicons name={index % 2 === 0 ? "pause" : "play"} size={14} color={COLORS.bg} />
+          </View>
+          <Text style={styles.taskTag}>[DGM-{index + 223}]</Text>
+          <Text style={styles.taskTitle} numberOfLines={1}>{item.title}</Text>
+          <Ionicons name="ellipsis-vertical" size={18} color={COLORS.textMuted} style={{marginLeft: 'auto'}} />
         </View>
-        <View style={styles.detailCell}>
-          <Text style={styles.detailLabel}>Urgency</Text>
-          <Text style={styles.detailValue}>{item.priority || "-"}</Text>
+
+        <View style={styles.taskDetailsGrid}>
+          <View style={styles.detailCell}>
+            <Text style={styles.detailLabel}>Created Date</Text>
+            <Text style={styles.detailValue}>11 Sep 2026</Text>
+          </View>
+          <View style={styles.detailCell}>
+            <Text style={styles.detailLabel}>Due Date</Text>
+            <Text style={styles.detailValue}>-</Text>
+          </View>
+          <View style={styles.detailCell}>
+            <Text style={styles.detailLabel}>Urgency</Text>
+            <Text style={styles.detailValue}>-</Text>
+          </View>
         </View>
-        <View style={styles.detailCell}>
-          <Text style={styles.detailLabel}>Project</Text>
-          <Text style={styles.detailValue}>-</Text>
-        </View>
-        <View style={styles.detailCell}>
-          <Text style={styles.detailLabel}>Assignee</Text>
-          <Text style={styles.detailValue}>Mukhamad Eko Arifudin</Text>
-        </View>
-        <View style={styles.detailCell}>
-          <Text style={styles.detailLabel}>Workspace</Text>
-          <Text style={styles.detailValue}>Design Manager</Text>
-        </View>
-        <View style={styles.detailCell}>
-          <Text style={styles.detailLabel}>Curr. Board</Text>
-          <Text style={styles.detailValue}>{item.isDone ? "Done" : "In Progress"}</Text>
+
+        <View style={styles.taskFooter}>
+          <View style={styles.avatarGroup}>
+             <View style={styles.miniAvatar}><Text style={styles.miniAvatarText}>E</Text></View>
+             <View style={[styles.miniAvatar, {marginLeft: -8, backgroundColor: COLORS.blue}]}><Text style={styles.miniAvatarText}>M</Text></View>
+          </View>
+          <View style={styles.tagGroup}>
+             <Text style={styles.projectTag}>Design Manager</Text>
+             <Text style={styles.statusTag}>In Progress</Text>
+          </View>
         </View>
       </View>
-      
-      <TouchableOpacity 
-        style={[styles.toggleBtn, item.isDone && { backgroundColor: COLORS.primary }]} 
-        onPress={onToggle}
-      >
-        <Text style={[styles.toggleBtnText, item.isDone && { color: COLORS.bg }]}>
-          {item.isDone ? "Selesai (Batalkan?)" : "Selesaikan Tugas"}
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
+    );
+  }
+
+
 }
 
-const styles = StyleSheet.create({
+const getStyles = (COLORS: any) => StyleSheet.create({
   safe: {
     flex: 1,
   },
@@ -341,20 +411,51 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
+    backgroundColor: COLORS.card,
+  },
+  logoBox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    backgroundColor: COLORS.primary,
+    alignItems: "center",
+    justifyContent: "center",
   },
   logoText: {
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: "bold",
     letterSpacing: 0.5,
   },
   headerRight: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
+    gap: 12,
+  },
+  timerPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+  },
+  timerPillText: {
+    fontSize: 10,
+    fontWeight: "bold",
+  },
+  teamBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  teamBadgeText: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: COLORS.primary,
   },
   notifBtn: {
     position: "relative",
@@ -399,20 +500,26 @@ const styles = StyleSheet.create({
   },
   
   myTasksSection: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 8,
     paddingBottom: 16,
   },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "bold",
     color: COLORS.text,
-    marginBottom: 16,
+    marginBottom: 12,
   },
-  searchBar: {
+  searchRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.bg,
+    gap: 12,
+  },
+  searchBar: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.card,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 12,
@@ -424,121 +531,141 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 14,
+  },
+  filterBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: COLORS.card,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   summaryScroll: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     gap: 12,
     paddingBottom: 16,
   },
   summaryBox: {
-    width: 90,
-    height: 100,
-    borderRadius: 16,
+    width: 130,
+    height: 64,
+    borderRadius: 8,
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.card,
+    backgroundColor: 'transparent',
   },
   summaryTitle: {
     fontSize: 11,
-    fontWeight: "500",
-    marginTop: 8,
+    fontWeight: "600",
     marginBottom: 4,
-    textAlign: "center",
   },
   summaryCount: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
   },
 
   taskList: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    gap: 16,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    gap: 12,
   },
   taskCard: {
     backgroundColor: COLORS.card,
-    borderRadius: 20,
-    padding: 20,
+    borderRadius: 12,
+    padding: 16,
     borderWidth: 1,
     borderColor: COLORS.border,
   },
-  taskCardHeader: {
+  taskHeaderRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 12,
+  },
+  pauseBtn: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 8,
   },
   taskTag: {
     color: COLORS.textMuted,
-    fontSize: 13,
+    fontSize: 12,
+    fontWeight: "500",
+    marginRight: 8,
   },
   taskTitle: {
-    fontSize: 18,
+    flex: 1,
+    fontSize: 14,
     fontWeight: "600",
-    color: COLORS.text,
-    marginBottom: 16,
-  },
-  taskTimerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    marginBottom: 20,
-  },
-  pauseBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  timerBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  timerText: {
-    color: COLORS.text,
-    fontSize: 13,
-    fontWeight: "500",
+    color: COLORS.blue,
   },
   taskDetailsGrid: {
     flexDirection: "row",
-    flexWrap: "wrap",
+    justifyContent: "space-between",
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
-    paddingTop: 16,
+    paddingTop: 12,
+    marginBottom: 12,
   },
   detailCell: {
-    width: "50%",
-    marginBottom: 16,
+    flex: 1,
   },
   detailLabel: {
-    fontSize: 12,
+    fontSize: 10,
     color: COLORS.textMuted,
-    marginBottom: 4,
+    marginBottom: 2,
   },
   detailValue: {
-    fontSize: 14,
+    fontSize: 12,
     color: COLORS.text,
     fontWeight: "500",
   },
-  toggleBtn: {
-    backgroundColor: COLORS.border,
-    borderRadius: 12,
-    paddingVertical: 12,
+  taskFooter: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+    paddingTop: 12,
   },
-  toggleBtnText: {
-    color: COLORS.text,
+  avatarGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  miniAvatar: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: COLORS.orange,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: COLORS.card,
+  },
+  miniAvatarText: {
+    color: COLORS.bg,
+    fontSize: 10,
+    fontWeight: "bold",
+  },
+  tagGroup: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  projectTag: {
+    fontSize: 10,
     fontWeight: "600",
-    fontSize: 14,
+    color: COLORS.blue,
+  },
+  statusTag: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: COLORS.text,
   },
 
   fab: {

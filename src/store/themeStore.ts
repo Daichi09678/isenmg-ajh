@@ -21,27 +21,27 @@ interface ThemeState {
 }
 
 const lightColors: ThemeColors = {
-  background: "#f6efe1",
+  background: "#f1f5f9",
   surface: "#ffffff",
-  text: "#241608",
-  textSecondary: "#8a7a63",
-  border: "#e6d9bf",
-  accent: "#d9691f", // ConcertGo Orange
-  accentText: "#FFFFFF",
-  gradientPrimary: ["#d9691f", "#b45211"],
-  gradientSecondary: ["#e67830", "#c45c16"],
+  text: "#0f172a",
+  textSecondary: "#64748b",
+  border: "#e2e8f0",
+  accent: "#10b981", 
+  accentText: "#ffffff",
+  gradientPrimary: ["#10b981", "#059669"],
+  gradientSecondary: ["#34d399", "#10b981"],
 };
 
 const darkColors: ThemeColors = {
-  background: "#241608",
-  surface: "#33200c",
-  text: "#f6efe1",
-  textSecondary: "#b3a490",
-  border: "#4a3219",
-  accent: "#d9691f", // ConcertGo Orange
-  accentText: "#FFFFFF",
-  gradientPrimary: ["#d9691f", "#b45211"],
-  gradientSecondary: ["#e67830", "#c45c16"],
+  background: "#0f172a",
+  surface: "#1e293b",
+  text: "#f8fafc",
+  textSecondary: "#94a3b8",
+  border: "#334155",
+  accent: "#10b981",
+  accentText: "#ffffff",
+  gradientPrimary: ["#10b981", "#059669"],
+  gradientSecondary: ["#34d399", "#10b981"],
 };
 
 export const useAppTheme = create<ThemeState>((set) => ({
