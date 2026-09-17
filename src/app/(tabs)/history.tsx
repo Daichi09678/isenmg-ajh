@@ -58,7 +58,7 @@ export default function WorkspaceScreen() {
       <TouchableOpacity 
         style={[styles.workspaceCard]}
         activeOpacity={0.8}
-        onPress={() => router.push("/(tabs)/settings")}
+        onPress={() => router.push("/workspace-detail")}
       >
         {isUpload ? (
           <View style={{ flex: 1, backgroundColor: COLORS.card, alignItems: "center", justifyContent: "center" }}>

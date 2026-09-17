@@ -15,6 +15,7 @@ export default function RootLayout() {
       <Stack.Screen name="export-tasks" options={{ presentation: 'modal' }} />
       <Stack.Screen name="create-workspace" options={{ presentation: 'modal' }} />
       <Stack.Screen name="join-workspace" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="workspace-detail" />
     </Stack>
   );
 }
