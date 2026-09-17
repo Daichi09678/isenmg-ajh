@@ -53,6 +53,125 @@ const RESOURCE_DATA = [
   { id: 10, member: 'Cakra Khan', project: 'Mobile App', plannedAssign: 15, completeAssign: 5, pctAssign: 33, plannedBeing: 20, completeBeing: 10, pctBeing: 50, duration: 2315 },
   { id: 11, member: 'Dewi Lestari', project: 'Web Admin', plannedAssign: 5, completeAssign: 5, pctAssign: 100, plannedBeing: 8, completeBeing: 2, pctBeing: 25, duration: 870 },
   { id: 12, member: 'Eko Prasetyo', project: 'Infrastructure', plannedAssign: 20, completeAssign: 18, pctAssign: 90, plannedBeing: 15, completeBeing: 12, pctBeing: 80, duration: 5600 },
+  { id: 13, member: 'Fajar Hidayat', project: 'Mobile App', plannedAssign: 8, completeAssign: 6, pctAssign: 75, plannedBeing: 10, completeBeing: 7, pctBeing: 70, duration: 3200 },
+  { id: 14, member: 'Galih Permana', project: '-', plannedAssign: 12, completeAssign: 4, pctAssign: 33, plannedBeing: 6, completeBeing: 2, pctBeing: 33, duration: 1450 },
+  { id: 15, member: 'Hendra Gunawan', project: 'Web Admin', plannedAssign: 18, completeAssign: 15, pctAssign: 83, plannedBeing: 9, completeBeing: 9, pctBeing: 100, duration: 6100 },
+  { id: 16, member: 'Irfan Maulana', project: '-', plannedAssign: 5, completeAssign: 1, pctAssign: 20, plannedBeing: 14, completeBeing: 3, pctBeing: 21, duration: 780 },
+  { id: 17, member: 'Joko Widodo', project: 'Backend System', plannedAssign: 22, completeAssign: 20, pctAssign: 91, plannedBeing: 18, completeBeing: 16, pctBeing: 89, duration: 7200 },
+  { id: 18, member: 'Kurniawan Saputra', project: '-', plannedAssign: 0, completeAssign: 0, pctAssign: 0, plannedBeing: 3, completeBeing: 1, pctBeing: 33, duration: 120 },
+  { id: 19, member: 'Lukman Hakim', project: 'Infrastructure', plannedAssign: 7, completeAssign: 7, pctAssign: 100, plannedBeing: 4, completeBeing: 4, pctBeing: 100, duration: 2950 },
+  { id: 20, member: 'Muhammad Rizky', project: '-', plannedAssign: 11, completeAssign: 3, pctAssign: 27, plannedBeing: 8, completeBeing: 5, pctBeing: 63, duration: 1870 },
+  { id: 21, member: 'Naufal Ghifari', project: 'Mobile App', plannedAssign: 14, completeAssign: 10, pctAssign: 71, plannedBeing: 7, completeBeing: 7, pctBeing: 100, duration: 4500 },
+  { id: 22, member: 'Oscar Pratama', project: '-', plannedAssign: 6, completeAssign: 2, pctAssign: 33, plannedBeing: 15, completeBeing: 8, pctBeing: 53, duration: 2100 },
+  { id: 23, member: 'Putra Mahendra', project: 'Web Admin', plannedAssign: 9, completeAssign: 9, pctAssign: 100, plannedBeing: 11, completeBeing: 6, pctBeing: 55, duration: 3600 },
+  { id: 24, member: 'Qodir Zulkarnain', project: '-', plannedAssign: 0, completeAssign: 0, pctAssign: 0, plannedBeing: 2, completeBeing: 0, pctBeing: 0, duration: 0 },
+  { id: 25, member: 'Rahmat Syahputra', project: 'Backend System', plannedAssign: 17, completeAssign: 12, pctAssign: 71, plannedBeing: 13, completeBeing: 10, pctBeing: 77, duration: 5400 },
+  { id: 26, member: 'Surya Dharma', project: '-', plannedAssign: 4, completeAssign: 4, pctAssign: 100, plannedBeing: 6, completeBeing: 3, pctBeing: 50, duration: 1600 },
+  { id: 27, member: 'Taufik Ismail', project: 'Infrastructure', plannedAssign: 13, completeAssign: 7, pctAssign: 54, plannedBeing: 19, completeBeing: 14, pctBeing: 74, duration: 4200 },
+  { id: 28, member: 'Umar Fauzi', project: '-', plannedAssign: 1, completeAssign: 0, pctAssign: 0, plannedBeing: 5, completeBeing: 1, pctBeing: 20, duration: 300 },
+  { id: 29, member: 'Vino Bastian', project: 'Mobile App', plannedAssign: 10, completeAssign: 8, pctAssign: 80, plannedBeing: 10, completeBeing: 9, pctBeing: 90, duration: 3800 },
+  { id: 30, member: 'Wahyu Setiawan', project: '-', plannedAssign: 3, completeAssign: 1, pctAssign: 33, plannedBeing: 7, completeBeing: 2, pctBeing: 29, duration: 640 },
+  { id: 31, member: 'Xaverius Rendi', project: 'Web Admin', plannedAssign: 8, completeAssign: 5, pctAssign: 63, plannedBeing: 4, completeBeing: 4, pctBeing: 100, duration: 2200 },
+  { id: 32, member: 'Yoga Aditama', project: '-', plannedAssign: 19, completeAssign: 14, pctAssign: 74, plannedBeing: 16, completeBeing: 11, pctBeing: 69, duration: 5100 },
+  { id: 33, member: 'Zainal Abidin', project: 'Backend System', plannedAssign: 6, completeAssign: 6, pctAssign: 100, plannedBeing: 3, completeBeing: 3, pctBeing: 100, duration: 2800 },
+  { id: 34, member: 'Arief Rachman', project: '-', plannedAssign: 14, completeAssign: 9, pctAssign: 64, plannedBeing: 8, completeBeing: 5, pctBeing: 63, duration: 3400 },
+  { id: 35, member: 'Bambang Suryono', project: 'Infrastructure', plannedAssign: 21, completeAssign: 19, pctAssign: 90, plannedBeing: 17, completeBeing: 15, pctBeing: 88, duration: 6800 },
+  { id: 36, member: 'Cahyo Nugroho', project: '-', plannedAssign: 2, completeAssign: 0, pctAssign: 0, plannedBeing: 9, completeBeing: 4, pctBeing: 44, duration: 950 },
+  { id: 37, member: 'Dimas Anggara', project: 'Mobile App', plannedAssign: 11, completeAssign: 7, pctAssign: 64, plannedBeing: 13, completeBeing: 8, pctBeing: 62, duration: 3100 },
+  { id: 38, member: 'Erwanto Pujiarto', project: '-', plannedAssign: 0, completeAssign: 0, pctAssign: 0, plannedBeing: 4, completeBeing: 0, pctBeing: 0, duration: 0 },
+  { id: 39, member: 'Firdaus Harahap', project: 'Web Admin', plannedAssign: 7, completeAssign: 3, pctAssign: 43, plannedBeing: 11, completeBeing: 6, pctBeing: 55, duration: 1700 },
+  { id: 40, member: 'Gilang Ramadhan', project: '-', plannedAssign: 16, completeAssign: 11, pctAssign: 69, plannedBeing: 5, completeBeing: 5, pctBeing: 100, duration: 4100 },
+  { id: 41, member: 'Hafidz Mubarok', project: 'Backend System', plannedAssign: 9, completeAssign: 9, pctAssign: 100, plannedBeing: 7, completeBeing: 7, pctBeing: 100, duration: 3900 },
+  { id: 42, member: 'Imam Fauzan', project: '-', plannedAssign: 5, completeAssign: 2, pctAssign: 40, plannedBeing: 10, completeBeing: 3, pctBeing: 30, duration: 890 },
+  { id: 43, member: 'Jefri Sihotang', project: 'Infrastructure', plannedAssign: 12, completeAssign: 8, pctAssign: 67, plannedBeing: 14, completeBeing: 10, pctBeing: 71, duration: 3700 },
+  { id: 44, member: 'Kevin Anggara', project: '-', plannedAssign: 0, completeAssign: 0, pctAssign: 0, plannedBeing: 1, completeBeing: 1, pctBeing: 100, duration: 45 },
+  { id: 45, member: 'Luthfi Hamdani', project: 'Mobile App', plannedAssign: 18, completeAssign: 13, pctAssign: 72, plannedBeing: 20, completeBeing: 15, pctBeing: 75, duration: 5800 },
+  { id: 46, member: 'Malik Ibrahim', project: '-', plannedAssign: 4, completeAssign: 4, pctAssign: 100, plannedBeing: 2, completeBeing: 2, pctBeing: 100, duration: 1100 },
+  { id: 47, member: 'Nanda Pratama', project: 'Web Admin', plannedAssign: 15, completeAssign: 10, pctAssign: 67, plannedBeing: 12, completeBeing: 9, pctBeing: 75, duration: 4300 },
+  { id: 48, member: 'Oktaviano Slamet', project: '-', plannedAssign: 3, completeAssign: 1, pctAssign: 33, plannedBeing: 6, completeBeing: 2, pctBeing: 33, duration: 520 },
+  { id: 49, member: 'Prasetya Aji', project: 'Backend System', plannedAssign: 20, completeAssign: 16, pctAssign: 80, plannedBeing: 9, completeBeing: 8, pctBeing: 89, duration: 6400 },
+  { id: 50, member: 'Ridwan Kamil', project: '-', plannedAssign: 1, completeAssign: 0, pctAssign: 0, plannedBeing: 3, completeBeing: 0, pctBeing: 0, duration: 0 },
+  { id: 51, member: 'Satria Nugraha', project: 'Infrastructure', plannedAssign: 8, completeAssign: 6, pctAssign: 75, plannedBeing: 11, completeBeing: 7, pctBeing: 64, duration: 2700 },
+  { id: 52, member: 'Teguh Prasetyo', project: '-', plannedAssign: 13, completeAssign: 10, pctAssign: 77, plannedBeing: 8, completeBeing: 6, pctBeing: 75, duration: 3500 },
+  { id: 53, member: 'Udin Saepudin', project: 'Mobile App', plannedAssign: 6, completeAssign: 3, pctAssign: 50, plannedBeing: 15, completeBeing: 10, pctBeing: 67, duration: 2400 },
+  { id: 54, member: 'Viktor Manurung', project: '-', plannedAssign: 0, completeAssign: 0, pctAssign: 0, plannedBeing: 5, completeBeing: 2, pctBeing: 40, duration: 380 },
+  { id: 55, member: 'Wawan Hermawan', project: 'Web Admin', plannedAssign: 10, completeAssign: 10, pctAssign: 100, plannedBeing: 6, completeBeing: 6, pctBeing: 100, duration: 4800 },
+  { id: 56, member: 'Yanto Sugiarto', project: '-', plannedAssign: 7, completeAssign: 2, pctAssign: 29, plannedBeing: 9, completeBeing: 4, pctBeing: 44, duration: 1300 },
+  { id: 57, member: 'Zulfikar Ramadhan', project: 'Backend System', plannedAssign: 14, completeAssign: 11, pctAssign: 79, plannedBeing: 7, completeBeing: 5, pctBeing: 71, duration: 4600 },
+  { id: 58, member: 'Andri Setiawan', project: '-', plannedAssign: 9, completeAssign: 5, pctAssign: 56, plannedBeing: 13, completeBeing: 8, pctBeing: 62, duration: 2900 },
+  { id: 59, member: 'Bayu Krisna', project: 'Infrastructure', plannedAssign: 17, completeAssign: 14, pctAssign: 82, plannedBeing: 10, completeBeing: 10, pctBeing: 100, duration: 5500 },
+  { id: 60, member: 'Chairul Anwar', project: '-', plannedAssign: 2, completeAssign: 2, pctAssign: 100, plannedBeing: 4, completeBeing: 1, pctBeing: 25, duration: 700 },
+  { id: 61, member: 'Deni Firmansyah', project: 'Mobile App', plannedAssign: 11, completeAssign: 8, pctAssign: 73, plannedBeing: 16, completeBeing: 12, pctBeing: 75, duration: 3800 },
+  { id: 62, member: 'Erwin Saputra', project: '-', plannedAssign: 0, completeAssign: 0, pctAssign: 0, plannedBeing: 2, completeBeing: 0, pctBeing: 0, duration: 0 },
+  { id: 63, member: 'Faisal Abdillah', project: 'Web Admin', plannedAssign: 15, completeAssign: 12, pctAssign: 80, plannedBeing: 8, completeBeing: 6, pctBeing: 75, duration: 4400 },
+  { id: 64, member: 'Guntur Wibowo', project: '-', plannedAssign: 4, completeAssign: 1, pctAssign: 25, plannedBeing: 7, completeBeing: 3, pctBeing: 43, duration: 900 },
+  { id: 65, member: 'Hasan Basri', project: 'Backend System', plannedAssign: 19, completeAssign: 17, pctAssign: 89, plannedBeing: 14, completeBeing: 13, pctBeing: 93, duration: 7100 },
+  { id: 66, member: 'Iwan Setiawan', project: '-', plannedAssign: 6, completeAssign: 4, pctAssign: 67, plannedBeing: 5, completeBeing: 3, pctBeing: 60, duration: 1800 },
+  { id: 67, member: 'Jajang Nurjaman', project: 'Infrastructure', plannedAssign: 8, completeAssign: 5, pctAssign: 63, plannedBeing: 11, completeBeing: 7, pctBeing: 64, duration: 2600 },
+  { id: 68, member: 'Khoirul Anam', project: '-', plannedAssign: 1, completeAssign: 0, pctAssign: 0, plannedBeing: 3, completeBeing: 1, pctBeing: 33, duration: 150 },
+  { id: 69, member: 'Lutfi Ramadhan', project: 'Mobile App', plannedAssign: 13, completeAssign: 9, pctAssign: 69, plannedBeing: 17, completeBeing: 12, pctBeing: 71, duration: 4000 },
+  { id: 70, member: 'Mulyadi Pranoto', project: '-', plannedAssign: 10, completeAssign: 7, pctAssign: 70, plannedBeing: 6, completeBeing: 4, pctBeing: 67, duration: 3100 },
+  { id: 71, member: 'Nur Rohman', project: 'Web Admin', plannedAssign: 5, completeAssign: 3, pctAssign: 60, plannedBeing: 9, completeBeing: 5, pctBeing: 56, duration: 1600 },
+  { id: 72, member: 'Oki Setiawan', project: '-', plannedAssign: 0, completeAssign: 0, pctAssign: 0, plannedBeing: 1, completeBeing: 0, pctBeing: 0, duration: 0 },
+  { id: 73, member: 'Pandu Wiratama', project: 'Backend System', plannedAssign: 16, completeAssign: 13, pctAssign: 81, plannedBeing: 12, completeBeing: 10, pctBeing: 83, duration: 5200 },
+  { id: 74, member: 'Rizal Fakhri', project: '-', plannedAssign: 7, completeAssign: 4, pctAssign: 57, plannedBeing: 8, completeBeing: 5, pctBeing: 63, duration: 2100 },
+  { id: 75, member: 'Slamet Riyadi', project: 'Infrastructure', plannedAssign: 12, completeAssign: 10, pctAssign: 83, plannedBeing: 15, completeBeing: 11, pctBeing: 73, duration: 4700 },
+  { id: 76, member: 'Tri Wibowo', project: '-', plannedAssign: 3, completeAssign: 2, pctAssign: 67, plannedBeing: 4, completeBeing: 2, pctBeing: 50, duration: 800 },
+  { id: 77, member: 'Ujang Darmawan', project: 'Mobile App', plannedAssign: 9, completeAssign: 6, pctAssign: 67, plannedBeing: 10, completeBeing: 8, pctBeing: 80, duration: 3300 },
+  { id: 78, member: 'Vicky Prasetyo', project: '-', plannedAssign: 2, completeAssign: 1, pctAssign: 50, plannedBeing: 6, completeBeing: 3, pctBeing: 50, duration: 600 },
+  { id: 79, member: 'Wisnu Wardana', project: 'Web Admin', plannedAssign: 18, completeAssign: 15, pctAssign: 83, plannedBeing: 13, completeBeing: 11, pctBeing: 85, duration: 6200 },
+  { id: 80, member: 'Yudha Permana', project: '-', plannedAssign: 5, completeAssign: 3, pctAssign: 60, plannedBeing: 7, completeBeing: 4, pctBeing: 57, duration: 1500 },
+  { id: 81, member: 'Zaenal Mustafa', project: 'Backend System', plannedAssign: 11, completeAssign: 8, pctAssign: 73, plannedBeing: 9, completeBeing: 7, pctBeing: 78, duration: 3600 },
+  { id: 82, member: 'Aris Munandar', project: '-', plannedAssign: 14, completeAssign: 10, pctAssign: 71, plannedBeing: 11, completeBeing: 8, pctBeing: 73, duration: 4100 },
+  { id: 83, member: 'Basuki Rahmat', project: 'Infrastructure', plannedAssign: 20, completeAssign: 18, pctAssign: 90, plannedBeing: 16, completeBeing: 14, pctBeing: 88, duration: 6900 },
+  { id: 84, member: 'Candra Wijaya', project: '-', plannedAssign: 1, completeAssign: 0, pctAssign: 0, plannedBeing: 2, completeBeing: 1, pctBeing: 50, duration: 200 },
+  { id: 85, member: 'Dian Nugroho', project: 'Mobile App', plannedAssign: 8, completeAssign: 6, pctAssign: 75, plannedBeing: 14, completeBeing: 10, pctBeing: 71, duration: 3500 },
+  { id: 86, member: 'Edy Purwanto', project: '-', plannedAssign: 0, completeAssign: 0, pctAssign: 0, plannedBeing: 3, completeBeing: 0, pctBeing: 0, duration: 0 },
+  { id: 87, member: 'Firman Hidayat', project: 'Web Admin', plannedAssign: 6, completeAssign: 4, pctAssign: 67, plannedBeing: 5, completeBeing: 3, pctBeing: 60, duration: 1900 },
+  { id: 88, member: 'Gandi Sulistyo', project: '-', plannedAssign: 13, completeAssign: 9, pctAssign: 69, plannedBeing: 10, completeBeing: 7, pctBeing: 70, duration: 3800 },
+  { id: 89, member: 'Handoko Santoso', project: 'Backend System', plannedAssign: 7, completeAssign: 5, pctAssign: 71, plannedBeing: 8, completeBeing: 6, pctBeing: 75, duration: 2500 },
+  { id: 90, member: 'Indra Lesmana', project: '-', plannedAssign: 4, completeAssign: 2, pctAssign: 50, plannedBeing: 12, completeBeing: 5, pctBeing: 42, duration: 1100 },
+  { id: 91, member: 'Jaya Kusuma', project: 'Infrastructure', plannedAssign: 15, completeAssign: 12, pctAssign: 80, plannedBeing: 11, completeBeing: 9, pctBeing: 82, duration: 5000 },
+  { id: 92, member: 'Karman Sopyan', project: '-', plannedAssign: 2, completeAssign: 1, pctAssign: 50, plannedBeing: 4, completeBeing: 2, pctBeing: 50, duration: 450 },
+  { id: 93, member: 'Lukito Wibowo', project: 'Mobile App', plannedAssign: 10, completeAssign: 7, pctAssign: 70, plannedBeing: 13, completeBeing: 9, pctBeing: 69, duration: 3400 },
+  { id: 94, member: 'Miftahul Huda', project: '-', plannedAssign: 0, completeAssign: 0, pctAssign: 0, plannedBeing: 1, completeBeing: 0, pctBeing: 0, duration: 0 },
+  { id: 95, member: 'Nugroho Prasetyo', project: 'Web Admin', plannedAssign: 17, completeAssign: 14, pctAssign: 82, plannedBeing: 9, completeBeing: 8, pctBeing: 89, duration: 5700 },
+  { id: 96, member: 'Oky Rahmawan', project: '-', plannedAssign: 5, completeAssign: 3, pctAssign: 60, plannedBeing: 7, completeBeing: 4, pctBeing: 57, duration: 1400 },
+  { id: 97, member: 'Prayoga Utama', project: 'Backend System', plannedAssign: 12, completeAssign: 10, pctAssign: 83, plannedBeing: 6, completeBeing: 5, pctBeing: 83, duration: 4200 },
+  { id: 98, member: 'Rendi Saputra', project: '-', plannedAssign: 3, completeAssign: 1, pctAssign: 33, plannedBeing: 8, completeBeing: 3, pctBeing: 38, duration: 720 },
+  { id: 99, member: 'Sugeng Hartono', project: 'Infrastructure', plannedAssign: 9, completeAssign: 7, pctAssign: 78, plannedBeing: 10, completeBeing: 8, pctBeing: 80, duration: 3200 },
+  { id: 100, member: 'Toni Sucipto', project: '-', plannedAssign: 6, completeAssign: 4, pctAssign: 67, plannedBeing: 5, completeBeing: 3, pctBeing: 60, duration: 1700 },
+  { id: 101, member: 'Unang Supriatna', project: 'Mobile App', plannedAssign: 14, completeAssign: 11, pctAssign: 79, plannedBeing: 18, completeBeing: 13, pctBeing: 72, duration: 5100 },
+  { id: 102, member: 'Vandy Pratama', project: '-', plannedAssign: 1, completeAssign: 0, pctAssign: 0, plannedBeing: 2, completeBeing: 0, pctBeing: 0, duration: 0 },
+  { id: 103, member: 'Wawan Kurniawan', project: 'Web Admin', plannedAssign: 8, completeAssign: 6, pctAssign: 75, plannedBeing: 7, completeBeing: 5, pctBeing: 71, duration: 2800 },
+  { id: 104, member: 'Yogi Firmansyah', project: '-', plannedAssign: 11, completeAssign: 8, pctAssign: 73, plannedBeing: 9, completeBeing: 6, pctBeing: 67, duration: 3400 },
+  { id: 105, member: 'Zubaedi Muttaqin', project: 'Backend System', plannedAssign: 16, completeAssign: 14, pctAssign: 88, plannedBeing: 12, completeBeing: 11, pctBeing: 92, duration: 5900 },
+  { id: 106, member: 'Anwar Ibrahim', project: '-', plannedAssign: 7, completeAssign: 3, pctAssign: 43, plannedBeing: 6, completeBeing: 2, pctBeing: 33, duration: 1200 },
+  { id: 107, member: 'Budiman Sujatmiko', project: 'Infrastructure', plannedAssign: 13, completeAssign: 11, pctAssign: 85, plannedBeing: 15, completeBeing: 12, pctBeing: 80, duration: 4800 },
+  { id: 108, member: 'Cecep Suhendar', project: '-', plannedAssign: 0, completeAssign: 0, pctAssign: 0, plannedBeing: 4, completeBeing: 1, pctBeing: 25, duration: 180 },
+  { id: 109, member: 'Dodi Iskandar', project: 'Mobile App', plannedAssign: 10, completeAssign: 7, pctAssign: 70, plannedBeing: 11, completeBeing: 8, pctBeing: 73, duration: 3600 },
+  { id: 110, member: 'Endang Supriyadi', project: '-', plannedAssign: 5, completeAssign: 2, pctAssign: 40, plannedBeing: 3, completeBeing: 1, pctBeing: 33, duration: 680 },
+  { id: 111, member: 'Ferry Irawan', project: 'Web Admin', plannedAssign: 18, completeAssign: 15, pctAssign: 83, plannedBeing: 14, completeBeing: 12, pctBeing: 86, duration: 6300 },
+  { id: 112, member: 'Gunawan Wicaksono', project: '-', plannedAssign: 4, completeAssign: 3, pctAssign: 75, plannedBeing: 8, completeBeing: 5, pctBeing: 63, duration: 1500 },
+  { id: 113, member: 'Heri Susanto', project: 'Backend System', plannedAssign: 9, completeAssign: 6, pctAssign: 67, plannedBeing: 7, completeBeing: 5, pctBeing: 71, duration: 2700 },
+  { id: 114, member: 'Ilham Maulana', project: '-', plannedAssign: 2, completeAssign: 1, pctAssign: 50, plannedBeing: 5, completeBeing: 2, pctBeing: 40, duration: 420 },
+  { id: 115, member: 'Johan Permadi', project: 'Infrastructure', plannedAssign: 15, completeAssign: 13, pctAssign: 87, plannedBeing: 10, completeBeing: 9, pctBeing: 90, duration: 5400 },
+  { id: 116, member: 'Kiki Saputra', project: '-', plannedAssign: 6, completeAssign: 4, pctAssign: 67, plannedBeing: 9, completeBeing: 6, pctBeing: 67, duration: 2000 },
+  { id: 117, member: 'Landi Ramadhan', project: 'Mobile App', plannedAssign: 12, completeAssign: 9, pctAssign: 75, plannedBeing: 16, completeBeing: 11, pctBeing: 69, duration: 4100 },
+  { id: 118, member: 'Marwan Effendi', project: '-', plannedAssign: 0, completeAssign: 0, pctAssign: 0, plannedBeing: 2, completeBeing: 1, pctBeing: 50, duration: 90 },
+  { id: 119, member: 'Nanang Hermawan', project: 'Web Admin', plannedAssign: 8, completeAssign: 5, pctAssign: 63, plannedBeing: 6, completeBeing: 4, pctBeing: 67, duration: 2300 },
+  { id: 120, member: 'Opik Santoso', project: '-', plannedAssign: 14, completeAssign: 10, pctAssign: 71, plannedBeing: 11, completeBeing: 8, pctBeing: 73, duration: 4200 },
+  { id: 121, member: 'Purnomo Anggoro', project: 'Backend System', plannedAssign: 7, completeAssign: 5, pctAssign: 71, plannedBeing: 4, completeBeing: 3, pctBeing: 75, duration: 2100 },
+  { id: 122, member: 'Rudy Hartono', project: '-', plannedAssign: 3, completeAssign: 2, pctAssign: 67, plannedBeing: 7, completeBeing: 4, pctBeing: 57, duration: 850 },
+  { id: 123, member: 'Soleh Hidayat', project: 'Infrastructure', plannedAssign: 11, completeAssign: 9, pctAssign: 82, plannedBeing: 13, completeBeing: 10, pctBeing: 77, duration: 4000 },
+  { id: 124, member: 'Tommy Kurniawan', project: '-', plannedAssign: 1, completeAssign: 0, pctAssign: 0, plannedBeing: 3, completeBeing: 0, pctBeing: 0, duration: 0 },
+  { id: 125, member: 'Usman Hakim', project: 'Mobile App', plannedAssign: 16, completeAssign: 12, pctAssign: 75, plannedBeing: 19, completeBeing: 14, pctBeing: 74, duration: 5300 },
+  { id: 126, member: 'Veri Setiawan', project: '-', plannedAssign: 5, completeAssign: 3, pctAssign: 60, plannedBeing: 8, completeBeing: 5, pctBeing: 63, duration: 1600 },
+  { id: 127, member: 'Widi Nugroho', project: 'Web Admin', plannedAssign: 10, completeAssign: 8, pctAssign: 80, plannedBeing: 7, completeBeing: 6, pctBeing: 86, duration: 3500 },
+  { id: 128, member: 'Yanto Purnomo', project: '-', plannedAssign: 4, completeAssign: 2, pctAssign: 50, plannedBeing: 6, completeBeing: 3, pctBeing: 50, duration: 900 },
+  { id: 129, member: 'Zaki Mubarak', project: 'Backend System', plannedAssign: 13, completeAssign: 10, pctAssign: 77, plannedBeing: 10, completeBeing: 8, pctBeing: 80, duration: 4500 },
+  { id: 130, member: 'Asep Sunandar', project: 'Infrastructure', plannedAssign: 19, completeAssign: 16, pctAssign: 84, plannedBeing: 14, completeBeing: 12, pctBeing: 86, duration: 6100 },
+  { id: 131, member: 'Benny Prasetyo', project: '-', plannedAssign: 2, completeAssign: 1, pctAssign: 50, plannedBeing: 5, completeBeing: 2, pctBeing: 40, duration: 550 },
 ];
 
 const STATUS_FILTERS = [
@@ -125,6 +244,128 @@ export default function MonitoringScreen() {
 
   const [activeTab, setActiveTab] = useState<'Task' | 'Resource'>('Task');
   const [showMenu, setShowMenu] = useState(false);
+
+  // Resource state
+  const [resourcePage, setResourcePage] = useState(1);
+  const [resourceRowsPerPage, setResourceRowsPerPage] = useState(10);
+  const [showRowsMenu, setShowRowsMenu] = useState(false);
+  const [resourceViewMode, setResourceViewMode] = useState<'Member' | 'Project'>('Member');
+  const [showWorkspaceDropdown, setShowWorkspaceDropdown] = useState(false);
+  const [selectedWorkspaces, setSelectedWorkspaces] = useState<string[]>([]);
+  const [showMoreFilter, setShowMoreFilter] = useState(false);
+  const [resourceSearch, setResourceSearch] = useState('');
+  const [minPct, setMinPct] = useState('');
+  const [maxPct, setMaxPct] = useState('');
+  const [minDuration, setMinDuration] = useState('');
+  const [maxDuration, setMaxDuration] = useState('');
+  const [resourceSortKey, setResourceSortKey] = useState<string>('member');
+  const [resourceSortAsc, setResourceSortAsc] = useState(true);
+
+  const ALL_WORKSPACES = useMemo(() => {
+    const ws = new Set(RESOURCE_DATA.map(r => r.project).filter(p => p !== '-'));
+    return Array.from(ws).sort();
+  }, []);
+
+  const toggleWorkspace = (ws: string) => {
+    setSelectedWorkspaces(prev =>
+      prev.includes(ws) ? prev.filter(w => w !== ws) : [...prev, ws]
+    );
+    setResourcePage(1);
+  };
+
+  // Grouped by project for "View by Project"
+  const groupedByProject = useMemo(() => {
+    const groups: Record<string, typeof RESOURCE_DATA> = {};
+    RESOURCE_DATA.forEach(r => {
+      const key = r.project === '-' ? 'Unassigned' : r.project;
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(r);
+    });
+    return groups;
+  }, []);
+
+  const filteredResource = useMemo(() => {
+    let data = [...RESOURCE_DATA];
+    // workspace filter
+    if (selectedWorkspaces.length > 0) {
+      data = data.filter(r => selectedWorkspaces.includes(r.project) || (selectedWorkspaces.includes('Unassigned') && r.project === '-'));
+    }
+    // search filter
+    if (resourceSearch.trim()) {
+      const q = resourceSearch.toLowerCase();
+      data = data.filter(r => r.member.toLowerCase().includes(q) || r.project.toLowerCase().includes(q));
+    }
+    // pct filter (uses average of pctAssign & pctBeing)
+    if (minPct !== '') {
+      const min = parseInt(minPct);
+      if (!isNaN(min)) data = data.filter(r => Math.max(r.pctAssign, r.pctBeing) >= min);
+    }
+    if (maxPct !== '') {
+      const max = parseInt(maxPct);
+      if (!isNaN(max)) data = data.filter(r => Math.min(r.pctAssign, r.pctBeing) <= max);
+    }
+    // duration filter
+    if (minDuration !== '') {
+      const min = parseInt(minDuration);
+      if (!isNaN(min)) data = data.filter(r => r.duration >= min);
+    }
+    if (maxDuration !== '') {
+      const max = parseInt(maxDuration);
+      if (!isNaN(max)) data = data.filter(r => r.duration <= max);
+    }
+    // sort
+    data.sort((a, b) => {
+      let va: any, vb: any;
+      switch (resourceSortKey) {
+        case 'member': va = a.member; vb = b.member; break;
+        case 'project': va = a.project; vb = b.project; break;
+        case 'plannedAssign': va = a.plannedAssign; vb = b.plannedAssign; break;
+        case 'completeAssign': va = a.completeAssign; vb = b.completeAssign; break;
+        case 'pctAssign': va = a.pctAssign; vb = b.pctAssign; break;
+        case 'plannedBeing': va = a.plannedBeing; vb = b.plannedBeing; break;
+        case 'completeBeing': va = a.completeBeing; vb = b.completeBeing; break;
+        case 'pctBeing': va = a.pctBeing; vb = b.pctBeing; break;
+        case 'duration': va = a.duration; vb = b.duration; break;
+        default: va = a.member; vb = b.member;
+      }
+      if (typeof va === 'string') {
+        return resourceSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+      }
+      return resourceSortAsc ? va - vb : vb - va;
+    });
+    return data;
+  }, [selectedWorkspaces, resourceSearch, minPct, maxPct, minDuration, maxDuration, resourceSortKey, resourceSortAsc]);
+
+  const totalResourcePages = Math.ceil(filteredResource.length / resourceRowsPerPage);
+  const paginatedResource = useMemo(() => {
+    const start = (resourcePage - 1) * resourceRowsPerPage;
+    return filteredResource.slice(start, start + resourceRowsPerPage);
+  }, [filteredResource, resourcePage, resourceRowsPerPage]);
+
+  const handleSort = (key: string) => {
+    if (resourceSortKey === key) {
+      setResourceSortAsc(!resourceSortAsc);
+    } else {
+      setResourceSortKey(key);
+      setResourceSortAsc(true);
+    }
+    setResourcePage(1);
+  };
+
+  const sortIcon = (key: string) => {
+    if (resourceSortKey === key) return resourceSortAsc ? ' ▲' : ' ▼';
+    return ' ↕';
+  };
+
+  const clearAllFilters = () => {
+    setSelectedWorkspaces([]);
+    setResourceSearch('');
+    setMinPct('');
+    setMaxPct('');
+    setMinDuration('');
+    setMaxDuration('');
+    setResourcePage(1);
+  };
 
   const [tasks] = useState(INITIAL_TASKS);
   const [search, setSearch] = useState('');
@@ -442,120 +683,429 @@ export default function MonitoringScreen() {
       {/* ================= MONITORING RESOURCE VIEW ================= */}
       {activeTab === 'Resource' && (
         <ScrollView contentContainerStyle={{ paddingBottom: (Platform.OS === 'ios' ? 88 : 70) + 20 }} style={{ flex: 1 }}>
+           {/* View Mode Toggle */}
            <View style={{ flexDirection: 'row', gap: 10, paddingHorizontal: 16, paddingVertical: 12 }}>
-             <TouchableOpacity style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: C.surface2, borderWidth: 1, borderColor: C.border }}>
-                <Text style={{ color: C.text1, fontSize: 13, fontWeight: '600' }}>View by Member</Text>
+             <TouchableOpacity
+               style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: resourceViewMode === 'Member' ? C.surface2 : 'transparent', borderWidth: resourceViewMode === 'Member' ? 1 : 0, borderColor: C.border }}
+               onPress={() => { setResourceViewMode('Member'); setResourcePage(1); }}
+             >
+                <Text style={{ color: resourceViewMode === 'Member' ? C.text1 : C.text3, fontSize: 13, fontWeight: '600' }}>View by Member</Text>
              </TouchableOpacity>
-             <TouchableOpacity style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 }}>
-                <Text style={{ color: C.text3, fontSize: 13, fontWeight: '600' }}>View by Project</Text>
+             <TouchableOpacity
+               style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: resourceViewMode === 'Project' ? C.surface2 : 'transparent', borderWidth: resourceViewMode === 'Project' ? 1 : 0, borderColor: C.border }}
+               onPress={() => { setResourceViewMode('Project'); setResourcePage(1); }}
+             >
+                <Text style={{ color: resourceViewMode === 'Project' ? C.text1 : C.text3, fontSize: 13, fontWeight: '600' }}>View by Project</Text>
              </TouchableOpacity>
            </View>
 
-           <View style={{ backgroundColor: C.surface, marginHorizontal: 16, borderRadius: 12, borderWidth: 1, borderColor: C.border, overflow: 'hidden' }}>
+           {/* Active filter indicator */}
+           {(selectedWorkspaces.length > 0 || resourceSearch || minPct || maxPct || minDuration || maxDuration) && (
+             <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingBottom: 8, gap: 8, flexWrap: 'wrap' }}>
+               <Ionicons name="filter" size={14} color={C.brand} />
+               <Text style={{ color: C.brand, fontSize: 11, fontWeight: '600' }}>Filters active</Text>
+               {selectedWorkspaces.map(ws => (
+                 <TouchableOpacity key={ws} onPress={() => toggleWorkspace(ws)} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: C.brandSoft, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12 }}>
+                   <Text style={{ color: C.brand, fontSize: 10, fontWeight: '600' }}>{ws}</Text>
+                   <Ionicons name="close" size={10} color={C.brand} />
+                 </TouchableOpacity>
+               ))}
+               {resourceSearch ? (
+                 <View style={{ backgroundColor: C.tealSoft, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12 }}>
+                   <Text style={{ color: C.teal, fontSize: 10, fontWeight: '600' }}>Search: {resourceSearch}</Text>
+                 </View>
+               ) : null}
+               <TouchableOpacity onPress={clearAllFilters} style={{ paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12, backgroundColor: C.slateSoft }}>
+                 <Text style={{ color: C.red, fontSize: 10, fontWeight: '600' }}>Clear All</Text>
+               </TouchableOpacity>
+             </View>
+           )}
+
+           <View style={{ backgroundColor: C.surface, marginHorizontal: 16, borderRadius: 12, borderWidth: 1, borderColor: C.border, overflow: 'visible' }}>
              
              {/* Toolbar */}
              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderBottomWidth: 1, borderBottomColor: C.borderSoft }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, position: 'relative', zIndex: 20 }}>
                    <Text style={{ color: C.text2, fontSize: 12, fontWeight: '600' }}>Workspaces:</Text>
-                   <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: C.bg, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: C.borderSoft }}>
-                      <Text style={{ color: C.text3, fontSize: 12 }}>Select Workspaces</Text>
-                      <Ionicons name="chevron-down" size={14} color={C.text3} />
+                   <TouchableOpacity
+                     style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: C.bg, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: selectedWorkspaces.length > 0 ? C.brand : C.borderSoft }}
+                     onPress={() => { setShowWorkspaceDropdown(!showWorkspaceDropdown); setShowMoreFilter(false); }}
+                   >
+                      <Text style={{ color: selectedWorkspaces.length > 0 ? C.brand : C.text3, fontSize: 12 }}>
+                        {selectedWorkspaces.length > 0 ? `${selectedWorkspaces.length} selected` : 'All Workspaces'}
+                      </Text>
+                      <Ionicons name={showWorkspaceDropdown ? "chevron-up" : "chevron-down"} size={14} color={selectedWorkspaces.length > 0 ? C.brand : C.text3} />
                    </TouchableOpacity>
+
+                   {/* Workspace Dropdown */}
+                   {showWorkspaceDropdown && (
+                     <View style={{ position: 'absolute', top: 36, left: 0, backgroundColor: C.surface, borderRadius: 12, borderWidth: 1, borderColor: C.border, zIndex: 999, width: 240, maxHeight: 320, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 12, elevation: 8 }}>
+                       <View style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: C.borderSoft }}>
+                         <Text style={{ color: C.text1, fontSize: 13, fontWeight: 'bold', marginBottom: 8 }}>Select Workspaces</Text>
+                         <TouchableOpacity
+                           onPress={() => { setSelectedWorkspaces([]); setResourcePage(1); }}
+                           style={{ paddingVertical: 6 }}
+                         >
+                           <Text style={{ color: C.brand, fontSize: 12, fontWeight: '600' }}>Show All</Text>
+                         </TouchableOpacity>
+                       </View>
+                       <ScrollView style={{ maxHeight: 220 }} nestedScrollEnabled>
+                         {/* Unassigned option */}
+                         <TouchableOpacity
+                           onPress={() => toggleWorkspace('Unassigned')}
+                           style={{ flexDirection: 'row', alignItems: 'center', padding: 12, gap: 10, borderBottomWidth: 1, borderBottomColor: C.borderSoft }}
+                         >
+                           <View style={{ width: 20, height: 20, borderRadius: 4, borderWidth: 1.5, borderColor: selectedWorkspaces.includes('Unassigned') ? C.brand : C.text3, backgroundColor: selectedWorkspaces.includes('Unassigned') ? C.brand : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
+                             {selectedWorkspaces.includes('Unassigned') && <Ionicons name="checkmark" size={14} color={C.bg} />}
+                           </View>
+                           <Text style={{ color: C.text2, fontSize: 12 }}>Unassigned (-)</Text>
+                         </TouchableOpacity>
+                         {ALL_WORKSPACES.map(ws => (
+                           <TouchableOpacity
+                             key={ws}
+                             onPress={() => toggleWorkspace(ws)}
+                             style={{ flexDirection: 'row', alignItems: 'center', padding: 12, gap: 10, borderBottomWidth: 1, borderBottomColor: C.borderSoft }}
+                           >
+                             <View style={{ width: 20, height: 20, borderRadius: 4, borderWidth: 1.5, borderColor: selectedWorkspaces.includes(ws) ? C.brand : C.text3, backgroundColor: selectedWorkspaces.includes(ws) ? C.brand : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
+                               {selectedWorkspaces.includes(ws) && <Ionicons name="checkmark" size={14} color={C.bg} />}
+                             </View>
+                             <Text style={{ color: C.text2, fontSize: 12 }}>{ws}</Text>
+                           </TouchableOpacity>
+                         ))}
+                       </ScrollView>
+                       <TouchableOpacity
+                         onPress={() => setShowWorkspaceDropdown(false)}
+                         style={{ padding: 12, borderTopWidth: 1, borderTopColor: C.borderSoft, alignItems: 'center' }}
+                       >
+                         <Text style={{ color: C.brand, fontSize: 12, fontWeight: 'bold' }}>Done</Text>
+                       </TouchableOpacity>
+                     </View>
+                   )}
                 </View>
-                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                   <Text style={{ color: C.text1, fontSize: 12, fontWeight: '600' }}>More Filter</Text>
-                   <Ionicons name="chevron-down" size={14} color={C.text1} />
+                <TouchableOpacity
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+                  onPress={() => { setShowMoreFilter(!showMoreFilter); setShowWorkspaceDropdown(false); }}
+                >
+                   <Ionicons name="options-outline" size={14} color={showMoreFilter ? C.brand : C.text1} />
+                   <Text style={{ color: showMoreFilter ? C.brand : C.text1, fontSize: 12, fontWeight: '600' }}>More Filter</Text>
+                   <Ionicons name={showMoreFilter ? "chevron-up" : "chevron-down"} size={14} color={showMoreFilter ? C.brand : C.text1} />
                 </TouchableOpacity>
              </View>
 
-             {/* Table container horizontally scrollable */}
-             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-               <View>
-                 {/* Table Header */}
-                 <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderColor: C.borderSoft }}>
-                    <Text style={{ width: 170, color: C.text1, fontWeight: 'bold', fontSize: 12 }}>Member ^</Text>
-                    <Text style={{ width: 100, color: C.text1, fontWeight: 'bold', fontSize: 12 }}>Project ↑↓</Text>
-                    
-                    <View style={{ width: 270 }}>
-                       <Text style={{ color: C.text1, fontWeight: 'bold', fontSize: 12, textAlign: 'center', marginBottom: 8 }}>Assigning Task</Text>
-                       <View style={{ flexDirection: 'row' }}>
-                          <Text style={{ flex: 1, color: C.text1, fontSize: 11, textAlign: 'center' }}>Planned ↑↓</Text>
-                          <Text style={{ flex: 1, color: C.text1, fontSize: 11, textAlign: 'center' }}>Complete ↑↓</Text>
-                          <Text style={{ flex: 1, color: C.text1, fontSize: 11, textAlign: 'center' }}>% ↑↓</Text>
-                       </View>
-                    </View>
-                    
-                    <View style={{ width: 270 }}>
-                       <Text style={{ color: C.text1, fontWeight: 'bold', fontSize: 12, textAlign: 'center', marginBottom: 8 }}>Being Assigned</Text>
-                       <View style={{ flexDirection: 'row' }}>
-                          <Text style={{ flex: 1, color: C.text1, fontSize: 11, textAlign: 'center' }}>Planned ↑↓</Text>
-                          <Text style={{ flex: 1, color: C.text1, fontSize: 11, textAlign: 'center' }}>Complete ↑↓</Text>
-                          <Text style={{ flex: 1, color: C.text1, fontSize: 11, textAlign: 'center' }}>% ↑↓</Text>
-                       </View>
-                    </View>
-
-                    <Text style={{ width: 110, color: C.text1, fontWeight: 'bold', fontSize: 12, textAlign: 'right' }}>Work Duration ↑↓</Text>
+             {/* More Filter Panel */}
+             {showMoreFilter && (
+               <View style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: C.borderSoft, backgroundColor: C.surface2, gap: 12 }}>
+                 {/* Search */}
+                 <View>
+                   <Text style={{ color: C.text2, fontSize: 11, fontWeight: '600', marginBottom: 6 }}>Search Member / Project</Text>
+                   <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: C.bg, borderRadius: 8, borderWidth: 1, borderColor: C.borderSoft, paddingHorizontal: 10, height: 36 }}>
+                     <Ionicons name="search" size={14} color={C.text3} style={{ marginRight: 8 }} />
+                     <TextInput
+                       value={resourceSearch}
+                       onChangeText={(t) => { setResourceSearch(t); setResourcePage(1); }}
+                       placeholder="Cari nama member atau project..."
+                       placeholderTextColor={C.text3}
+                       style={{ flex: 1, color: C.text1, fontSize: 12 }}
+                     />
+                     {resourceSearch ? (
+                       <TouchableOpacity onPress={() => { setResourceSearch(''); setResourcePage(1); }}>
+                         <Ionicons name="close-circle" size={16} color={C.text3} />
+                       </TouchableOpacity>
+                     ) : null}
+                   </View>
                  </View>
 
-                 {/* Table Rows */}
-                 {RESOURCE_DATA.map((row, i) => (
-                    <View key={row.id} style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderColor: C.borderSoft, alignItems: 'center' }}>
-                       <View style={{ width: 170, flexDirection: 'row', alignItems: 'center' }}>
-                          <Ionicons name="chevron-down" size={14} color={C.text3} style={{ marginRight: 8 }} />
-                          <Text style={{ color: C.text2, fontSize: 11 }}>{row.member}</Text>
+                 {/* Percentage & Duration filters in row */}
+                 <View style={{ flexDirection: 'row', gap: 12 }}>
+                   {/* Completion % */}
+                   <View style={{ flex: 1 }}>
+                     <Text style={{ color: C.text2, fontSize: 11, fontWeight: '600', marginBottom: 6 }}>Completion %</Text>
+                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                       <View style={{ flex: 1, backgroundColor: C.bg, borderRadius: 8, borderWidth: 1, borderColor: C.borderSoft, paddingHorizontal: 8, height: 32, justifyContent: 'center' }}>
+                         <TextInput
+                           value={minPct}
+                           onChangeText={(t) => { setMinPct(t.replace(/[^0-9]/g, '')); setResourcePage(1); }}
+                           placeholder="Min"
+                           placeholderTextColor={C.text3}
+                           keyboardType="numeric"
+                           style={{ color: C.text1, fontSize: 11 }}
+                         />
                        </View>
-                       <Text style={{ width: 100, color: C.text3, fontSize: 11 }}>{row.project}</Text>
-                       
-                       {/* Assigning Task cols */}
-                       <View style={{ width: 270, flexDirection: 'row', alignItems: 'center' }}>
-                          <Text style={{ flex: 1, color: C.text2, fontSize: 11, textAlign: 'center' }}>{row.plannedAssign}</Text>
-                          <Text style={{ flex: 1, color: C.text2, fontSize: 11, textAlign: 'center' }}>{row.completeAssign}</Text>
-                          <View style={{ flex: 1, paddingHorizontal: 12 }}>
-                             <Text style={{ color: C.text2, fontSize: 10, textAlign: 'right', marginBottom: 4 }}>{row.pctAssign}%</Text>
-                             <View style={{ height: 3, backgroundColor: C.borderSoft, borderRadius: 2 }}>
-                                <View style={{ width: `${row.pctAssign}%`, height: '100%', backgroundColor: getBarColor(row.pctAssign, C), borderRadius: 2 }} />
-                             </View>
-                          </View>
+                       <Text style={{ color: C.text3, fontSize: 11 }}>–</Text>
+                       <View style={{ flex: 1, backgroundColor: C.bg, borderRadius: 8, borderWidth: 1, borderColor: C.borderSoft, paddingHorizontal: 8, height: 32, justifyContent: 'center' }}>
+                         <TextInput
+                           value={maxPct}
+                           onChangeText={(t) => { setMaxPct(t.replace(/[^0-9]/g, '')); setResourcePage(1); }}
+                           placeholder="Max"
+                           placeholderTextColor={C.text3}
+                           keyboardType="numeric"
+                           style={{ color: C.text1, fontSize: 11 }}
+                         />
                        </View>
-                       
-                       {/* Being Assigned cols */}
-                       <View style={{ width: 270, flexDirection: 'row', alignItems: 'center' }}>
-                          <Text style={{ flex: 1, color: C.text2, fontSize: 11, textAlign: 'center' }}>{row.plannedBeing}</Text>
-                          <Text style={{ flex: 1, color: C.text2, fontSize: 11, textAlign: 'center' }}>{row.completeBeing}</Text>
-                          <View style={{ flex: 1, paddingHorizontal: 12 }}>
-                             <Text style={{ color: C.text2, fontSize: 10, textAlign: 'right', marginBottom: 4 }}>{row.pctBeing}%</Text>
-                             <View style={{ height: 3, backgroundColor: C.borderSoft, borderRadius: 2 }}>
-                                <View style={{ width: `${row.pctBeing}%`, height: '100%', backgroundColor: getBarColor(row.pctBeing, C), borderRadius: 2 }} />
-                             </View>
-                          </View>
-                       </View>
+                     </View>
+                   </View>
 
-                       <Text style={{ width: 110, color: C.text2, fontSize: 11, textAlign: 'right' }}>{row.duration} min</Text>
-                    </View>
-                 ))}
+                   {/* Duration */}
+                   <View style={{ flex: 1 }}>
+                     <Text style={{ color: C.text2, fontSize: 11, fontWeight: '600', marginBottom: 6 }}>Duration (min)</Text>
+                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                       <View style={{ flex: 1, backgroundColor: C.bg, borderRadius: 8, borderWidth: 1, borderColor: C.borderSoft, paddingHorizontal: 8, height: 32, justifyContent: 'center' }}>
+                         <TextInput
+                           value={minDuration}
+                           onChangeText={(t) => { setMinDuration(t.replace(/[^0-9]/g, '')); setResourcePage(1); }}
+                           placeholder="Min"
+                           placeholderTextColor={C.text3}
+                           keyboardType="numeric"
+                           style={{ color: C.text1, fontSize: 11 }}
+                         />
+                       </View>
+                       <Text style={{ color: C.text3, fontSize: 11 }}>–</Text>
+                       <View style={{ flex: 1, backgroundColor: C.bg, borderRadius: 8, borderWidth: 1, borderColor: C.borderSoft, paddingHorizontal: 8, height: 32, justifyContent: 'center' }}>
+                         <TextInput
+                           value={maxDuration}
+                           onChangeText={(t) => { setMaxDuration(t.replace(/[^0-9]/g, '')); setResourcePage(1); }}
+                           placeholder="Max"
+                           placeholderTextColor={C.text3}
+                           keyboardType="numeric"
+                           style={{ color: C.text1, fontSize: 11 }}
+                         />
+                       </View>
+                     </View>
+                   </View>
+                 </View>
+
+                 {/* Clear button */}
+                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8 }}>
+                   <TouchableOpacity onPress={clearAllFilters} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: C.slateSoft }}>
+                     <Ionicons name="trash-outline" size={12} color={C.red} />
+                     <Text style={{ color: C.red, fontSize: 11, fontWeight: '600' }}>Clear All</Text>
+                   </TouchableOpacity>
+                   <TouchableOpacity onPress={() => setShowMoreFilter(false)} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: C.brandSoft }}>
+                     <Ionicons name="checkmark" size={12} color={C.brand} />
+                     <Text style={{ color: C.brand, fontSize: 11, fontWeight: '600' }}>Apply</Text>
+                   </TouchableOpacity>
+                 </View>
                </View>
-             </ScrollView>
+             )}
 
-             {/* Table Footer */}
-             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12, backgroundColor: C.surface }}>
-                <Text style={{ color: C.text3, fontSize: 11 }}>Showing 1 to 10 of 131 results</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                      <Text style={{ color: C.text3, fontSize: 11 }}>Rows per page</Text>
-                      <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, borderWidth: 1, borderColor: C.borderSoft }}>
-                         <Text style={{ color: C.text2, fontSize: 11 }}>10</Text>
-                         <Ionicons name="chevron-down" size={10} color={C.text3} />
+             {/* VIEW BY MEMBER: Table with sorting */}
+             {resourceViewMode === 'Member' && (
+               <>
+               {/* Table container horizontally scrollable */}
+               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View>
+                  {/* Table Header - Sortable */}
+                  <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderColor: C.borderSoft }}>
+                     <TouchableOpacity onPress={() => handleSort('member')} style={{ width: 170 }}>
+                       <Text style={{ color: C.text1, fontWeight: 'bold', fontSize: 12 }}>Member{sortIcon('member')}</Text>
+                     </TouchableOpacity>
+                     <TouchableOpacity onPress={() => handleSort('project')} style={{ width: 100 }}>
+                       <Text style={{ color: C.text1, fontWeight: 'bold', fontSize: 12 }}>Project{sortIcon('project')}</Text>
+                     </TouchableOpacity>
+                     
+                     <View style={{ width: 270 }}>
+                        <Text style={{ color: C.text1, fontWeight: 'bold', fontSize: 12, textAlign: 'center', marginBottom: 8 }}>Assigning Task</Text>
+                        <View style={{ flexDirection: 'row' }}>
+                           <TouchableOpacity onPress={() => handleSort('plannedAssign')} style={{ flex: 1 }}>
+                             <Text style={{ color: C.text1, fontSize: 11, textAlign: 'center' }}>Planned{sortIcon('plannedAssign')}</Text>
+                           </TouchableOpacity>
+                           <TouchableOpacity onPress={() => handleSort('completeAssign')} style={{ flex: 1 }}>
+                             <Text style={{ color: C.text1, fontSize: 11, textAlign: 'center' }}>Complete{sortIcon('completeAssign')}</Text>
+                           </TouchableOpacity>
+                           <TouchableOpacity onPress={() => handleSort('pctAssign')} style={{ flex: 1 }}>
+                             <Text style={{ color: C.text1, fontSize: 11, textAlign: 'center' }}>%{sortIcon('pctAssign')}</Text>
+                           </TouchableOpacity>
+                        </View>
+                     </View>
+                     
+                     <View style={{ width: 270 }}>
+                        <Text style={{ color: C.text1, fontWeight: 'bold', fontSize: 12, textAlign: 'center', marginBottom: 8 }}>Being Assigned</Text>
+                        <View style={{ flexDirection: 'row' }}>
+                           <TouchableOpacity onPress={() => handleSort('plannedBeing')} style={{ flex: 1 }}>
+                             <Text style={{ color: C.text1, fontSize: 11, textAlign: 'center' }}>Planned{sortIcon('plannedBeing')}</Text>
+                           </TouchableOpacity>
+                           <TouchableOpacity onPress={() => handleSort('completeBeing')} style={{ flex: 1 }}>
+                             <Text style={{ color: C.text1, fontSize: 11, textAlign: 'center' }}>Complete{sortIcon('completeBeing')}</Text>
+                           </TouchableOpacity>
+                           <TouchableOpacity onPress={() => handleSort('pctBeing')} style={{ flex: 1 }}>
+                             <Text style={{ color: C.text1, fontSize: 11, textAlign: 'center' }}>%{sortIcon('pctBeing')}</Text>
+                           </TouchableOpacity>
+                        </View>
+                     </View>
+
+                     <TouchableOpacity onPress={() => handleSort('duration')} style={{ width: 110 }}>
+                       <Text style={{ color: C.text1, fontWeight: 'bold', fontSize: 12, textAlign: 'right' }}>Duration{sortIcon('duration')}</Text>
+                     </TouchableOpacity>
+                  </View>
+
+                  {/* Table Rows */}
+                  {paginatedResource.length === 0 ? (
+                    <View style={{ padding: 24, alignItems: 'center' }}>
+                      <Ionicons name="search-outline" size={32} color={C.text3} />
+                      <Text style={{ color: C.text3, fontSize: 13, marginTop: 8 }}>No results found</Text>
+                      <TouchableOpacity onPress={clearAllFilters} style={{ marginTop: 8 }}>
+                        <Text style={{ color: C.brand, fontSize: 12, fontWeight: '600' }}>Clear Filters</Text>
                       </TouchableOpacity>
-                   </View>
-                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                      <TouchableOpacity style={{ padding: 4, opacity: 0.5 }}><Ionicons name="chevron-back-circle-outline" size={16} color={C.text3} /></TouchableOpacity>
-                      <TouchableOpacity style={{ padding: 4 }}><Ionicons name="chevron-back" size={14} color={C.text2} /></TouchableOpacity>
-                      <Text style={{ color: C.text2, fontSize: 11, marginHorizontal: 4 }}>Page 1 of 14</Text>
-                      <TouchableOpacity style={{ padding: 4 }}><Ionicons name="chevron-forward" size={14} color={C.text2} /></TouchableOpacity>
-                      <TouchableOpacity style={{ padding: 4 }}><Ionicons name="chevron-forward-circle-outline" size={16} color={C.text2} /></TouchableOpacity>
-                   </View>
+                    </View>
+                  ) : (
+                  paginatedResource.map((row, i) => (
+                     <View key={row.id} style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderColor: C.borderSoft, alignItems: 'center', backgroundColor: i % 2 === 0 ? 'transparent' : C.surface2 + '40' }}>
+                        <View style={{ width: 170, flexDirection: 'row', alignItems: 'center' }}>
+                           <Ionicons name="chevron-down" size={14} color={C.text3} style={{ marginRight: 8 }} />
+                           <Text style={{ color: C.text2, fontSize: 11 }}>{row.member}</Text>
+                        </View>
+                        <Text style={{ width: 100, color: row.project === '-' ? C.text3 : C.brand, fontSize: 11, fontWeight: row.project === '-' ? '400' : '600' }}>{row.project}</Text>
+                        
+                        {/* Assigning Task cols */}
+                        <View style={{ width: 270, flexDirection: 'row', alignItems: 'center' }}>
+                           <Text style={{ flex: 1, color: C.text2, fontSize: 11, textAlign: 'center' }}>{row.plannedAssign}</Text>
+                           <Text style={{ flex: 1, color: C.text2, fontSize: 11, textAlign: 'center' }}>{row.completeAssign}</Text>
+                           <View style={{ flex: 1, paddingHorizontal: 12 }}>
+                              <Text style={{ color: C.text2, fontSize: 10, textAlign: 'right', marginBottom: 4 }}>{row.pctAssign}%</Text>
+                              <View style={{ height: 3, backgroundColor: C.borderSoft, borderRadius: 2 }}>
+                                 <View style={{ width: `${row.pctAssign}%`, height: '100%', backgroundColor: getBarColor(row.pctAssign, C), borderRadius: 2 }} />
+                              </View>
+                           </View>
+                        </View>
+                        
+                        {/* Being Assigned cols */}
+                        <View style={{ width: 270, flexDirection: 'row', alignItems: 'center' }}>
+                           <Text style={{ flex: 1, color: C.text2, fontSize: 11, textAlign: 'center' }}>{row.plannedBeing}</Text>
+                           <Text style={{ flex: 1, color: C.text2, fontSize: 11, textAlign: 'center' }}>{row.completeBeing}</Text>
+                           <View style={{ flex: 1, paddingHorizontal: 12 }}>
+                              <Text style={{ color: C.text2, fontSize: 10, textAlign: 'right', marginBottom: 4 }}>{row.pctBeing}%</Text>
+                              <View style={{ height: 3, backgroundColor: C.borderSoft, borderRadius: 2 }}>
+                                 <View style={{ width: `${row.pctBeing}%`, height: '100%', backgroundColor: getBarColor(row.pctBeing, C), borderRadius: 2 }} />
+                              </View>
+                           </View>
+                        </View>
+
+                        <Text style={{ width: 110, color: C.text2, fontSize: 11, textAlign: 'right' }}>{row.duration} min</Text>
+                     </View>
+                  )))}
                 </View>
-             </View>
+              </ScrollView>
+              </>
+             )}
+
+             {/* VIEW BY PROJECT: Grouped cards */}
+             {resourceViewMode === 'Project' && (
+               <ScrollView style={{ maxHeight: 500 }} nestedScrollEnabled>
+                 {Object.entries(groupedByProject)
+                   .filter(([projName]) => {
+                     if (selectedWorkspaces.length === 0) return true;
+                     return selectedWorkspaces.includes(projName) || (selectedWorkspaces.includes('Unassigned') && projName === 'Unassigned');
+                   })
+                   .map(([projName, members]) => {
+                     // Apply search filter
+                     let filtered = members;
+                     if (resourceSearch.trim()) {
+                       const q = resourceSearch.toLowerCase();
+                       filtered = filtered.filter(r => r.member.toLowerCase().includes(q));
+                     }
+                     if (filtered.length === 0) return null;
+
+                     const totalPlanned = filtered.reduce((s, m) => s + m.plannedAssign, 0);
+                     const totalComplete = filtered.reduce((s, m) => s + m.completeAssign, 0);
+                     const avgPct = filtered.length > 0 ? Math.round(filtered.reduce((s, m) => s + m.pctAssign, 0) / filtered.length) : 0;
+                     const totalDuration = filtered.reduce((s, m) => s + m.duration, 0);
+
+                     return (
+                       <View key={projName} style={{ borderBottomWidth: 1, borderBottomColor: C.borderSoft }}>
+                         {/* Project Header */}
+                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12, backgroundColor: C.surface2 }}>
+                           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                             <Ionicons name="folder-outline" size={16} color={projName === 'Unassigned' ? C.text3 : C.brand} />
+                             <Text style={{ color: C.text1, fontSize: 13, fontWeight: 'bold' }}>{projName}</Text>
+                             <View style={{ backgroundColor: C.brandSoft, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 10 }}>
+                               <Text style={{ color: C.brand, fontSize: 10, fontWeight: 'bold' }}>{filtered.length} members</Text>
+                             </View>
+                           </View>
+                           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+                             <View style={{ alignItems: 'center' }}>
+                               <Text style={{ color: C.text3, fontSize: 9 }}>Planned</Text>
+                               <Text style={{ color: C.text1, fontSize: 12, fontWeight: 'bold' }}>{totalPlanned}</Text>
+                             </View>
+                             <View style={{ alignItems: 'center' }}>
+                               <Text style={{ color: C.text3, fontSize: 9 }}>Complete</Text>
+                               <Text style={{ color: C.green, fontSize: 12, fontWeight: 'bold' }}>{totalComplete}</Text>
+                             </View>
+                             <View style={{ alignItems: 'center' }}>
+                               <Text style={{ color: C.text3, fontSize: 9 }}>Avg %</Text>
+                               <Text style={{ color: getBarColor(avgPct, C), fontSize: 12, fontWeight: 'bold' }}>{avgPct}%</Text>
+                             </View>
+                             <View style={{ alignItems: 'center' }}>
+                               <Text style={{ color: C.text3, fontSize: 9 }}>Duration</Text>
+                               <Text style={{ color: C.text2, fontSize: 12, fontWeight: 'bold' }}>{totalDuration} min</Text>
+                             </View>
+                           </View>
+                         </View>
+                         {/* Members under this project */}
+                         {filtered.map((m, mi) => (
+                           <View key={m.id} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 16, paddingLeft: 36, borderBottomWidth: mi < filtered.length - 1 ? 1 : 0, borderBottomColor: C.borderSoft + '60' }}>
+                             <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: C.brandSoft, alignItems: 'center', justifyContent: 'center', marginRight: 10 }}>
+                               <Text style={{ color: C.brand, fontSize: 11, fontWeight: 'bold' }}>{m.member.charAt(0)}</Text>
+                             </View>
+                             <View style={{ flex: 1 }}>
+                               <Text style={{ color: C.text2, fontSize: 11, fontWeight: '500' }}>{m.member}</Text>
+                             </View>
+                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+                               <View style={{ width: 50, alignItems: 'center' }}>
+                                 <View style={{ width: 40, height: 3, backgroundColor: C.borderSoft, borderRadius: 2 }}>
+                                   <View style={{ width: `${m.pctAssign}%`, height: '100%', backgroundColor: getBarColor(m.pctAssign, C), borderRadius: 2 }} />
+                                 </View>
+                                 <Text style={{ color: C.text3, fontSize: 9, marginTop: 2 }}>{m.pctAssign}%</Text>
+                               </View>
+                               <Text style={{ color: C.text3, fontSize: 10, width: 60, textAlign: 'right' }}>{m.duration} min</Text>
+                             </View>
+                           </View>
+                         ))}
+                       </View>
+                     );
+                   })}
+               </ScrollView>
+             )}
+
+             {/* Table Footer with working pagination (only in Member view) */}
+             {resourceViewMode === 'Member' && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12, backgroundColor: C.surface }}>
+                 <Text style={{ color: C.text3, fontSize: 11 }}>
+                   {filteredResource.length === 0 ? 'No results' : `Showing ${((resourcePage - 1) * resourceRowsPerPage) + 1} to ${Math.min(resourcePage * resourceRowsPerPage, filteredResource.length)} of ${filteredResource.length} results`}
+                 </Text>
+                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, position: 'relative' }}>
+                       <Text style={{ color: C.text3, fontSize: 11 }}>Rows per page</Text>
+                       <TouchableOpacity
+                          style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, borderWidth: 1, borderColor: C.borderSoft }}
+                          onPress={() => setShowRowsMenu(!showRowsMenu)}
+                       >
+                          <Text style={{ color: C.text2, fontSize: 11 }}>{resourceRowsPerPage}</Text>
+                          <Ionicons name="chevron-down" size={10} color={C.text3} />
+                       </TouchableOpacity>
+                       {showRowsMenu && (
+                          <View style={{ position: 'absolute', bottom: 28, right: 0, backgroundColor: C.surface2, borderRadius: 8, borderWidth: 1, borderColor: C.border, zIndex: 100, minWidth: 60 }}>
+                             {[10, 25, 50].map(n => (
+                                <TouchableOpacity
+                                   key={n}
+                                   style={{ paddingHorizontal: 12, paddingVertical: 8, backgroundColor: resourceRowsPerPage === n ? C.surface3 : 'transparent' }}
+                                   onPress={() => { setResourceRowsPerPage(n); setResourcePage(1); setShowRowsMenu(false); }}
+                                >
+                                   <Text style={{ color: C.text2, fontSize: 11 }}>{n}</Text>
+                                </TouchableOpacity>
+                             ))}
+                          </View>
+                       )}
+                    </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                       <TouchableOpacity style={{ padding: 4, opacity: resourcePage === 1 ? 0.3 : 1 }} disabled={resourcePage === 1} onPress={() => setResourcePage(1)}><Ionicons name="chevron-back-circle-outline" size={16} color={C.text3} /></TouchableOpacity>
+                       <TouchableOpacity style={{ padding: 4, opacity: resourcePage === 1 ? 0.3 : 1 }} disabled={resourcePage === 1} onPress={() => setResourcePage(p => Math.max(1, p - 1))}><Ionicons name="chevron-back" size={14} color={C.text2} /></TouchableOpacity>
+                       <Text style={{ color: C.text2, fontSize: 11, marginHorizontal: 4 }}>Page {resourcePage} of {totalResourcePages || 1}</Text>
+                       <TouchableOpacity style={{ padding: 4, opacity: resourcePage >= totalResourcePages ? 0.3 : 1 }} disabled={resourcePage >= totalResourcePages} onPress={() => setResourcePage(p => Math.min(totalResourcePages, p + 1))}><Ionicons name="chevron-forward" size={14} color={C.text2} /></TouchableOpacity>
+                       <TouchableOpacity style={{ padding: 4, opacity: resourcePage >= totalResourcePages ? 0.3 : 1 }} disabled={resourcePage >= totalResourcePages} onPress={() => setResourcePage(totalResourcePages)}><Ionicons name="chevron-forward-circle-outline" size={16} color={C.text2} /></TouchableOpacity>
+                    </View>
+                 </View>
+              </View>
+             )}
 
            </View>
         </ScrollView>
