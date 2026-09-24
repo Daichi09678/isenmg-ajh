@@ -12,6 +12,7 @@ export default function RootLayout() {
       <Stack.Screen name="performance-report" />
       <Stack.Screen name="achievements" />
       <Stack.Screen name="change-password" />
+      <Stack.Screen name="notifications" />
       <Stack.Screen name="export-tasks" options={{ presentation: 'modal' }} />
       <Stack.Screen name="create-workspace" options={{ presentation: 'modal' }} />
       <Stack.Screen name="join-workspace" options={{ presentation: 'modal' }} />

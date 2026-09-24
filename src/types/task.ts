@@ -29,4 +29,21 @@ export interface Task {
   members?: string[];
   joinRequests?: string[];
   comments?: Comment[];
+  
+  // New fields for Advanced Edit Task
+  assigner?: string;
+  isImportant?: boolean;
+  isUrgent?: boolean;
+  planStartDate?: string;
+  targetDuration?: string;
+  actualStartDate?: string;
+  storyPoint?: string;
+  labels?: string[];
+  parentTask?: string;
+  checklists?: { 
+    id: string; 
+    name: string; 
+    items: { id: string; title: string; isDone: boolean; members: string[] }[] 
+  }[];
+  attachments?: string[];
 }

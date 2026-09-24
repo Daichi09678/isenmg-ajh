@@ -46,7 +46,6 @@ export default function HomeTab() {
   
   const [query, setQuery] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [notifVisible, setNotifVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
 
   // Form states
@@ -108,7 +107,7 @@ export default function HomeTab() {
             <Ionicons name="people" size={12} color={COLORS.primary} />
             <Text style={styles.teamBadgeText}>3</Text>
           </View>
-          <TouchableOpacity onPress={() => setNotifVisible(true)} style={styles.notifBtn}>
+          <TouchableOpacity onPress={() => router.push("/notifications")} style={styles.notifBtn}>
             <Ionicons name="notifications-outline" size={22} color={themeText} />
             <View style={styles.notifBadge} />
           </TouchableOpacity>
@@ -204,40 +203,6 @@ export default function HomeTab() {
         </View>
       </Modal>
 
-      {/* MODAL NOTIFIKASI */}
-      <Modal visible={notifVisible} animationType="slide" transparent onRequestClose={() => setNotifVisible(false)}>
-        <View style={styles.modalBackdrop}>
-          <View style={[styles.modalSheet, { backgroundColor: COLORS.card, maxHeight: "80%" }]}>
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: COLORS.text }]}>Notifikasi</Text>
-              <TouchableOpacity onPress={() => setNotifVisible(false)}>
-                <Ionicons name="close" size={24} color={COLORS.textMuted} />
-              </TouchableOpacity>
-            </View>
-            
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingBottom: 20 }}>
-              {[
-                { id: 1, title: "Tugas Baru", desc: "Anda ditugaskan pada 'Perbaikan UI Dashboard' oleh Fikri.", time: "10 mnt lalu", icon: "briefcase", color: COLORS.blue },
-                { id: 2, title: "Tenggat Waktu Dekat", desc: "Tugas 'Laporan Keuangan Q3' akan jatuh tempo besok.", time: "1 jam lalu", icon: "warning", color: COLORS.orange },
-                { id: 3, title: "Komentar Baru", desc: "Rina mengomentari tugas 'API Integration'.", time: "3 jam lalu", icon: "chatbubble", color: COLORS.green },
-                { id: 4, title: "Sistem Update", desc: "Maintenance server dijadwalkan malam ini pukul 23:00 WIB.", time: "5 jam lalu", icon: "construct", color: COLORS.textMuted },
-                { id: 5, title: "Permintaan Bergabung", desc: "Budi ingin bergabung ke workspace 'Mobile Asabri'.", time: "Kemarin", icon: "person-add", color: COLORS.purple },
-              ].map(notif => (
-                <View key={notif.id} style={{ flexDirection: "row", alignItems: "center", gap: 12, padding: 12, backgroundColor: COLORS.bg, borderRadius: 12, borderWidth: 1, borderColor: COLORS.border }}>
-                  <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: notif.color + '20', alignItems: 'center', justifyContent: 'center' }}>
-                    <Ionicons name={notif.icon as any} size={20} color={notif.color} />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 14, fontWeight: "bold", color: COLORS.text }}>{notif.title}</Text>
-                    <Text style={{ fontSize: 12, color: COLORS.textMuted, marginTop: 2, lineHeight: 18 }}>{notif.desc}</Text>
-                    <Text style={{ fontSize: 10, color: COLORS.primary, marginTop: 4, fontWeight: "600" }}>{notif.time}</Text>
-                  </View>
-                </View>
-              ))}
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
 
       {/* MODAL DETAIL TUGAS */}
       <Modal visible={!!selectedTask} animationType="slide" transparent onRequestClose={() => setSelectedTask(null)}>

@@ -26,10 +26,10 @@ const lightColors: ThemeColors = {
   text: "#0f172a",
   textSecondary: "#64748b",
   border: "#e2e8f0",
-  accent: "#10b981", 
+  accent: "#3b82f6", 
   accentText: "#ffffff",
-  gradientPrimary: ["#10b981", "#059669"],
-  gradientSecondary: ["#34d399", "#10b981"],
+  gradientPrimary: ["#3b82f6", "#2563eb"],
+  gradientSecondary: ["#60a5fa", "#3b82f6"],
 };
 
 const darkColors: ThemeColors = {
@@ -38,10 +38,10 @@ const darkColors: ThemeColors = {
   text: "#f8fafc",
   textSecondary: "#94a3b8",
   border: "#334155",
-  accent: "#10b981",
+  accent: "#3b82f6",
   accentText: "#ffffff",
-  gradientPrimary: ["#10b981", "#059669"],
-  gradientSecondary: ["#34d399", "#10b981"],
+  gradientPrimary: ["#3b82f6", "#2563eb"],
+  gradientSecondary: ["#60a5fa", "#3b82f6"],
 };
 
 export const useAppTheme = create<ThemeState>((set) => ({

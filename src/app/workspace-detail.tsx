@@ -384,7 +384,7 @@ export default function WorkspaceDetailScreen() {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.boardScroll}>
         <BoardColumn title="Backlog" count={backlogCount} color={COLORS.blue}>
           {backlogTasks.map((t) => (
-            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => setTaskDetail(t)} />
+            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => router.push(`/task/${t.id}` as any)} />
           ))}
           <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("Backlog")}>
             <Ionicons name="add" size={16} color={COLORS.textMuted} />
@@ -394,7 +394,7 @@ export default function WorkspaceDetailScreen() {
         
         <BoardColumn title="Doing" count={doingCount} color={COLORS.text}>
           {doingTasks.map((t) => (
-            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => setTaskDetail(t)} />
+            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => router.push(`/task/${t.id}` as any)} />
           ))}
           <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("Doing")}>
             <Ionicons name="add" size={16} color={COLORS.textMuted} />
@@ -409,7 +409,7 @@ export default function WorkspaceDetailScreen() {
             </View>
           )}
           {mrTasks.map((t) => (
-            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => setTaskDetail(t)} />
+            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => router.push(`/task/${t.id}` as any)} />
           ))}
           <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("MR")}>
             <Ionicons name="add" size={16} color={COLORS.textMuted} />
@@ -419,7 +419,7 @@ export default function WorkspaceDetailScreen() {
         
         <BoardColumn title="Testing" count={testingCount} color={COLORS.yellow}>
           {testingTasks.map((t) => (
-            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => setTaskDetail(t)} />
+            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => router.push(`/task/${t.id}` as any)} />
           ))}
           <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("Testing")}>
             <Ionicons name="add" size={16} color={COLORS.textMuted} />
@@ -429,7 +429,7 @@ export default function WorkspaceDetailScreen() {
         
         <BoardColumn title="Done" count={doneCount} color={COLORS.green}>
           {doneTasks.map((t) => (
-            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => setTaskDetail(t)} />
+            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => router.push(`/task/${t.id}` as any)} />
           ))}
           <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("Done")}>
             <Ionicons name="add" size={16} color={COLORS.textMuted} />
