@@ -3,630 +3,346 @@ import {
   View,
   Text,
   StyleSheet,
+  TextInput,
+  TouchableOpacity,
   ScrollView,
-  Pressable,
   Switch,
   Platform,
   KeyboardAvoidingView,
-  SafeAreaView,
-  TextInput,
 } from "react-native";
-import { useAppTheme } from "../store/themeStore";
-import { router, useLocalSearchParams } from "expo-router";
-import { Feather } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTaskStore } from "../store/taskStore";
-import { Priority, Urgency } from "../types/task";
-import { formatDeadline } from "../utils/date";
+import { useAppTheme } from "../store/themeStore";
 
-const PRIORITIES: Priority[] = ["Low", "Medium", "High"];
-const URGENCIES: Urgency[] = ["Rendah", "Sedang", "Tinggi", "Kritis"];
-const ESTIMATED_TIMES = ["1 Jam", "4 Jam", "1 Hari", "2 Hari"];
-
-const Palette = {
-  bg: "#0f172a",
-  text: "#f8fafc",
-  textMuted: "#94a3b8",
-  primary: "#3b82f6",
-  border: "#334155",
-  surface: "#1e293b",
-  surfaceAlt: "rgba(30, 41, 59, 0.5)",
-};
-
-export default function AddEditTaskScreen() {
+export default function AddNewTaskModal() {
   const { colors, mode } = useAppTheme();
-  const COLORS = React.useMemo(() => ({
-    bg: colors.background,
-    card: colors.surface,
-    taskBg: colors.background,
-    border: colors.border,
-    text: colors.text,
-    textMuted: colors.textSecondary,
-    blue: "#3b82f6",
-    green: "#10b981",
-    yellow: "#fbbf24",
-    purple: "#8b5cf6",
-    amber: "#f59e0b",
-    rose: "#f43f5e",
-    accent: colors.accent,
-    white: colors.surface === "#ffffff" ? "#ffffff" : colors.text,
-    danger: "#ef4444",
-    primary: colors.accent,
-    surface: colors.surface,
-    surfaceAlt: mode === 'dark' ? "rgba(30, 41, 59, 0.5)" : "rgba(241, 245, 249, 0.5)",
-  }), [colors, mode]);
-  const styles = React.useMemo(() => getStyles(COLORS), [COLORS]);
+  
+  // Custom refined palette to match the elegant UI requirements
+  const COLORS = {
+    bg: mode === 'dark' ? '#121212' : '#ffffff',
+    text: mode === 'dark' ? '#f1f5f9' : '#334155', // Dark slate for pro look
+    textMuted: mode === 'dark' ? '#94a3b8' : '#94a3b8',
+    border: mode === 'dark' ? '#334155' : '#e2e8f0', // Soft border
+    inputBg: mode === 'dark' ? '#1e293b' : '#ffffff',
+    primary: '#10b981', // Solid elegant green
+    ghost: 'transparent',
+    danger: '#ef4444',
+  };
 
-  const { id } = useLocalSearchParams<{ id?: string }>();
-  const addTask = useTaskStore((s) => s.addTask);
-  const updateTask = useTaskStore((s) => s.updateTask);
-  const getTaskById = useTaskStore((s) => s.getTaskById);
+  const addTask = useTaskStore(s => s.addTask);
 
-  const existingTask = id ? getTaskById(id) : undefined;
-  const isEditMode = !!existingTask;
-
-  const [title, setTitle] = useState(existingTask?.title ?? "");
-  const [description, setDescription] = useState(existingTask?.description ?? "");
-  const [deadline, setDeadline] = useState<Date>(
-    existingTask ? new Date(existingTask.deadline) : new Date(Date.now() + 3600 * 1000)
-  );
-  const [estimatedTime, setEstimatedTime] = useState(existingTask?.estimatedTime ?? "");
-  const [priority, setPriority] = useState<Priority>(existingTask?.priority ?? "Medium");
-  const [urgency, setUrgency] = useState<Urgency | undefined>(existingTask?.urgency);
-  const [reminder, setReminder] = useState(existingTask?.reminder ?? false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [dueDate, setDueDate] = useState<Date | null>(null);
   const [showPicker, setShowPicker] = useState(false);
+  const [isImportant, setIsImportant] = useState(false);
+  const [isUrgent, setIsUrgent] = useState(false);
   const [errors, setErrors] = useState<{ title?: string }>({});
-  const [category, setCategory] = useState(existingTask?.category ?? "Pekerjaan");
-  const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
   const validate = () => {
     const newErrors: { title?: string } = {};
-    if (!title.trim()) newErrors.title = "Judul task wajib diisi";
+    if (!title.trim()) newErrors.title = "Task Title is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!validate()) return;
-
-    const payload = {
+    
+    let priority: any = "Medium";
+    if (isImportant) priority = "High";
+    
+    let urgency: any = "Sedang";
+    if (isUrgent) urgency = "Tinggi";
+    
+    addTask({
       title: title.trim(),
       description: description.trim(),
-      deadline: deadline.toISOString(),
-      estimatedTime,
-      priority,
-      urgency,
-      reminder,
-      taskType: "Personal" as const,
-    };
-
-    if (isEditMode && existingTask) {
-      await updateTask(existingTask.id, payload);
-    } else {
-      await addTask(payload);
-    }
+      deadline: dueDate ? dueDate.toISOString() : "",
+      priority: priority,
+      urgency: urgency,
+      isImportant: isImportant,
+      isUrgent: isUrgent,
+      taskType: "Personal"
+    });
     router.back();
   };
 
-  const handleCancel = () => {
-    router.back();
-  };
-
-  const onDateChange = (event: any, selectedDate?: Date) => {
-    setShowPicker(Platform.OS === "ios");
-    if (selectedDate) setDeadline(selectedDate);
-    if (Platform.OS === "android") setShowPicker(false);
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={{ flex: 1 }}
+    <SafeAreaView style={[styles.container, { backgroundColor: COLORS.bg }]} edges={["top", "bottom"]}>
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }} 
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <ScrollView
-          contentContainerStyle={styles.form}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="none"
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent} 
           showsVerticalScrollIndicator={false}
-          bounces={false}
-          contentInsetAdjustmentBehavior="automatic"
+          keyboardShouldPersistTaps="handled"
         >
-          {/* Header */}
-          <View style={styles.header}>
-            <Pressable
-              onPress={handleCancel}
-              hitSlop={8}
-              style={({ pressed }) => [
-                styles.backButton,
-                pressed && { opacity: 0.7 },
-              ]}
+          {/* HEADER */}
+          <View style={styles.headerRow}>
+            <Text style={[styles.headerTitle, { color: COLORS.text }]}>Add New Task</Text>
+            <TouchableOpacity 
+              style={[styles.closeButton, { borderColor: COLORS.textMuted }]} 
+              onPress={() => router.back()}
             >
-              <Feather name="x" size={20} color={COLORS.text} />
-            </Pressable>
-            <Text style={styles.headerTitle}>
-              {isEditMode ? "Edit Aktivitas" : "Buat Aktivitas"}
-            </Text>
-            <View style={{ width: 40 }} />
+              <Ionicons name="close" size={20} color={COLORS.textMuted} />
+            </TouchableOpacity>
           </View>
 
-          {/* Hero / Header Section */}
-          <View style={styles.heroSection}>
-            <View style={styles.heroBadge}>
-              <Feather name="star" size={12} color={COLORS.primary} />
-              <Text style={styles.heroBadgeText}>
-                {isEditMode ? "UPDATE" : "BARU"}
+          {/* TASK TITLE */}
+          <View style={styles.inputGroup}>
+            <Text style={[styles.label, { color: COLORS.text }]}>
+              Task Title <Text style={{ color: COLORS.danger }}>*</Text>
+            </Text>
+            <TextInput
+              style={[
+                styles.input, 
+                { backgroundColor: COLORS.inputBg, borderColor: errors.title ? COLORS.danger : COLORS.border, color: COLORS.text }
+              ]}
+              placeholder="Enter task title..."
+              placeholderTextColor={COLORS.textMuted}
+              value={title}
+              onChangeText={(txt) => { setTitle(txt); setErrors({}); }}
+            />
+            {errors.title && <Text style={styles.errorText}>{errors.title}</Text>}
+          </View>
+
+          {/* DESCRIPTION */}
+          <View style={styles.inputGroup}>
+            <Text style={[styles.label, { color: COLORS.text }]}>Description</Text>
+            <TextInput
+              style={[
+                styles.input, 
+                styles.textArea,
+                { backgroundColor: COLORS.inputBg, borderColor: COLORS.border, color: COLORS.text }
+              ]}
+              placeholder="Add a more detailed description..."
+              placeholderTextColor={COLORS.textMuted}
+              multiline
+              numberOfLines={5}
+              textAlignVertical="top"
+              value={description}
+              onChangeText={setDescription}
+            />
+          </View>
+
+          {/* DUE DATE */}
+          <View style={styles.inputGroup}>
+            <Text style={[styles.label, { color: COLORS.text }]}>Due Date</Text>
+            <TouchableOpacity 
+              activeOpacity={0.7}
+              onPress={() => setShowPicker(true)}
+              style={[styles.dateInputContainer, { backgroundColor: COLORS.inputBg, borderColor: COLORS.border }]}
+            >
+              <Text style={[styles.dateText, { color: dueDate ? COLORS.text : COLORS.textMuted }]}>
+                {dueDate ? formatDate(dueDate) : "No Due Date"}
               </Text>
-            </View>
-            <Text style={styles.heroTitle}>
-              {isEditMode ? "Perbarui Aktivitas" : "Aktivitas Pribadi"}
-            </Text>
-            <Text style={styles.heroSubtitle}>
-              {isEditMode
-                ? "Sesuaikan kembali aktivitas yang sudah Anda buat."
-                : "Fokus pada apa yang penting hari ini."}
-            </Text>
+              <View style={[styles.dateIconWrapper, { borderLeftColor: COLORS.border }]}>
+                <Ionicons name="calendar-outline" size={20} color={COLORS.textMuted} />
+              </View>
+            </TouchableOpacity>
           </View>
 
-          <View style={styles.card}>
-            {/* Judul Task */}
-            <View style={styles.field}>
-              <Text style={styles.label}>Judul Tugas</Text>
-              <View
-                style={[
-                  styles.inputContainer,
-                  focusedInput === 'title' && styles.inputFocused,
-                  errors.title && styles.inputError,
-                ]}
-              >
-                <Feather
-                  name="edit-2"
-                  size={18}
-                  color={focusedInput === 'title' ? COLORS.primary : COLORS.textMuted}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  value={title}
-                  onChangeText={(text) => {
-                    setTitle(text);
-                    if (errors.title) setErrors({});
-                  }}
-                  onFocus={() => setFocusedInput('title')}
-                  onBlur={() => setFocusedInput(null)}
-                  placeholder="Mis: Menyelesaikan desain laporan"
-                  placeholderTextColor={COLORS.textMuted}
-                  style={styles.input}
-                  autoCorrect={false}
-                />
-              </View>
-              {errors.title && (
-                <Text style={styles.errorText}>{errors.title}</Text>
-              )}
-            </View>
-
-            {/* Deskripsi */}
-            <View style={styles.field}>
-              <Text style={styles.label}>Deskripsi Singkat</Text>
-              <View
-                style={[
-                  styles.inputContainer,
-                  styles.textAreaContainer,
-                  focusedInput === 'desc' && styles.inputFocused
-                ]}
-              >
-                <Feather
-                  name="align-left"
-                  size={18}
-                  color={focusedInput === 'desc' ? COLORS.primary : COLORS.textMuted}
-                  style={[styles.inputIcon, { marginTop: 16 }]}
-                />
-                <TextInput
-                  value={description}
-                  onChangeText={setDescription}
-                  onFocus={() => setFocusedInput('desc')}
-                  onBlur={() => setFocusedInput(null)}
-                  placeholder="Tambahkan catatan atau detail..."
-                  placeholderTextColor={COLORS.textMuted}
-                  multiline
-                  numberOfLines={4}
-                  style={[styles.input, styles.textArea]}
-                  autoCorrect={false}
-                />
-              </View>
-            </View>
-
-            {/* Deadline & Kategori Row */}
-            <View style={{ flexDirection: "row", gap: 16 }}>
-              {/* Deadline */}
-              <View style={[styles.field, { flex: 1 }]}>
-                <Text style={styles.label}>Tenggat Waktu</Text>
-                <Pressable
-                  onPress={() => setShowPicker(true)}
-                  style={({ pressed }) => [
-                    styles.inputContainer,
-                    pressed && { backgroundColor: COLORS.surfaceAlt },
-                  ]}
-                >
-                  <Feather
-                    name="calendar"
-                    size={18}
-                    color={COLORS.primary}
-                    style={styles.inputIcon}
-                  />
-                  <Text style={styles.dateText}>
-                    {formatDeadline(deadline.toISOString())}
-                  </Text>
-                  <Feather
-                    name="chevron-down"
-                    size={18}
-                    color={COLORS.textMuted}
-                    style={{ marginRight: 16 }}
-                  />
-                </Pressable>
-              </View>
-
-              {/* Kategori */}
-              <View style={[styles.field, { flex: 1 }]}>
-                <Text style={styles.label}>Kategori</Text>
-                <View style={[styles.inputContainer, { paddingHorizontal: 16 }]}>
-                  <Feather
-                    name="tag"
-                    size={18}
-                    color={COLORS.primary}
-                    style={{ marginRight: 12 }}
-                  />
-                  <Text style={styles.dateText}>{category}</Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Priority */}
-            <View style={styles.field}>
-              <Text style={styles.label}>Tingkat Prioritas</Text>
-              <View style={styles.priorityRow}>
-                {PRIORITIES.map((p) => {
-                  const isActive = p === priority;
-                  return (
-                    <Pressable
-                      key={p}
-                      onPress={() => setPriority(p)}
-                      style={[
-                        styles.priorityChip,
-                        isActive && styles.priorityChipActive,
-                      ]}
-                    >
-                      {isActive && (
-                        <Feather name="check-circle" size={14} color="#fff" />
-                      )}
-                      <Text
-                        style={[
-                          styles.priorityChipText,
-                          isActive && styles.priorityChipTextActive,
-                        ]}
-                      >
-                        {p === "High"
-                          ? "Tinggi"
-                          : p === "Medium"
-                          ? "Sedang"
-                          : "Rendah"}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </View>
-
-            {/* Reminder Toggle */}
-            <View style={styles.reminderRow}>
-              <View style={styles.reminderTextContainer}>
-                <View style={styles.reminderIconWrapper}>
-                  <Feather
-                    name="bell"
-                    size={20}
-                    color={reminder ? COLORS.primary : COLORS.textMuted}
-                  />
-                </View>
-                <View>
-                  <Text style={styles.reminderTitle}>Pasang Pengingat</Text>
-                  <Text style={styles.reminderSubtitle}>
-                    Notifikasi sebelum tenggat waktu
-                  </Text>
-                </View>
-              </View>
+          {/* FLAGS */}
+          <View style={styles.inputGroup}>
+            <Text style={[styles.label, { color: COLORS.text, marginBottom: 12 }]}>Flags</Text>
+            
+            <View style={styles.flagRow}>
               <Switch
-                value={reminder}
-                onValueChange={setReminder}
-                trackColor={{ false: COLORS.border, true: COLORS.primary }}
-                thumbColor={"#fff"}
+                value={isImportant}
+                onValueChange={setIsImportant}
+                trackColor={{ false: COLORS.border, true: COLORS.textMuted }}
+                thumbColor={isImportant ? '#ffffff' : '#ffffff'}
                 ios_backgroundColor={COLORS.border}
+                style={{ transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] }}
               />
+              <Text style={[styles.flagLabel, { color: COLORS.text }]}>Is Important</Text>
+            </View>
+
+            <View style={styles.flagRow}>
+              <Switch
+                value={isUrgent}
+                onValueChange={setIsUrgent}
+                trackColor={{ false: COLORS.border, true: COLORS.textMuted }}
+                thumbColor={isUrgent ? '#ffffff' : '#ffffff'}
+                ios_backgroundColor={COLORS.border}
+                style={{ transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] }}
+              />
+              <Text style={[styles.flagLabel, { color: COLORS.text }]}>Is Urgent</Text>
             </View>
           </View>
 
-          {/* Action Buttons */}
-          <View style={styles.actions}>
-            <Pressable
-              onPress={handleCancel}
-              style={({ pressed }) => [
-                styles.btnCancel,
-                pressed && { opacity: 0.7, transform: [{ scale: 0.98 }] },
-              ]}
-            >
-              <Text style={styles.btnCancelText}>Batal</Text>
-            </Pressable>
-            <Pressable
-              onPress={handleSave}
-              style={({ pressed }) => [
-                styles.btnSave,
-                pressed && { opacity: 0.9, transform: [{ scale: 0.98 }] },
-              ]}
-            >
-              <Text style={styles.btnSaveText}>
-                {isEditMode ? "Simpan Perubahan" : "Simpan Tugas"}
-              </Text>
-              <Feather name="arrow-right" size={18} color="#fff" />
-            </Pressable>
-          </View>
         </ScrollView>
-      </KeyboardAvoidingView>
 
-      {/* DateTimePicker dipindah ke luar ScrollView agar tidak mengganggu layout */}
-      {showPicker && (
-        <DateTimePicker
-          value={deadline}
-          mode="date"
-          display={Platform.OS === "ios" ? "spinner" : "default"}
-          onChange={onDateChange}
-        />
-      )}
+        {/* FOOTER ACTIONS */}
+        <View style={[styles.footerRow, { backgroundColor: COLORS.bg, borderTopColor: COLORS.border }]}>
+          <TouchableOpacity 
+            style={styles.cancelBtn} 
+            onPress={() => router.back()}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="close-outline" size={20} color={COLORS.primary} style={{ marginRight: 4 }} />
+            <Text style={[styles.cancelBtnText, { color: COLORS.primary }]}>Cancel</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.saveBtn, { backgroundColor: COLORS.primary }]} 
+            onPress={handleSave}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="checkmark-outline" size={20} color="#ffffff" style={{ marginRight: 4 }} />
+            <Text style={styles.saveBtnText}>Save</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* DATE PICKER MODAL */}
+        {showPicker && (
+          <DateTimePicker
+            value={dueDate || new Date()}
+            mode="date"
+            display="default"
+            onChange={(event, date) => {
+              setShowPicker(Platform.OS === 'ios');
+              if (date) setDueDate(date);
+              if (Platform.OS === 'android') setShowPicker(false);
+            }}
+          />
+        )}
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
-const getStyles = (COLORS: any) => StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.bg,
   },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.bg,
+  scrollContent: {
+    padding: 24,
+    paddingBottom: 100, // Space for footer
   },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.surfaceAlt,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: COLORS.border,
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 32,
   },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: COLORS.text,
-    fontFamily: Platform.OS === "ios" ? "Georgia" : "serif",
+    fontSize: 22,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
-  form: {
-    flexGrow: 1,
-    padding: 24,
-    paddingBottom: 40,
-  },
-  heroSection: {
-    marginBottom: 32,
-    alignItems: "flex-start",
-  },
-  heroBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    backgroundColor: "rgba(59, 130, 246, 0.1)",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
+  closeButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: "rgba(59, 130, 246, 0.3)",
-    marginBottom: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  heroBadgeText: {
-    fontSize: 10,
-    fontWeight: "800",
-    color: COLORS.primary,
-    letterSpacing: 1.5,
-  },
-  heroTitle: {
-    fontSize: 32,
-    fontWeight: "800",
-    color: COLORS.text,
-    fontFamily: Platform.OS === "ios" ? "Georgia" : "serif",
-    marginBottom: 8,
-  },
-  heroSubtitle: {
-    fontSize: 14,
-    color: COLORS.textMuted,
-    lineHeight: 22,
-  },
-  card: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 24,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    shadowColor: COLORS.text,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 12,
-    elevation: 2,
-    gap: 24,
-  },
-  field: {
-    gap: 10,
+  inputGroup: {
+    marginBottom: 24,
   },
   label: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: COLORS.text,
-    marginLeft: 4,
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.surfaceAlt,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 16,
-    minHeight: 56,
-  },
-  inputFocused: {
-    borderColor: COLORS.primary,
-    backgroundColor: 'rgba(59, 130, 246, 0.05)',
-  },
-  inputError: {
-    borderColor: '#ef4444',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 8,
   },
   input: {
-    flex: 1,
-    fontSize: 16,
-    color: COLORS.text,
-    paddingRight: 16,
-    paddingVertical: 16,
-  },
-  inputIcon: {
+    borderWidth: 1,
+    borderRadius: 8,
     paddingHorizontal: 16,
-  },
-  textAreaContainer: {
-    alignItems: "flex-start",
+    paddingVertical: 14,
+    fontSize: 15,
   },
   textArea: {
-    textAlignVertical: "top",
     minHeight: 120,
     paddingTop: 16,
+  },
+  dateInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 8,
+    overflow: 'hidden',
   },
   dateText: {
     flex: 1,
     fontSize: 15,
-    fontWeight: "600",
-    color: COLORS.text,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
+  dateIconWrapper: {
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderLeftWidth: 1,
+    backgroundColor: 'rgba(0,0,0,0.02)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  flagRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  flagLabel: {
+    fontSize: 15,
+    marginLeft: 12,
+    fontWeight: '500',
   },
   errorText: {
     fontSize: 12,
-    color: "#ef4444",
-    marginLeft: 4,
-    fontWeight: "500",
-  },
-  priorityRow: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  priorityChip: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 12,
-    paddingVertical: 14,
-    backgroundColor: COLORS.surfaceAlt,
-  },
-  priorityChipActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  priorityChipText: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: COLORS.textMuted,
-  },
-  priorityChipTextActive: {
-    color: "#fff",
-  },
-  reminderRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingTop: 24,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    color: '#ef4444',
     marginTop: 4,
+    marginLeft: 4,
   },
-  reminderTextContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
-  },
-  reminderIconWrapper: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.surfaceAlt,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  reminderTitle: {
-    fontSize: 14,
-    fontWeight: "800",
-    color: COLORS.text,
-    marginBottom: 2,
-  },
-  reminderSubtitle: {
-    fontSize: 12,
-    color: COLORS.textMuted,
-  },
-  actions: {
-    flexDirection: "row",
-    gap: 12,
-    padding: 24,
-    backgroundColor: COLORS.bg,
+  footerRow: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    backgroundColor: '#ffffff', // Usually footer is solid to overlay content
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: '#f1f5f9',
+    gap: 16,
   },
-  btnCancel: {
-    flex: 1,
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 999,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 16,
+  cancelBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
   },
-  btnCancelText: {
+  cancelBtnText: {
     fontSize: 15,
-    fontWeight: "700",
-    color: COLORS.text,
+    fontWeight: '600',
   },
-  btnSave: {
-    flex: 1.5,
-    flexDirection: "row",
-    backgroundColor: COLORS.primary,
-    borderRadius: 999,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    paddingVertical: 16,
-    shadowColor: COLORS.text,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+  saveBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 6,
   },
-  btnSaveText: {
+  saveBtnText: {
     fontSize: 15,
-    fontWeight: "700",
-    color: "#fff",
+    fontWeight: '600',
+    color: '#ffffff',
   },
 });

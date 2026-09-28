@@ -332,6 +332,14 @@ export default function WorkspaceDetailScreen() {
         <View style={styles.toolsRow}>
           <TouchableOpacity 
             style={[styles.toolBtn, { backgroundColor: COLORS.blue }]}
+            onPress={() => router.push("/invite-workspace")}
+          >
+            <Ionicons name="person-add-outline" size={14} color={COLORS.text} />
+            <Text style={styles.toolBtnText}>Invite</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.toolBtn, { backgroundColor: COLORS.purple }]}
             onPress={() => router.push("/export-tasks")}
           >
             <Ionicons name="download-outline" size={14} color={COLORS.text} />

@@ -6,7 +6,7 @@ export default function RootLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="login" />
       <Stack.Screen name="(tabs)" /> 
-      <Stack.Screen name="add-task" />
+      <Stack.Screen name="add-task" options={{ presentation: 'modal' }} />
       <Stack.Screen name="add-team-task" />
       <Stack.Screen name="task/[id]" />
       <Stack.Screen name="performance-report" />
@@ -14,8 +14,11 @@ export default function RootLayout() {
       <Stack.Screen name="change-password" />
       <Stack.Screen name="notifications" />
       <Stack.Screen name="export-tasks" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="filter-tasks" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="custom-fields" options={{ presentation: 'modal' }} />
       <Stack.Screen name="create-workspace" options={{ presentation: 'modal' }} />
       <Stack.Screen name="join-workspace" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="invite-workspace" options={{ presentation: 'modal' }} />
       <Stack.Screen name="workspace-detail" />
     </Stack>
   );

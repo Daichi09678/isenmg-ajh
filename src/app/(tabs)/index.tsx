@@ -130,7 +130,19 @@ export default function HomeTab() {
 
         {/* MY TASKS & SEARCH */}
         <View style={styles.myTasksSection}>
-          <Text style={styles.sectionTitle}>My Tasks</Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>My Tasks</Text>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <TouchableOpacity onPress={() => router.push("/invite-workspace")} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, backgroundColor: COLORS.blue + '15', borderRadius: 12 }}>
+                <Ionicons name="person-add-outline" size={14} color={COLORS.blue} />
+                <Text style={{ color: COLORS.blue, fontWeight: 'bold', fontSize: 12 }}>Invite</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push("/custom-fields")} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, backgroundColor: COLORS.primary + '15', borderRadius: 12 }}>
+                <Ionicons name="construct-outline" size={14} color={COLORS.primary} />
+                <Text style={{ color: COLORS.primary, fontWeight: 'bold', fontSize: 12 }}>Custom Fields</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
           <View style={styles.searchRow}>
             <View style={styles.searchBar}>
               <Ionicons name="search" size={20} color={COLORS.textMuted} style={styles.searchIcon} />
@@ -142,7 +154,7 @@ export default function HomeTab() {
                 style={[styles.searchInput, { color: themeText }]}
               />
             </View>
-            <TouchableOpacity style={styles.filterBtn} onPress={() => {}}>
+            <TouchableOpacity style={styles.filterBtn} onPress={() => router.push("/filter-tasks")}>
               <Ionicons name="options-outline" size={22} color={themeText} />
             </TouchableOpacity>
           </View>
