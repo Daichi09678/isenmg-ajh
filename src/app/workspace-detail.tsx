@@ -91,6 +91,7 @@ export default function WorkspaceDetailScreen() {
   const [isPaused, setIsPaused] = useState(false);
   const [activeProject, setActiveProject] = useState("Mobile Asabri");
   const [projectModalVisible, setProjectModalVisible] = useState(false);
+  const [viewMode, setViewMode] = useState<"board" | "list">("list");
 
   const [isSearching, setIsSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -249,6 +250,15 @@ export default function WorkspaceDetailScreen() {
                   <Text style={styles.headerTitle}>{activeProject}</Text>
                   <Ionicons name="chevron-down" size={16} color={COLORS.text} />
                 </TouchableOpacity>
+
+                <View style={{ flexDirection: "row", backgroundColor: COLORS.card, borderRadius: 8, borderWidth: 1, borderColor: COLORS.border, overflow: 'hidden' }}>
+                  <TouchableOpacity onPress={() => setViewMode("board")} style={{ paddingHorizontal: 10, paddingVertical: 8, backgroundColor: viewMode === "board" ? COLORS.blue + '20' : 'transparent' }}>
+                     <Ionicons name="grid" size={16} color={viewMode === "board" ? COLORS.blue : COLORS.textMuted} />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setViewMode("list")} style={{ paddingHorizontal: 10, paddingVertical: 8, backgroundColor: viewMode === "list" ? COLORS.blue + '20' : 'transparent', borderLeftWidth: 1, borderLeftColor: COLORS.border }}>
+                     <Ionicons name="list" size={16} color={viewMode === "list" ? COLORS.blue : COLORS.textMuted} />
+                  </TouchableOpacity>
+                </View>
                 
                 <View style={[styles.liveBadge, { backgroundColor: 'transparent', borderWidth: 0, paddingHorizontal: 0 }]}>
                   <BlinkingLiveDot isPaused={isPaused} COLORS={COLORS} styles={styles} />
@@ -331,6 +341,14 @@ export default function WorkspaceDetailScreen() {
         {/* Tools Row: Semua tools monitoring yang dibutuhkan langsung ada di sini */}
         <View style={styles.toolsRow}>
           <TouchableOpacity 
+            style={[styles.toolBtn, { backgroundColor: COLORS.card, borderWidth: 1, borderColor: COLORS.border }]}
+            onPress={() => setMembersModalVisible(true)}
+          >
+            <Ionicons name="people-outline" size={14} color={COLORS.text} />
+            <Text style={[styles.toolBtnText, { color: COLORS.text }]}>Members</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
             style={[styles.toolBtn, { backgroundColor: COLORS.blue }]}
             onPress={() => router.push("/invite-workspace")}
           >
@@ -389,139 +407,204 @@ export default function WorkspaceDetailScreen() {
       </View>
 
       {/* Kanban Board Columns */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.boardScroll}>
-        <BoardColumn title="Backlog" count={backlogCount} color={COLORS.blue}>
-          {backlogTasks.map((t) => (
-            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => router.push(`/task/${t.id}` as any)} />
-          ))}
-          <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("Backlog")}>
-            <Ionicons name="add" size={16} color={COLORS.textMuted} />
-            <Text style={styles.newTaskText}>Update Progres</Text>
-          </TouchableOpacity>
-        </BoardColumn>
-        
-        <BoardColumn title="Doing" count={doingCount} color={COLORS.text}>
-          {doingTasks.map((t) => (
-            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => router.push(`/task/${t.id}` as any)} />
-          ))}
-          <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("Doing")}>
-            <Ionicons name="add" size={16} color={COLORS.textMuted} />
-            <Text style={styles.newTaskText}>Update Progres</Text>
-          </TouchableOpacity>
-        </BoardColumn>
+      {/* Board / Table View */}
+      {viewMode === "board" ? (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.boardScroll}>
+          <BoardColumn title="Backlog" count={backlogCount} color={COLORS.blue}>
+            {backlogTasks.map((t) => (
+              <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => router.push(`/task/${t.id}` as any)} />
+            ))}
+            <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("Backlog")}>
+              <Ionicons name="add" size={16} color={COLORS.textMuted} />
+              <Text style={styles.newTaskText}>Update Progres</Text>
+            </TouchableOpacity>
+          </BoardColumn>
+          
+          <BoardColumn title="Doing" count={doingCount} color={COLORS.text}>
+            {doingTasks.map((t) => (
+              <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => router.push(`/task/${t.id}` as any)} />
+            ))}
+            <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("Doing")}>
+              <Ionicons name="add" size={16} color={COLORS.textMuted} />
+              <Text style={styles.newTaskText}>Update Progres</Text>
+            </TouchableOpacity>
+          </BoardColumn>
 
-        <BoardColumn title="MR" count={mrCount} color={COLORS.text}>
-          {mrTasks.length === 0 && (
-            <View style={styles.dropZone}>
-              <Text style={styles.dropText}>Drop task here</Text>
-            </View>
-          )}
-          {mrTasks.map((t) => (
-            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => router.push(`/task/${t.id}` as any)} />
-          ))}
-          <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("MR")}>
-            <Ionicons name="add" size={16} color={COLORS.textMuted} />
-            <Text style={styles.newTaskText}>Update Progres</Text>
-          </TouchableOpacity>
-        </BoardColumn>
-        
-        <BoardColumn title="Testing" count={testingCount} color={COLORS.yellow}>
-          {testingTasks.map((t) => (
-            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => router.push(`/task/${t.id}` as any)} />
-          ))}
-          <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("Testing")}>
-            <Ionicons name="add" size={16} color={COLORS.textMuted} />
-            <Text style={styles.newTaskText}>Update Progres</Text>
-          </TouchableOpacity>
-        </BoardColumn>
-        
-        <BoardColumn title="Done" count={doneCount} color={COLORS.green}>
-          {doneTasks.map((t) => (
-            <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => router.push(`/task/${t.id}` as any)} />
-          ))}
-          <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("Done")}>
-            <Ionicons name="add" size={16} color={COLORS.textMuted} />
-            <Text style={styles.newTaskText}>Update Progres</Text>
-          </TouchableOpacity>
-        </BoardColumn>
-      </ScrollView>
+          <BoardColumn title="MR" count={mrCount} color={COLORS.text}>
+            {mrTasks.length === 0 && (
+              <View style={styles.dropZone}>
+                <Text style={styles.dropText}>Drop task here</Text>
+              </View>
+            )}
+            {mrTasks.map((t) => (
+              <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => router.push(`/task/${t.id}` as any)} />
+            ))}
+            <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("MR")}>
+              <Ionicons name="add" size={16} color={COLORS.textMuted} />
+              <Text style={styles.newTaskText}>Update Progres</Text>
+            </TouchableOpacity>
+          </BoardColumn>
+          
+          <BoardColumn title="Testing" count={testingCount} color={COLORS.yellow}>
+            {testingTasks.map((t) => (
+              <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => router.push(`/task/${t.id}` as any)} />
+            ))}
+            <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("Testing")}>
+              <Ionicons name="add" size={16} color={COLORS.textMuted} />
+              <Text style={styles.newTaskText}>Update Progres</Text>
+            </TouchableOpacity>
+          </BoardColumn>
+          
+          <BoardColumn title="Done" count={doneCount} color={COLORS.green}>
+            {doneTasks.map((t) => (
+              <TaskCard key={t.id} title={t.title} desc={t.description} tag={`T-${t.id}`} author={t.members?.[0] || 'Unknown'} commentCount={t.comments?.length || 0} onSelect={() => router.push(`/task/${t.id}` as any)} />
+            ))}
+            <TouchableOpacity style={styles.newTaskBtn} onPress={() => setQuickUpdateColumn("Done")}>
+              <Ionicons name="add" size={16} color={COLORS.textMuted} />
+              <Text style={styles.newTaskText}>Update Progres</Text>
+            </TouchableOpacity>
+          </BoardColumn>
+        </ScrollView>
+      ) : (
+        <ScrollView horizontal showsHorizontalScrollIndicator={true} style={{ flex: 1, marginTop: 16, marginHorizontal: 16 }}>
+          <View style={{ backgroundColor: COLORS.card, borderRadius: 8, borderWidth: 1, borderColor: COLORS.border, minWidth: 1000 }}>
+             {/* Table Header */}
+             <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: COLORS.border, backgroundColor: COLORS.bg, paddingVertical: 12, paddingHorizontal: 16 }}>
+                <Text style={{ width: 40, fontWeight: 'bold', color: COLORS.textMuted, fontSize: 13 }}>No</Text>
+                <View style={{ width: 150, flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ fontWeight: 'bold', color: COLORS.green, fontSize: 13 }}>Created Date </Text>
+                  <Ionicons name="arrow-down" size={12} color={COLORS.green} />
+                </View>
+                <View style={{ flex: 1, minWidth: 200, flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ fontWeight: 'bold', color: COLORS.textMuted, fontSize: 13 }}>Task </Text>
+                  <Ionicons name="arrow-up-outline" size={12} color={COLORS.textMuted} />
+                </View>
+                <Text style={{ width: 90, fontWeight: 'bold', color: COLORS.textMuted, fontSize: 13 }}>Urgency</Text>
+                <Text style={{ width: 130, fontWeight: 'bold', color: COLORS.textMuted, fontSize: 13 }}>Label</Text>
+                <View style={{ width: 100, flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ fontWeight: 'bold', color: COLORS.textMuted, fontSize: 13 }}>Due Date </Text>
+                  <Ionicons name="arrow-up-outline" size={12} color={COLORS.textMuted} />
+                </View>
+                <View style={{ width: 140, flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ fontWeight: 'bold', color: COLORS.textMuted, fontSize: 13 }}>Assigner </Text>
+                  <Ionicons name="arrow-up-outline" size={12} color={COLORS.textMuted} />
+                </View>
+                <View style={{ width: 140, flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ fontWeight: 'bold', color: COLORS.textMuted, fontSize: 13 }}>Assignee </Text>
+                  <Ionicons name="arrow-up-outline" size={12} color={COLORS.textMuted} />
+                </View>
+                <View style={{ width: 120, flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ fontWeight: 'bold', color: COLORS.textMuted, fontSize: 13 }}>Curr. Board </Text>
+                  <Ionicons name="arrow-up-outline" size={12} color={COLORS.textMuted} />
+                </View>
+             </View>
+             
+             {/* Table Body */}
+             <ScrollView showsVerticalScrollIndicator={true} style={{ maxHeight: 600 }}>
+               {teamTasks.map((t, idx) => (
+                 <TouchableOpacity 
+                   key={t.id} 
+                   style={{ flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: COLORS.border, paddingVertical: 14, paddingHorizontal: 16, alignItems: 'center', backgroundColor: COLORS.card }}
+                   onPress={() => router.push(`/task/${t.id}` as any)}
+                 >
+                   <Text style={{ width: 40, color: COLORS.textMuted, fontSize: 13 }}>{idx + 1}</Text>
+                   <Text style={{ width: 150, color: COLORS.green, fontSize: 13 }}>
+                     {t.createdAt ? new Date(t.createdAt).toLocaleString('id-ID', {day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'}).replace(/\./g, ':') : '29 Sep 2026 09:04:18'}
+                   </Text>
+                   <Text style={{ flex: 1, minWidth: 200, color: COLORS.blue, fontSize: 13, fontWeight: '500' }} numberOfLines={1}>
+                     [PKL-{t.id}] {t.title}
+                   </Text>
+                   <Text style={{ width: 90, color: COLORS.text, fontSize: 13 }}>{t.priority || '-'}</Text>
+                   <View style={{ width: 130, paddingRight: 10 }}>
+                     <View style={{ backgroundColor: '#b45309', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, alignSelf: 'flex-start' }}>
+                       <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>Product Division</Text>
+                     </View>
+                   </View>
+                   <Text style={{ width: 100, color: COLORS.text, fontSize: 13 }}>-</Text>
+                   <Text style={{ width: 140, color: COLORS.text, fontSize: 13 }} numberOfLines={1}>Mukhamad Eko Arifudin</Text>
+                   <Text style={{ width: 140, color: COLORS.text, fontSize: 13 }} numberOfLines={1}>{t.members?.[0] || 'Unknown'}</Text>
+                   <Text style={{ width: 120, color: COLORS.text, fontSize: 13 }}>{t.status}</Text>
+                 </TouchableOpacity>
+               ))}
+               {teamTasks.length === 0 && (
+                 <View style={{ padding: 24, alignItems: 'center' }}>
+                    <Text style={{ color: COLORS.textMuted }}>No tasks found.</Text>
+                 </View>
+               )}
+             </ScrollView>
+             
+             {/* Pagination (dummy visually like in the screenshot) */}
+             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: 16, borderTopWidth: 1, borderTopColor: COLORS.border, gap: 16 }}>
+               <Ionicons name="chevron-back" size={16} color={COLORS.textMuted} />
+               <View style={{ backgroundColor: COLORS.green + '20', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16 }}>
+                 <Text style={{ color: COLORS.green, fontWeight: 'bold' }}>1</Text>
+               </View>
+               <Ionicons name="chevron-forward" size={16} color={COLORS.textMuted} />
+               
+               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginLeft: 16, borderWidth: 1, borderColor: COLORS.border, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 }}>
+                  <Text style={{ color: COLORS.text }}>25</Text>
+                  <Ionicons name="chevron-down" size={12} color={COLORS.text} />
+               </View>
+             </View>
+          </View>
+        </ScrollView>
+      )}
 
       {/* CUSTOM MODALS */}
       {/* 1. Modal Anggota */}
       <Modal visible={membersModalVisible} animationType="fade" transparent onRequestClose={() => setMembersModalVisible(false)}>
         <View style={styles.modalBackdrop}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Anggota Tergabung</Text>
+          <View style={[styles.modalContent, { width: '90%', maxWidth: 600, padding: 24, borderRadius: 12 }]}>
+            <View style={[styles.modalHeader, { marginBottom: 16 }]}>
+              <Text style={{ fontSize: 18, fontWeight: 'bold', color: COLORS.text }}>Workspace Members</Text>
               <TouchableOpacity onPress={() => setMembersModalVisible(false)}>
                 <Ionicons name="close" size={24} color={COLORS.textMuted} />
               </TouchableOpacity>
             </View>
-            <ScrollView style={{maxHeight: 400}} showsVerticalScrollIndicator={false}>
-              
-              {/* Join Requests Section */}
-              {joinRequests.length > 0 && (
-                 <View style={{marginBottom: 20}}>
-                    <Text style={{color: COLORS.text, fontWeight: 'bold', marginBottom: 8}}>Permintaan Bergabung</Text>
-                    {joinRequests.map(req => (
-                       <View key={req.id} style={{backgroundColor: COLORS.bg, padding: 12, borderRadius: 8, marginBottom: 8}}>
-                          <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                             <View>
-                               <Text style={{color: COLORS.text, fontWeight: 'bold', fontSize: 13}}>{req.name}</Text>
-                               <Text style={{color: COLORS.textMuted, fontSize: 11}}>{req.email}</Text>
-                             </View>
-                             <TouchableOpacity onPress={() => setJoinRequests(joinRequests.map(r => r.id === req.id ? {...r, requestedRole: r.requestedRole === 'Viewer' ? 'Editor' : 'Viewer'} : r))} style={{backgroundColor: COLORS.card, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4, borderWidth: 1, borderColor: COLORS.border}}>
-                               <Text style={{color: COLORS.textMuted, fontSize: 11}}>{req.requestedRole}</Text>
-                             </TouchableOpacity>
-                          </View>
-                          <View style={{flexDirection: 'row', gap: 8, marginTop: 12}}>
-                             <TouchableOpacity onPress={() => setJoinRequests(joinRequests.filter(r => r.id !== req.id))} style={{flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 6, borderWidth: 1, borderColor: COLORS.border}}>
-                               <Text style={{color: COLORS.text, fontSize: 12, fontWeight: 'bold'}}>Tolak</Text>
-                             </TouchableOpacity>
-                             <TouchableOpacity onPress={() => setJoinRequests(joinRequests.filter(r => r.id !== req.id))} style={{flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 6, backgroundColor: COLORS.blue}}>
-                               <Text style={{color: '#fff', fontSize: 12, fontWeight: 'bold'}}>Terima</Text>
-                             </TouchableOpacity>
-                          </View>
-                       </View>
-                    ))}
-                 </View>
-              )}
 
-              {/* Invite Section */}
-              <View style={{marginBottom: 20}}>
-                <Text style={{color: COLORS.text, fontWeight: 'bold', marginBottom: 8}}>Undang Anggota</Text>
-                <View style={{flexDirection: 'row', gap: 8, marginBottom: 8}}>
-                   <TextInput
-                     placeholder="Masukkan email..."
-                     placeholderTextColor={COLORS.textMuted}
-                     value={inviteEmail}
-                     onChangeText={setInviteEmail}
-                     style={{flex: 1, backgroundColor: COLORS.bg, borderWidth: 1, borderColor: COLORS.border, borderRadius: 8, paddingHorizontal: 12, color: COLORS.text, fontSize: 12}}
-                   />
-                   <TouchableOpacity onPress={() => setInviteRole(inviteRole === 'Viewer' ? 'Editor' : 'Viewer')} style={{backgroundColor: COLORS.bg, borderWidth: 1, borderColor: COLORS.border, borderRadius: 8, paddingHorizontal: 12, justifyContent: 'center'}}>
-                     <Text style={{color: COLORS.textMuted, fontSize: 12}}>{inviteRole}</Text>
-                   </TouchableOpacity>
-                </View>
-                <TouchableOpacity onPress={() => {setInviteEmail("");}} style={{backgroundColor: COLORS.blue, paddingVertical: 10, borderRadius: 8, alignItems: 'center'}}>
-                   <Text style={{color: '#fff', fontWeight: 'bold', fontSize: 12}}>Kirim Undangan</Text>
-                </TouchableOpacity>
-              </View>
+            <View style={{ marginBottom: 16 }}>
+              <TextInput
+                placeholder="Search by name"
+                placeholderTextColor={COLORS.textMuted}
+                style={{ backgroundColor: COLORS.bg, borderWidth: 1, borderColor: COLORS.border, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, color: COLORS.text, fontSize: 14 }}
+              />
+            </View>
 
-              <Text style={{color: COLORS.textMuted, fontSize: 12, marginBottom: 16}}>
-                {ACTIVE_MEMBERS.length} Anggota sedang mengakses monitoring ini secara real-time.
-              </Text>
-              {ACTIVE_MEMBERS.map(m => (
-                <View key={m.id} style={{flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 12}}>
-                  <View style={[styles.memberAvatar, {backgroundColor: m.color, width: 36, height: 36, borderRadius: 18}]}>
-                     <Text style={{color: '#fff', fontWeight: 'bold'}}>{m.initials}</Text>
+            {/* Header Table */}
+            <View style={{ flexDirection: 'row', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: COLORS.border, marginBottom: 8 }}>
+              <Text style={{ flex: 2, color: COLORS.text, fontWeight: 'bold', fontSize: 13 }}>Name</Text>
+              <Text style={{ flex: 1.5, color: COLORS.text, fontWeight: 'bold', fontSize: 13 }}>Role</Text>
+              <Text style={{ flex: 1.5, color: COLORS.text, fontWeight: 'bold', fontSize: 13 }}>Position</Text>
+            </View>
+
+            <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={false}>
+              {[
+                { name: "Fahri Bintang A Ramsyah (You)", role: "Member", position: "Select Position", avatar: "FB", isYou: true },
+                { name: "Mukhamad Eko Arifudin", role: "Admin", position: "Select Position", avatar: "ME", isYou: false },
+              ].map((m, idx) => (
+                <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.border }}>
+                  {/* Name column */}
+                  <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center', gap: 10, paddingRight: 8 }}>
+                    <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: m.isYou ? COLORS.purple : COLORS.blue, justifyContent: 'center', alignItems: 'center' }}>
+                       <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>{m.avatar}</Text>
+                    </View>
+                    <Text style={{ color: COLORS.text, fontSize: 13, fontWeight: '500', flexShrink: 1 }} numberOfLines={2}>{m.name}</Text>
                   </View>
-                  <View style={{flex: 1}}>
-                    <Text style={{color: COLORS.text, fontWeight: 'bold'}}>{m.name}</Text>
-                    <Text style={{color: COLORS.textMuted, fontSize: 12}}>{m.role}</Text>
+                  
+                  {/* Role column */}
+                  <View style={{ flex: 1.5, paddingRight: 10 }}>
+                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: COLORS.bg, borderWidth: 1, borderColor: COLORS.border, borderRadius: 6, paddingHorizontal: 10, paddingVertical: 8 }}>
+                       <Text style={{ color: COLORS.textMuted, fontSize: 13 }}>{m.role}</Text>
+                       <Ionicons name="chevron-down" size={14} color={COLORS.textMuted} />
+                     </View>
                   </View>
-                  <View style={{flexDirection: 'row', alignItems: 'center', gap: 6}}>
-                    <BlinkingDot COLORS={COLORS} />
-                    <Text style={{color: COLORS.green, fontSize: 12}}>Online</Text>
+
+                  {/* Position column */}
+                  <View style={{ flex: 1.5 }}>
+                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: COLORS.bg, borderWidth: 1, borderColor: COLORS.border, borderRadius: 6, paddingHorizontal: 10, paddingVertical: 8 }}>
+                       <Text style={{ color: COLORS.textMuted, fontSize: 13 }}>{m.position}</Text>
+                       <Ionicons name="chevron-down" size={14} color={COLORS.textMuted} />
+                     </View>
                   </View>
                 </View>
               ))}
