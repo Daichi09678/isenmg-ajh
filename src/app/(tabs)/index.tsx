@@ -124,8 +124,18 @@ export default function HomeTab() {
       <ScrollView contentContainerStyle={styles.contentPad} showsVerticalScrollIndicator={false}>
         {/* GREETING */}
         <View style={styles.greetingSection}>
-          <Text style={styles.greetingTitle}>Home</Text>
-          <Text style={styles.greetingSubtitle}>Welcome <Text style={{fontWeight: 'bold', color: themeText}}>{name || "User"}</Text></Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <View style={{ backgroundColor: '#10b98120', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#10b981' }} />
+              <Text style={{ color: '#10b981', fontWeight: 'bold', fontSize: 12 }}>Hari Produktif</Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Ionicons name="calendar-outline" size={16} color={COLORS.textMuted} />
+              <Text style={{ color: COLORS.textMuted, fontSize: 13, fontWeight: '500' }}>22 Okt 2024</Text>
+            </View>
+          </View>
+          <Text style={styles.greetingTitle}>Selamat datang, {name || "Amanu"} 👋</Text>
+          <Text style={styles.greetingSubtitle}>Kamu punya <Text style={{ color: COLORS.green, fontWeight: 'bold' }}>{filteredTasks.length} tugas aktif</Text> untuk diselesaikan hari ini.</Text>
         </View>
 
         {/* MY TASKS & SEARCH */}
@@ -133,10 +143,6 @@ export default function HomeTab() {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
             <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>My Tasks</Text>
             <View style={{ flexDirection: 'row', gap: 8 }}>
-              <TouchableOpacity onPress={() => router.push("/invite-workspace")} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, backgroundColor: COLORS.blue + '15', borderRadius: 12 }}>
-                <Ionicons name="person-add-outline" size={14} color={COLORS.blue} />
-                <Text style={{ color: COLORS.blue, fontWeight: 'bold', fontSize: 12 }}>Invite</Text>
-              </TouchableOpacity>
               <TouchableOpacity onPress={() => router.push("/custom-fields")} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, backgroundColor: COLORS.primary + '15', borderRadius: 12 }}>
                 <Ionicons name="construct-outline" size={14} color={COLORS.primary} />
                 <Text style={{ color: COLORS.primary, fontWeight: 'bold', fontSize: 12 }}>Custom Fields</Text>
@@ -463,19 +469,18 @@ const getStyles = (COLORS: any) => StyleSheet.create({
   greetingSection: {
     paddingHorizontal: 20,
     paddingTop: 24,
-    paddingBottom: 16,
+    paddingBottom: 24,
   },
   greetingTitle: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "bold",
     color: COLORS.text,
     marginBottom: 4,
   },
   greetingSubtitle: {
-    fontSize: 15,
+    fontSize: 14,
     color: COLORS.textMuted,
   },
-  
   myTasksSection: {
     paddingHorizontal: 16,
     paddingTop: 8,
